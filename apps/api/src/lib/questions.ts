@@ -132,6 +132,7 @@ export function buildQuestions(
 
     if (type === 'definition_choice') {
       prompt = '根据中文释义，选择对应的英文单词'
+      stem = word.chineseDef
       hint = null
       options = pickOptions(
         word.spelling,
@@ -163,6 +164,7 @@ export function buildQuestions(
       if (imageOptions.length < 2 || !word.imageUrl) {
         type = 'definition_choice'
         prompt = '根据中文释义，选择对应的英文单词'
+        stem = word.chineseDef
         options = pickOptions(word.spelling, word.pos, optionPool(word, allWords, 'definition_choice'))
       } else {
         prompt = '看图，选择对应的英文单词'
@@ -190,8 +192,9 @@ export function buildQuestions(
       options = null
     }
 
-    if (type === 'definition_choice' && !prompt) {
-      prompt = '根据中文释义，选择对应的英文单词'
+    if (type === 'definition_choice') {
+      if (!prompt) prompt = '根据中文释义，选择对应的英文单词'
+      if (!stem) stem = word.chineseDef
     }
 
     const finalType = type
@@ -258,7 +261,7 @@ export function applyManualQuestion(
     type,
     typeLabel: QUESTION_TYPE_LABELS[type],
     prompt: TYPE_PROMPTS[type],
-    stem: manual.stem,
+    stem: type === 'definition_choice' ? manual.stem || word.chineseDef : manual.stem,
     options,
     imageUrl: type === 'image_choice' ? word.imageUrl : null,
     audioUrl: type === 'audio_choice' ? word.audioUrl : null,

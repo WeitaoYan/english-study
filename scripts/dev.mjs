@@ -1,17 +1,24 @@
 import { spawn } from 'node:child_process'
 
 const isWindows = process.platform === 'win32'
-const npm = isWindows ? 'npm.cmd' : 'npm'
+
+// Node 20.12+/22+ 不允许不带 shell 直接 spawn `.cmd`/`.bat`（CVE-2024-27980），
+// Windows 上会抛 EINVAL。优先用当前 node 直接执行 npm-cli.js，避免依赖 shell。
+const npmCli = process.env.npm_execpath?.endsWith('npm-cli.js')
+  ? process.env.npm_execpath
+  : null
 
 const children = []
 let shuttingDown = false
 
 function run(label, args) {
-  const child = spawn(npm, args, {
+  const command = npmCli ? process.execPath : isWindows ? 'npm.cmd' : 'npm'
+  const commandArgs = npmCli ? [npmCli, ...args] : args
+  const child = spawn(command, commandArgs, {
     cwd: process.cwd(),
     env: process.env,
     stdio: 'inherit',
-    shell: false,
+    shell: !npmCli && isWindows,
   })
 
   child.on('exit', (code, signal) => {

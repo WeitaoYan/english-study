@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="tree">
+  <rect width="320" height="320" rx="52" fill="#e8f0e4"/>
+  <circle cx="258" cy="58" r="82" fill="#ffffff" opacity=".30"/>
+  <ellipse cx="160" cy="274" rx="92" ry="14" fill="#2f5f4c" opacity=".14"/>
+  <text x="160" y="218" text-anchor="middle" font-size="156" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif">🌳</text>
+</svg>

@@ -1,0 +1,28 @@
+{
+  "name": "@english-study/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "wrangler dev --config .output/server/wrangler.json",
+    "typecheck": "nuxt typecheck",
+    "deploy": "npm run build && wrangler deploy --config .output/server/wrangler.json"
+  },
+  "dependencies": {
+    "lucide-vue-next": "^1.0.0",
+    "nuxt": "^4.6.3",
+    "vue": "^3.5.24",
+    "vue-router": "^4.6.3"
+  },
+  "devDependencies": {
+    "@english-study/shared": "*",
+    "@tailwindcss/vite": "^4.3.3",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.14",
+    "wrangler": "^4.156.1"
+  }
+}

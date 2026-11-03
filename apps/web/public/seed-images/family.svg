@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="family">
+  <rect width="320" height="320" rx="52" fill="#f4e9e2"/>
+  <circle cx="62" cy="62" r="82" fill="#ffffff" opacity=".28"/>
+  <ellipse cx="160" cy="270" rx="100" ry="15" fill="#b9714d" opacity=".13"/>
+  <text x="160" y="204" text-anchor="middle" font-size="128" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif">👨‍👩‍👧</text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="apple">
+  <rect width="320" height="320" rx="52" fill="#f7e6da"/>
+  <circle cx="262" cy="58" r="80" fill="#ffffff" opacity=".22"/>
+  <ellipse cx="160" cy="268" rx="92" ry="16" fill="#c6764e" opacity=".14"/>
+  <text x="160" y="214" text-anchor="middle" font-size="156" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif">🍎</text>
+</svg>

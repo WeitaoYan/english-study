@@ -1,0 +1,4 @@
+# Local Worker secrets (never commit real values)
+JWT_SECRET=dev-only-change-me-please-32-characters
+APP_ENV=development
+COOKIE_DOMAIN=

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" width="320" height="320" role="img" aria-label="dog">
+  <rect width="320" height="320" rx="52" fill="#efe6da"/>
+  <circle cx="60" cy="62" r="82" fill="#ffffff" opacity=".26"/>
+  <ellipse cx="160" cy="270" rx="90" ry="15" fill="#b9714d" opacity=".16"/>
+  <text x="160" y="216" text-anchor="middle" font-size="156" font-family="'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif">🐶</text>
+</svg>

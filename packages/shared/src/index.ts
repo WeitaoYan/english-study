@@ -25,8 +25,12 @@ export interface UserSummary {
   id: string
   role: Role
   nickname: string
-  phone: string
+  /** 学生可能没有手机号；家长创建的孩子账号 phone 与 email 均为 null。 */
+  phone: string | null
+  email: string | null
   enabled: boolean
+  /** 家长切换到孩子视角时才有值：切回家长身份必须验证该家长的密码。 */
+  switchedFromParent?: { id: string; nickname: string } | null
 }
 
 export interface AuthResponse {
@@ -232,7 +236,7 @@ export interface ProgressOverview {
 export interface ChildSummary {
   id: string
   nickname: string
-  phone: string
+  phone: string | null
   relation: string
   status: 'pending' | 'active' | 'rejected'
   today: {
@@ -281,7 +285,7 @@ export interface ParentReport {
   child: {
     id: string
     nickname: string
-    phone: string
+    phone: string | null
   }
   today: StudentDashboard['today']
   week: {

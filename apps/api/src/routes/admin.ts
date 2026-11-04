@@ -902,12 +902,12 @@ admin.get('/users', async (c) => {
   const values: unknown[] = []
   if (role) { conditions.push('u.role = ?'); values.push(role) }
   if (search) {
-    conditions.push('(u.nickname LIKE ? OR u.phone LIKE ?)')
-    values.push(`%${search}%`, `%${search}%`)
+    conditions.push('(u.nickname LIKE ? OR u.phone LIKE ? OR u.email LIKE ?)')
+    values.push(`%${search}%`, `%${search}%`, `%${search}%`)
   }
   const { results } = await c.env.DB.prepare(
-    `SELECT u.id, u.role, u.nickname, u.phone, u.enabled, u.created_at,
-       p.nickname AS parent_name, p.phone AS parent_phone
+    `SELECT u.id, u.role, u.nickname, u.phone, u.email, u.enabled, u.created_at,
+       p.nickname AS parent_name, p.phone AS parent_phone, p.email AS parent_email
      FROM user u
      LEFT JOIN user p ON p.id = u.parent_id
      WHERE ${conditions.join(' AND ')}
@@ -919,43 +919,68 @@ admin.get('/users', async (c) => {
       role: row.role,
       nickname: row.nickname,
       phone: row.phone,
+      email: row.email,
       enabled: Boolean(row.enabled),
       createdAt: row.created_at,
       parentName: row.parent_name,
       parentPhone: row.parent_phone,
+      parentEmail: row.parent_email,
     })),
   })
 })
 
+// 管理员创建账号：手机号与邮箱至少填一个（学生也可能只有邮箱；家长创建的孩子账号不走这条，
+// 由家长在自己账号内创建，那条才允许两个都不填）。
 const userSchema = z.object({
   role: z.enum(['student', 'parent', 'admin']),
   nickname: z.string().trim().min(1, '请填写昵称').max(50),
-  phone: z.string().trim().regex(/^1\d{10}$/, '请输入正确的手机号'),
+  phone: z.string().trim().regex(/^1\d{10}$/, '请输入正确的手机号').optional().nullable(),
+  email: z.string().trim().toLowerCase().email('请输入正确的邮箱').optional().nullable(),
   password: z.string().min(6, '密码至少 6 位').max(100),
-})
+}).refine((value) => Boolean(value.phone || value.email), { message: '请填写手机号或邮箱' })
 
 admin.post('/users', async (c) => {
   const body = await parseBody(c, userSchema)
-  const existing = await c.env.DB.prepare('SELECT id FROM user WHERE phone = ?').bind(body.phone).first()
-  if (existing) return c.json({ error: '该手机号已存在' }, 409)
+  if (body.phone) {
+    const existing = await c.env.DB.prepare('SELECT id FROM user WHERE phone = ?').bind(body.phone).first()
+    if (existing) return c.json({ error: '该手机号已存在' }, 409)
+  }
+  if (body.email) {
+    const existing = await c.env.DB.prepare('SELECT id FROM user WHERE lower(email) = lower(?)').bind(body.email).first()
+    if (existing) return c.json({ error: '该邮箱已存在' }, 409)
+  }
   const id = uuid('u')
   await c.env.DB.prepare(
-    'INSERT INTO user (id, role, nickname, phone, password_hash, enabled) VALUES (?, ?, ?, ?, ?, 1)',
-  ).bind(id, body.role, body.nickname, body.phone, await hashPassword(body.password)).run()
+    'INSERT INTO user (id, role, nickname, phone, email, password_hash, enabled) VALUES (?, ?, ?, ?, ?, ?, 1)',
+  ).bind(id, body.role, body.nickname, body.phone || null, body.email || null, await hashPassword(body.password)).run()
   return c.json({ id }, 201)
 })
 
 admin.patch('/users/:id', async (c) => {
   const body = await parseBody(c, z.object({
     nickname: z.string().trim().min(1).max(50).optional(),
-    phone: z.string().trim().regex(/^1\d{10}$/).optional(),
+    phone: z.string().trim().regex(/^1\d{10}$/).nullable().optional(),
+    email: z.string().trim().toLowerCase().email('请输入正确的邮箱').nullable().optional(),
     password: z.string().min(6).max(100).optional(),
     enabled: z.boolean().optional(),
   }))
   const updates: string[] = []
   const values: unknown[] = []
   if (body.nickname !== undefined) { updates.push('nickname = ?'); values.push(body.nickname) }
-  if (body.phone !== undefined) { updates.push('phone = ?'); values.push(body.phone) }
+  if (body.phone !== undefined) {
+    if (body.phone) {
+      const existing = await c.env.DB.prepare('SELECT id FROM user WHERE phone = ? AND id <> ?').bind(body.phone, c.req.param('id')).first()
+      if (existing) return c.json({ error: '该手机号已存在' }, 409)
+    }
+    updates.push('phone = ?'); values.push(body.phone)
+  }
+  if (body.email !== undefined) {
+    if (body.email) {
+      const existing = await c.env.DB.prepare('SELECT id FROM user WHERE lower(email) = lower(?) AND id <> ?').bind(body.email, c.req.param('id')).first()
+      if (existing) return c.json({ error: '该邮箱已存在' }, 409)
+    }
+    updates.push('email = ?'); values.push(body.email)
+  }
   if (body.enabled !== undefined) { updates.push('enabled = ?'); values.push(body.enabled ? 1 : 0) }
   if (body.password !== undefined) {
     updates.push('password_hash = ?')

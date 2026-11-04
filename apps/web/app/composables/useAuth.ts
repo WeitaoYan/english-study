@@ -12,6 +12,17 @@ export function useAuth() {
     return '/admin'
   })
 
+  /** 是否正处在家长切换进来的孩子视角：此时切回家长必须验证家长密码。 */
+  const isChildView = computed(() => Boolean(user.value?.switchedFromParent))
+
+  function applySession(nextUser: UserSummary, token?: string) {
+    user.value = nextUser
+    ready.value = true
+    if (import.meta.client && token) {
+      localStorage.setItem('es_token', token)
+    }
+  }
+
   async function fetchMe(force = false) {
     if (ready.value && !force) return user.value
     const api = useApi()
@@ -26,23 +37,53 @@ export function useAuth() {
     return user.value
   }
 
-  async function login(phone: string, password: string) {
+  async function login(identifier: string, password: string) {
     loading.value = true
     const api = useApi()
     try {
       const response = await api.post<{ user: UserSummary; token: string }>('/auth/login', {
-        phone,
+        identifier,
         password,
       })
-      user.value = response.user
-      ready.value = true
-      if (import.meta.client && response.token) {
-        localStorage.setItem('es_token', response.token)
-      }
+      applySession(response.user, response.token)
       return response.user
     } finally {
       loading.value = false
     }
+  }
+
+  async function register(email: string, nickname: string, password: string) {
+    loading.value = true
+    const api = useApi()
+    try {
+      const response = await api.post<{ user: UserSummary; token: string }>('/auth/register', {
+        email,
+        nickname,
+        password,
+      })
+      applySession(response.user, response.token)
+      return response.user
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function switchToChild(childId: string) {
+    const api = useApi()
+    const response = await api.post<{ user: UserSummary; token: string }>('/auth/switch-to-child', {
+      childId,
+    })
+    applySession(response.user, response.token)
+    return response.user
+  }
+
+  async function switchBack(password: string) {
+    const api = useApi()
+    const response = await api.post<{ user: UserSummary; token: string }>('/auth/switch-back', {
+      password,
+    })
+    applySession(response.user, response.token)
+    return response.user
   }
 
   async function logout() {
@@ -62,5 +103,5 @@ export function useAuth() {
     return role === 'student' ? '/student' : role === 'parent' ? '/parent' : '/admin'
   }
 
-  return { user, ready, loading, home, fetchMe, login, logout, roleHome }
+  return { user, ready, loading, home, isChildView, fetchMe, login, register, switchToChild, switchBack, logout, roleHome }
 }

@@ -65,12 +65,24 @@ export function getRequestToken(c: Parameters<MiddlewareHandler<AppEnv>>[0]): st
   return getCookie(c, COOKIE_NAME) || null
 }
 
-export async function createToken(env: Env, user: { id: string; role: string; nickname: string }): Promise<string> {
+export interface TokenOptions {
+  /** 家长切换到孩子视角时才传：孩子视角令牌的“来源家长”，切回时凭它找家长验密。 */
+  parentId?: string
+  parentName?: string
+}
+
+export async function createToken(
+  env: Env,
+  user: { id: string; role: string; nickname: string },
+  options: TokenOptions = {},
+): Promise<string> {
   return sign(
     {
       sub: user.id,
       role: user.role,
       name: user.nickname,
+      parentId: options.parentId || undefined,
+      parentName: options.parentName || undefined,
       exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
     },
     env.JWT_SECRET || 'dev-only-change-me-please-32-characters',
@@ -108,21 +120,50 @@ export const requireAuth: MiddlewareHandler<AppEnv> = async (c, next) => {
   const sub = typeof payload.sub === 'string' ? payload.sub : ''
   if (!sub) throw new HTTPException(401, { message: '登录状态无效' })
   const user = await c.env.DB.prepare(
-    'SELECT id, role, nickname, phone, enabled FROM user WHERE id = ?',
+    'SELECT id, role, nickname, phone, email, enabled FROM user WHERE id = ?',
   ).bind(sub).first<{
     id: string
     role: 'student' | 'parent' | 'admin'
     nickname: string
-    phone: string
+    phone: string | null
+    email: string | null
     enabled: number
   }>()
   if (!user || !user.enabled) throw new HTTPException(403, { message: '账号不可用，请联系管理员' })
+
+  // 孩子视角令牌：必须同时满足三点，否则视为无效，不能用来冒充家长或别的孩子——
+  // 来源家长存在且启用、是家长角色、该孩子当前仍在其家庭的启用成员里（解绑后令牌立即失效）。
+  let switchedFromParent: { id: string; nickname: string } | null = null
+  const parentId = typeof payload.parentId === 'string' ? payload.parentId : ''
+  if (parentId) {
+    if (user.role !== 'student') throw new HTTPException(401, { message: '登录状态无效' })
+    const parent = await c.env.DB.prepare(
+      'SELECT id, role, nickname, enabled FROM user WHERE id = ?',
+    ).bind(parentId).first<{
+      id: string
+      role: string
+      nickname: string
+      enabled: number
+    }>()
+    if (!parent || !parent.enabled || parent.role !== 'parent') {
+      throw new HTTPException(401, { message: '登录状态无效' })
+    }
+    const member = await c.env.DB.prepare(
+      `SELECT fm.id FROM family_member fm JOIN family f ON f.id = fm.family_id
+       WHERE f.parent_user_id = ? AND fm.student_user_id = ? AND fm.status = 'active' AND fm.enabled = 1`,
+    ).bind(parentId, user.id).first<{ id: string }>()
+    if (!member) throw new HTTPException(403, { message: '该孩子已不在此家庭中' })
+    switchedFromParent = { id: parent.id, nickname: parent.nickname }
+  }
+
   c.set('user', {
     id: user.id,
     role: user.role,
     nickname: user.nickname,
     phone: user.phone,
+    email: user.email,
     enabled: Boolean(user.enabled),
+    switchedFromParent,
   })
   await next()
 }

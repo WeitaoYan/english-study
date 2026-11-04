@@ -7,7 +7,7 @@ const auth = useAuth()
 const route = useRoute()
 const toast = useToast()
 
-const phone = ref('')
+const identifier = ref('')
 const password = ref('')
 const error = ref('')
 const submitting = ref(false)
@@ -42,8 +42,10 @@ const demos = [
 
 async function submit() {
   error.value = ''
-  if (!/^1\d{10}$/.test(phone.value.trim())) {
-    error.value = '请输入 11 位手机号'
+  const value = identifier.value.trim()
+  const isEmail = value.includes('@')
+  if (isEmail ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) : !/^1\d{10}$/.test(value)) {
+    error.value = isEmail ? '请输入正确的邮箱' : '请输入 11 位手机号'
     return
   }
   if (password.value.length < 6) {
@@ -52,12 +54,12 @@ async function submit() {
   }
   submitting.value = true
   try {
-    await auth.login(phone.value.trim(), password.value)
+    await auth.login(value, password.value)
     toast.success('登录成功')
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
     await navigateTo(redirect && redirect !== '/login' ? redirect : auth.home.value)
   } catch (err) {
-    error.value = errorMessage(err, '登录失败，请检查手机号和密码')
+    error.value = errorMessage(err, '登录失败，请检查账号和密码')
   } finally {
     submitting.value = false
   }
@@ -66,7 +68,7 @@ async function submit() {
 async function demoLogin(demo: (typeof demos)[number]) {
   error.value = ''
   demoLoading.value = demo.role
-  phone.value = demo.phone
+  identifier.value = demo.phone
   password.value = demo.password
   try {
     await auth.login(demo.phone, demo.password)
@@ -147,21 +149,19 @@ async function demoLogin(demo: (typeof demos)[number]) {
         <p class="eyebrow">欢迎回来</p>
         <h2 class="mt-2 font-display text-3xl tracking-tight text-ink">登录学习空间</h2>
         <p class="mt-2.5 text-sm leading-relaxed text-muted">
-          学生、家长与管理员使用手机号登录，进入各自的工作台。
+          使用手机号或邮箱登录，进入各自的工作台。家长可以用邮箱注册，注册后在自己账号内创建孩子账号，孩子无需手机号。
         </p>
 
         <form class="mt-8 space-y-4" @submit.prevent="submit">
           <div>
-            <label class="label" for="phone">手机号</label>
+            <label class="label" for="identifier">手机号或邮箱</label>
             <input
-              id="phone"
-              v-model="phone"
+              id="identifier"
+              v-model="identifier"
               class="input"
-              type="tel"
-              inputmode="numeric"
+              type="text"
               autocomplete="username"
-              placeholder="请输入手机号"
-              maxlength="11"
+              placeholder="请输入手机号或邮箱"
             >
           </div>
           <div>
@@ -213,7 +213,12 @@ async function demoLogin(demo: (typeof demos)[number]) {
           </button>
         </div>
 
-        <p class="mt-8 text-center text-[10px] leading-relaxed text-muted/80">
+        <p class="mt-8 text-center text-xs text-muted">
+          家长还没有账号？
+          <NuxtLink to="/register" class="font-medium text-forest underline underline-offset-2">用邮箱注册</NuxtLink>
+        </p>
+
+        <p class="mt-4 text-center text-[10px] leading-relaxed text-muted/80">
           演示数据仅用于预览功能。正式部署前请创建新的管理员账号并修改初始密码。
         </p>
       </div>

@@ -7,7 +7,7 @@ import {
   type QuestionType,
 } from '@english-study/shared'
 import type { AppEnv } from '../types'
-import { requireAuth, requireRole } from '../lib/auth'
+import { hashPassword, requireAuth, requireRole } from '../lib/auth'
 import { parseBody, queryInt } from '../lib/http'
 import { getCalendar, WORD_COLUMNS, MASTERY_COLUMNS, mapJoinedWord, type JoinedWordRow } from '../lib/queries'
 import { dateKeyInCN, nowIso, safeJson, startOfCNWeek, uuid } from '../lib/utils'
@@ -22,7 +22,7 @@ interface ChildRow {
   relation: string
   status: 'pending' | 'active' | 'rejected'
   nickname: string
-  phone: string
+  phone: string | null
 }
 
 async function getFamilyId(env: AppEnv['Bindings'], parentId: string): Promise<string | null> {
@@ -178,6 +178,36 @@ parent.get('/children', async (c) => {
   }
 
   return c.json({ data })
+})
+
+// 家长在自己账号内创建孩子账号：孩子无需手机号、无需邮箱、无需绑定邀请，创建即启用。
+// 孩子账号没有可直接登录的标识与密码（密码存的是一次性随机值且不展示），只能由家长切换视角进入；
+// 每个孩子都是独立 user 行，练习、记忆、激励都按 student_user_id 隔离，互不干扰。
+parent.post('/children', async (c) => {
+  const user = c.get('user')
+  const body = await parseBody(c, z.object({
+    nickname: z.string().trim().min(1, '请填写孩子昵称').max(50),
+    relation: z.string().trim().min(1).max(20).default('孩子'),
+  }))
+  const familyId = await ensureFamily(c.env, user.id)
+  const childId = uuid('u')
+  // crypto.randomUUID 在 Worker 与 Node 均可用；该值只用于填满 NOT NULL 的密码列，永不返回给前端。
+  const unusablePassword = crypto.randomUUID()
+  await c.env.DB.batch([
+    c.env.DB.prepare(
+      'INSERT INTO user (id, role, nickname, phone, email, password_hash, parent_id, enabled) VALUES (?, ?, ?, NULL, NULL, ?, ?, 1)',
+    ).bind(childId, 'student', body.nickname, await hashPassword(unusablePassword), user.id),
+    c.env.DB.prepare(
+      `INSERT INTO family_member (id, family_id, student_user_id, relation, status, enabled)
+       VALUES (?, ?, ?, ?, 'active', 1)`,
+    ).bind(uuid('fm'), familyId, childId, body.relation),
+  ])
+  return c.json({
+    id: childId,
+    nickname: body.nickname,
+    relation: body.relation,
+    status: 'active',
+  }, 201)
 })
 
 parent.post('/bind', async (c) => {

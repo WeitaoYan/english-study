@@ -19,18 +19,20 @@ interface AdminUser {
   id: string
   role: Role
   nickname: string
-  phone: string
+  phone: string | null
+  email: string | null
   enabled: boolean
   createdAt: string
   parentName: string | null
   parentPhone: string | null
+  parentEmail?: string | null
 }
 
 interface FamilyMember {
   id: string
   studentUserId: string
   studentName: string
-  studentPhone: string
+  studentPhone: string | null
   relation: string
   status: 'pending' | 'active' | 'rejected'
 }
@@ -39,7 +41,7 @@ interface FamilyGroup {
   id: string
   parentUserId: string
   parentName: string
-  parentPhone: string
+  parentPhone: string | null
   members: FamilyMember[]
 }
 
@@ -63,6 +65,7 @@ const userForm = reactive({
   role: 'student' as Role,
   nickname: '',
   phone: '',
+  email: '',
   password: '',
   enabled: true,
 })
@@ -101,7 +104,9 @@ const filteredUsers = computed(() => {
   return users.value.filter((user) => {
     if (roleFilter.value && user.role !== roleFilter.value) return false
     if (!keyword) return true
-    return user.nickname.toLowerCase().includes(keyword) || user.phone.includes(keyword)
+    return user.nickname.toLowerCase().includes(keyword)
+      || (user.phone || '').includes(keyword)
+      || (user.email || '').toLowerCase().includes(keyword)
   })
 })
 
@@ -135,6 +140,7 @@ function openCreateUser() {
   userForm.role = 'student'
   userForm.nickname = ''
   userForm.phone = ''
+  userForm.email = ''
   userForm.password = ''
   userForm.enabled = true
   userError.value = ''
@@ -145,7 +151,8 @@ function openEditUser(user: AdminUser) {
   editingUserId.value = user.id
   userForm.role = user.role
   userForm.nickname = user.nickname
-  userForm.phone = user.phone
+  userForm.phone = user.phone || ''
+  userForm.email = user.email || ''
   userForm.password = ''
   userForm.enabled = user.enabled
   userError.value = ''
@@ -158,8 +165,16 @@ async function saveUser() {
     userError.value = '请填写昵称'
     return
   }
-  if (!/^1\d{10}$/.test(userForm.phone.trim())) {
+  if (userForm.phone.trim() && !/^1\d{10}$/.test(userForm.phone.trim())) {
     userError.value = '请输入正确的 11 位手机号'
+    return
+  }
+  if (userForm.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userForm.email.trim())) {
+    userError.value = '请输入正确的邮箱'
+    return
+  }
+  if (!userForm.phone.trim() && !userForm.email.trim()) {
+    userError.value = '请填写手机号或邮箱（家长创建的孩子账号除外，那条不走这里）'
     return
   }
   if (!editingUserId.value && userForm.password.length < 6) {
@@ -175,7 +190,8 @@ async function saveUser() {
     if (editingUserId.value) {
       const payload: Record<string, unknown> = {
         nickname: userForm.nickname.trim(),
-        phone: userForm.phone.trim(),
+        phone: userForm.phone.trim() || null,
+        email: userForm.email.trim().toLowerCase() || null,
         enabled: userForm.enabled,
       }
       if (userForm.password) payload.password = userForm.password
@@ -185,7 +201,8 @@ async function saveUser() {
       await api.post('/admin/users', {
         role: userForm.role,
         nickname: userForm.nickname.trim(),
-        phone: userForm.phone.trim(),
+        phone: userForm.phone.trim() || null,
+        email: userForm.email.trim().toLowerCase() || null,
         password: userForm.password,
       })
       toast.success('账号已创建')
@@ -348,7 +365,7 @@ onMounted(load)
               <tr>
                 <th>账号</th>
                 <th>角色</th>
-                <th>手机号</th>
+                <th>联系方式</th>
                 <th>家长关联</th>
                 <th>状态</th>
                 <th>创建时间</th>
@@ -359,9 +376,9 @@ onMounted(load)
               <tr v-for="user in filteredUsers" :key="user.id">
                 <td><p class="font-medium text-ink">{{ user.nickname }}</p></td>
                 <td><span :class="roleTone[user.role]" class="!py-0.5">{{ roleLabels[user.role] }}</span></td>
-                <td><span class="text-xs">{{ user.phone }}</span></td>
+                <td><span class="text-xs">{{ user.phone || user.email || '无联系方式' }}</span></td>
                 <td>
-                  <span v-if="user.parentName" class="text-xs">{{ user.parentName }} · {{ user.parentPhone }}</span>
+                  <span v-if="user.parentName" class="text-xs">{{ user.parentName }} · {{ user.parentPhone || user.parentEmail || '无联系方式' }}</span>
                   <span v-else class="text-[10px] text-muted">—</span>
                 </td>
                 <td><span :class="user.enabled ? 'chip-forest' : 'chip-danger'" class="!py-0.5">{{ user.enabled ? '启用' : '停用' }}</span></td>
@@ -482,8 +499,12 @@ onMounted(load)
           <input id="account-name" v-model="userForm.nickname" class="input" maxlength="50" placeholder="林小满">
         </div>
         <div>
-          <label class="label" for="account-phone">手机号</label>
+          <label class="label" for="account-phone">手机号（与邮箱至少填一个）</label>
           <input id="account-phone" v-model="userForm.phone" class="input" type="tel" inputmode="numeric" maxlength="11" placeholder="13800000000">
+        </div>
+        <div>
+          <label class="label" for="account-email">邮箱（与手机号至少填一个）</label>
+          <input id="account-email" v-model="userForm.email" class="input" type="email" placeholder="parent@example.com">
         </div>
         <div>
           <label class="label" for="account-password">{{ editingUserId ? '新密码（留空不修改）' : '初始密码' }}</label>
@@ -518,7 +539,7 @@ onMounted(load)
           <select id="bind-parent" v-model="bindForm.parentId" class="input">
             <option value="" disabled>请选择家长</option>
             <option v-for="parent in parentOptions" :key="parent.id" :value="parent.id">
-              {{ parent.nickname }} · {{ parent.phone }}
+              {{ parent.nickname }} · {{ parent.phone || parent.email || '无联系方式' }}
             </option>
           </select>
         </div>
@@ -527,7 +548,7 @@ onMounted(load)
           <select id="bind-student" v-model="bindForm.studentId" class="input">
             <option value="" disabled>请选择学生</option>
             <option v-for="student in studentOptions" :key="student.id" :value="student.id">
-              {{ student.nickname }} · {{ student.phone }}
+              {{ student.nickname }} · {{ student.phone || student.email || '无联系方式' }}
             </option>
           </select>
         </div>

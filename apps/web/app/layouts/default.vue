@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   Library,
   ListChecks,
+  Loader2,
   LogOut,
   Menu,
   RefreshCw,
@@ -23,6 +24,32 @@ import type { Component } from 'vue'
 
 const auth = useAuth()
 const route = useRoute()
+const toast = useToast()
+
+const switchBackOpen = ref(false)
+const switchBackPassword = ref('')
+const switchBackError = ref('')
+const switchingBack = ref(false)
+
+async function submitSwitchBack() {
+  switchBackError.value = ''
+  if (!switchBackPassword.value) {
+    switchBackError.value = '请输入家长密码'
+    return
+  }
+  switchingBack.value = true
+  try {
+    await auth.switchBack(switchBackPassword.value)
+    toast.success('已切回家长身份')
+    switchBackOpen.value = false
+    switchBackPassword.value = ''
+    await navigateTo('/parent')
+  } catch (error) {
+    switchBackError.value = errorMessage(error, '切回失败')
+  } finally {
+    switchingBack.value = false
+  }
+}
 
 interface NavItem {
   label: string
@@ -61,6 +88,9 @@ const navItems = computed(() => {
 })
 
 const roleMeta = computed(() => {
+  if (auth.user.value?.switchedFromParent) {
+    return { label: '孩子视角', note: '由家长切换进入，切回需验证家长密码', icon: GraduationCap }
+  }
   if (auth.user.value?.role === 'parent') {
     return { label: '家长端', note: '了解进度，约定奖励', icon: Users }
   }
@@ -150,7 +180,7 @@ async function signOut() {
         <div class="flex items-center justify-between gap-2">
           <div class="min-w-0">
             <p class="truncate text-xs font-medium text-ink">{{ auth.user.value.nickname }}</p>
-            <p class="text-[11px] text-muted">{{ auth.user.value.phone }}</p>
+            <p class="text-[11px] text-muted">{{ auth.user.value.phone || auth.user.value.email || '无联系方式' }}</p>
           </div>
           <button class="btn-ghost size-9 !p-0" title="退出登录" @click="signOut">
             <LogOut :size="16" />
@@ -223,8 +253,52 @@ async function signOut() {
 
     <main class="lg:pl-[264px]">
       <div class="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+        <div
+          v-if="auth.isChildView.value"
+          class="mb-6 flex flex-col gap-3 rounded-2xl border border-clay/25 bg-clay-soft/60 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p class="text-xs leading-relaxed text-ink-soft">
+            正在以 <span class="font-medium text-ink">{{ auth.user.value?.nickname }}</span> 的视角查看。
+            家长端已锁定，切回家长身份需要验证家长密码。
+          </p>
+          <button class="btn-primary btn-sm shrink-0" @click="switchBackOpen = true">
+            切回家长身份
+          </button>
+        </div>
         <slot />
       </div>
     </main>
+
+    <Modal
+      :open="switchBackOpen"
+      title="切回家长身份"
+      description="请输入家长密码验证身份。孩子视角下无法直接进入家长端，密码是唯一的切回凭证。"
+      @close="switchBackOpen = false"
+    >
+      <div class="space-y-4">
+        <div>
+          <label class="label" for="switch-back-password">家长密码</label>
+          <input
+            id="switch-back-password"
+            v-model="switchBackPassword"
+            class="input"
+            type="password"
+            autocomplete="current-password"
+            placeholder="请输入家长密码"
+            @keyup.enter="submitSwitchBack"
+          >
+        </div>
+        <p v-if="switchBackError" class="rounded-xl border border-danger/15 bg-danger-soft px-3.5 py-2.5 text-xs text-danger">
+          {{ switchBackError }}
+        </p>
+      </div>
+      <template #footer>
+        <button class="btn-secondary" @click="switchBackOpen = false">取消</button>
+        <button class="btn-primary" :disabled="switchingBack" @click="submitSwitchBack">
+          <Loader2 v-if="switchingBack" :size="15" class="animate-spin" />
+          验证并切回
+        </button>
+      </template>
+    </Modal>
   </div>
 </template>

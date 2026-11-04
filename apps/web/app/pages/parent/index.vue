@@ -13,6 +13,7 @@ import type { ChildSummary } from '@english-study/shared'
 
 const api = useApi()
 const toast = useToast()
+const auth = useAuth()
 
 const children = ref<ChildSummary[]>([])
 const loading = ref(true)
@@ -20,6 +21,11 @@ const bindOpen = ref(false)
 const bindForm = reactive({ phone: '', relation: '孩子' })
 const binding = ref(false)
 const bindError = ref('')
+const createOpen = ref(false)
+const createForm = reactive({ nickname: '', relation: '孩子' })
+const creating = ref(false)
+const createError = ref('')
+const switchingId = ref('')
 
 const activeChildren = computed(() => children.value.filter((child) => child.status === 'active'))
 const totalPending = computed(() => children.value.reduce((sum, child) => sum + child.pendingRewards, 0))
@@ -61,6 +67,43 @@ async function bind() {
   }
 }
 
+async function createChild() {
+  createError.value = ''
+  if (!createForm.nickname.trim()) {
+    createError.value = '请填写孩子昵称'
+    return
+  }
+  creating.value = true
+  try {
+    await api.post('/parent/children', {
+      nickname: createForm.nickname.trim(),
+      relation: createForm.relation.trim() || '孩子',
+    })
+    toast.success('孩子账号已创建，可直接切换到孩子视角')
+    createOpen.value = false
+    createForm.nickname = ''
+    createForm.relation = '孩子'
+    await load()
+  } catch (error) {
+    createError.value = errorMessage(error, '创建失败')
+  } finally {
+    creating.value = false
+  }
+}
+
+async function switchToChild(child: ChildSummary) {
+  switchingId.value = child.id
+  try {
+    await auth.switchToChild(child.id)
+    toast.success(`已切换到 ${child.nickname} 的视角`)
+    await navigateTo('/student')
+  } catch (error) {
+    toast.error(errorMessage(error, '切换失败'))
+  } finally {
+    switchingId.value = ''
+  }
+}
+
 onMounted(load)
 </script>
 
@@ -72,9 +115,13 @@ onMounted(load)
       description="查看今日学习、本周进度与待确认奖励。所有报告来自原始答题记录。"
     >
       <template #actions>
-        <button class="btn-primary" @click="bindOpen = true">
+        <button class="btn-primary" @click="createOpen = true">
+          <Plus :size="16" />
+          创建孩子账号
+        </button>
+        <button class="btn-secondary" @click="bindOpen = true">
           <UserPlus :size="16" />
-          绑定孩子
+          绑定已有孩子
         </button>
       </template>
     </PageHeader>
@@ -107,9 +154,8 @@ onMounted(load)
 
       <div v-if="children.length" class="mt-4 grid gap-4 lg:grid-cols-2">
         <template v-for="child in children" :key="child.id">
-          <NuxtLink
+          <article
             v-if="child.status === 'active'"
-            :to="`/parent/children/${child.id}`"
             class="card group overflow-hidden transition hover:-translate-y-0.5 hover:border-forest/25 hover:shadow-[0_24px_50px_-34px_rgba(34,48,42,0.5)]"
           >
             <div class="flex items-start gap-4 p-5">
@@ -122,7 +168,7 @@ onMounted(load)
                   <span class="chip">{{ child.relation }}</span>
                   <span v-if="child.pendingRewards" class="chip-clay">{{ child.pendingRewards }} 条待确认</span>
                 </div>
-                <p class="mt-1 text-[11px] text-muted">{{ child.phone }}</p>
+                <p class="mt-1 text-[11px] text-muted">{{ child.phone || '家长创建 · 无手机号' }}</p>
                 <div class="mt-4 grid grid-cols-3 gap-2">
                   <div class="rounded-xl bg-paper/80 px-3 py-2.5">
                     <p class="text-[9px] text-muted">今日答题</p>
@@ -145,9 +191,18 @@ onMounted(load)
                 <span class="inline-flex items-center gap-1"><CheckCircle2 :size="11" /> 新学 {{ child.week.newWords }} 词</span>
                 <span v-if="child.weakWords" class="inline-flex items-center gap-1 text-clay"><Gift :size="11" /> {{ child.weakWords }} 个薄弱词</span>
               </div>
-              <ArrowRight :size="15" class="text-muted transition group-hover:translate-x-0.5 group-hover:text-forest" />
+              <div class="flex shrink-0 items-center gap-1.5">
+                <NuxtLink :to="`/parent/children/${child.id}`" class="btn-ghost btn-sm">
+                  查看报告
+                  <ArrowRight :size="13" />
+                </NuxtLink>
+                <button class="btn-primary btn-sm" :disabled="switchingId === child.id" @click="switchToChild(child)">
+                  <Loader2 v-if="switchingId === child.id" :size="13" class="animate-spin" />
+                  进入孩子视角
+                </button>
+              </div>
             </div>
-          </NuxtLink>
+          </article>
 
           <div v-else class="card flex flex-col justify-between border-dashed p-5">
             <div class="flex items-start gap-4">
@@ -159,7 +214,7 @@ onMounted(load)
                   <p class="text-base font-medium text-ink">{{ child.nickname }}</p>
                   <span class="chip-clay">待学生确认</span>
                 </div>
-                <p class="mt-1 text-[11px] text-muted">{{ child.phone }} · {{ child.relation }}</p>
+                <p class="mt-1 text-[11px] text-muted">{{ child.phone || '家长创建 · 无手机号' }} · {{ child.relation }}</p>
                 <p class="mt-3 text-xs leading-relaxed text-muted">
                   绑定邀请已发送。学生登录后，在“奖励进度”页确认即可查看数据。
                 </p>
@@ -171,18 +226,58 @@ onMounted(load)
 
       <EmptyState
         v-else
-        title="还没有绑定孩子"
-        description="输入学生账号的手机号发送绑定邀请。学生确认后即可查看学习报告。"
+        title="还没有孩子账号"
+        description="直接创建孩子账号，无需手机号；也可以绑定已有学生账号的手机号，学生确认后即可查看学习报告。"
       >
         <template #icon><Users :size="18" /></template>
         <template #action>
-          <button class="btn-primary" @click="bindOpen = true">
+          <button class="btn-primary" @click="createOpen = true">
             <Plus :size="15" />
-            绑定第一个孩子
+            创建第一个孩子
           </button>
         </template>
       </EmptyState>
     </template>
+
+    <Modal
+      :open="createOpen"
+      title="创建孩子账号"
+      description="孩子无需手机号和邮箱，创建后立即启用；家长登录后可切换到孩子视角，每个孩子各自完成自己的练习与复习。"
+      @close="createOpen = false"
+    >
+      <div class="space-y-4">
+        <div>
+          <label class="label" for="create-nickname">孩子昵称</label>
+          <input
+            id="create-nickname"
+            v-model="createForm.nickname"
+            class="input"
+            type="text"
+            placeholder="例如：小满"
+            maxlength="50"
+          >
+        </div>
+        <div>
+          <label class="label" for="create-relation">关系</label>
+          <select id="create-relation" v-model="createForm.relation" class="input">
+            <option value="孩子">孩子</option>
+            <option value="女儿">女儿</option>
+            <option value="儿子">儿子</option>
+            <option value="学生">学生</option>
+          </select>
+        </div>
+        <p v-if="createError" class="rounded-xl border border-danger/15 bg-danger-soft px-3.5 py-2.5 text-xs text-danger">
+          {{ createError }}
+        </p>
+      </div>
+      <template #footer>
+        <button class="btn-secondary" @click="createOpen = false">取消</button>
+        <button class="btn-primary" :disabled="creating" @click="createChild">
+          <Loader2 v-if="creating" :size="15" class="animate-spin" />
+          创建孩子账号
+        </button>
+      </template>
+    </Modal>
 
     <Modal
       :open="bindOpen"

@@ -28,12 +28,14 @@ export async function hashPassword(password: string, salt?: string): Promise<str
     false,
     ['deriveBits'],
   )
+  // Cloudflare Workers 的 WebCrypto 不支持超过 100000 次的 PBKDF2 迭代（本地 Node 可以，
+  // 所以本地测试一直通过、线上登录却 500）。用 100000 次，仍在安全范围内。
   const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt: encoder.encode(actualSalt), iterations: 120000, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt: encoder.encode(actualSalt), iterations: 100000, hash: 'SHA-256' },
     key,
     256,
   )
-  return `pbkdf2$120000$${actualSalt}$${toHex(bits)}`
+  return `pbkdf2$100000$${actualSalt}$${toHex(bits)}`
 }
 
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {

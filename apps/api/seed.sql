@@ -22,11 +22,11 @@ DELETE FROM family;
 DELETE FROM user;
 
 INSERT INTO user (id, role, nickname, email, password_hash, enabled) VALUES
-  ('u-admin', 'admin', '系统管理员', 'admin@example.com', 'pbkdf2$120000$admin-demo-salt$ab6c42b32c5ea4bb9f7d7e7b77a0db5a37736df3d752b8c03aca7e500d976525', 1),
-  ('u-parent', 'parent', '林妈妈', 'parent@example.com', 'pbkdf2$120000$parent-demo-salt$b3deb2ae8ccd953dcc157aadb1b92d797def67aa911dc5cc01e771200e1b57dd', 1),
-  ('u-student', 'student', '林小满', 'student@example.com', 'pbkdf2$120000$student-demo-salt$27a5a7cd82fbfe513fba5654127b4b8c84cf770e4bf80c54800de0290c6af70d', 1),
-  ('u-student-2', 'student', '周予安', 'student2@example.com', 'pbkdf2$120000$student-demo-salt$27a5a7cd82fbfe513fba5654127b4b8c84cf770e4bf80c54800de0290c6af70d', 1),
-  ('u-parent-2', 'parent', '周爸爸', 'parent2@example.com', 'pbkdf2$120000$parent-demo-salt$b3deb2ae8ccd953dcc157aadb1b92d797def67aa911dc5cc01e771200e1b57dd', 1);
+  ('u-admin', 'admin', '系统管理员', 'admin@example.com', 'pbkdf2$100000$admin-demo-salt$e688d0d2f75df9fc0d80d2f29a178fe59f45d7c822939cf9e3ebe4f32de5263a', 1),
+  ('u-parent', 'parent', '林妈妈', 'parent@example.com', 'pbkdf2$100000$parent-demo-salt$03b10c918411e0be9bf74dfe09a82a1278a73cf725b9f874a80742dc4c6d3b90', 1),
+  ('u-student', 'student', '林小满', 'student@example.com', 'pbkdf2$100000$student-demo-salt$7177139d2629d9452a8f9cd23af3b149d615b846d01c85ddf6a946c3293da8be', 1),
+  ('u-student-2', 'student', '周予安', 'student2@example.com', 'pbkdf2$100000$student-demo-salt$7177139d2629d9452a8f9cd23af3b149d615b846d01c85ddf6a946c3293da8be', 1),
+  ('u-parent-2', 'parent', '周爸爸', 'parent2@example.com', 'pbkdf2$100000$parent-demo-salt$03b10c918411e0be9bf74dfe09a82a1278a73cf725b9f874a80742dc4c6d3b90', 1);
 
 INSERT INTO family (id, parent_user_id) VALUES ('f-1', 'u-parent');
 INSERT INTO family (id, parent_user_id) VALUES ('f-2', 'u-parent-2');

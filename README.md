@@ -93,6 +93,27 @@ npm run dev:web
 
 正式使用前请创建新的管理员账号并修改演示密码。家长也可以不用演示账号：直接在登录页点“用邮箱注册”创建家长账号。
 
+## 线上部署（Cloudflare，Yanweitao@hotmail.com 账号）
+
+- 前端：<https://english.ikber.cc>（Worker `weitaoyan-english-study-apps-web`，自定义域名）
+- API：<https://english-study-api.yanweitao.workers.dev/api>（Worker `english-study-api`）
+- D1：`english-study`（`c125b631-7ef8-4701-a3f4-c8d62f2fa8d1`），R2：`english-study-images`，线上已跑完迁移 0001–0004 并导入演示数据
+- `JWT_SECRET` 只存在 Cloudflare Secret 里，不进仓库；不要把本地 `.dev.vars` 的值当线上密钥用
+
+部署步骤（Web 的 API 地址靠 Worker 变量，不是构建时写死）：
+
+```bash
+# API：先在 apps/api/wrangler.jsonc 里填好 database_id，再部署、跑迁移、导种子
+npm run deploy:api
+npm run db:migrate:remote -w @english-study/api
+npm run db:seed:remote -w @english-study/api
+# Web：构建后，在 .output/server/wrangler.json 里补上 routes（english.ikber.cc 自定义域名）
+# 与 vars（NUXT_PUBLIC_API_BASE=https://english-study-api.yanweitao.workers.dev/api），再部署
+npm run deploy:web
+```
+
+注意：Workers 的 WebCrypto 不支持超过 100000 次的 PBKDF2 迭代，密码哈希统一用 100000 次（本地 Node 能跑 120000 次，线上会 500，这条是实测踩过的坑）。
+
 ## 常用命令
 
 ```bash

@@ -8,15 +8,15 @@
     "enabled": true
   },
   "vars": {
-    "APP_ENV": "development",
+    "APP_ENV": "production",
     "COOKIE_DOMAIN": "",
-    "CORS_ORIGINS": "http://localhost:3000,http://127.0.0.1:3000"
+    "CORS_ORIGINS": "https://english.ikber.cc,https://weitaoyan-english-study-apps-web.yanweitao.workers.dev,http://localhost:3000,http://127.0.0.1:3000"
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "english-study",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "c125b631-7ef8-4701-a3f4-c8d62f2fa8d1",
       "migrations_dir": "migrations"
     }
   ],

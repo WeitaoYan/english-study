@@ -5,7 +5,7 @@ import type { AppEnv, MasteryRow, WordRow } from '../types'
 import { requireAuth, requireRole } from '../lib/auth'
 import { parseBody } from '../lib/http'
 import { computeMastery, masteryToApi } from '../lib/srs'
-import { applyManualQuestion, buildQuestions, expectedAnswer, explanationForRow, type ManualQuestion } from '../lib/questions'
+import { applyManualQuestion, buildQuestions, expectedAnswer, explanationForRow, maskWordInPhrase, type ManualQuestion } from '../lib/questions'
 import { isQuestionType, mapWord } from '../lib/mappers'
 import {
   currentStreak,
@@ -459,7 +459,11 @@ student.post('/practice/answer', async (c) => {
       explanation = manual.explanation || explanation
     }
   }
+  // 搭配题选项已挖空目标单词：孩子提交的是挖空后的选项（如“a ___ peel”），
+  // 判对挖空形式与完整短语两种；返回给前端的 correctAnswer 仍是完整短语，便于答错时学习。
   const isCorrect = normalizeAnswer(body.answer) === normalizeAnswer(correctAnswer)
+    || (type === 'collocation_choice'
+      && normalizeAnswer(body.answer) === normalizeAnswer(maskWordInPhrase(correctAnswer, planned.wordSpelling)))
   const now = new Date()
   const existing = await c.env.DB.prepare(
     'SELECT * FROM word_mastery WHERE user_id = ? AND word_id = ?',

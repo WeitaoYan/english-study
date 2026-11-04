@@ -99,6 +99,15 @@ function maskSpelling(spelling: string): string {
     .join(' ')
 }
 
+/** 搭配题：把短语里的目标单词挖空成 ___，避免孩子只凭“选项里有这个词”蒙对。
+ *  只挖完整单词（含复数 s/es），不挖它作为别的词一部分的情况（如 cat 不挖 catch）。
+ *  挖空后孩子必须靠剩下的词判断哪个搭配属于目标单词，例如 banana 一题：
+ *  “a ___ peel”对“read a book”“walk the dog”，得知道 banana 配 peel 才选得出来。 */
+export function maskWordInPhrase(phrase: string, spelling: string): string {
+  const escaped = spelling.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return phrase.replace(new RegExp(`\\b${escaped}(s|es)?\\b`, 'gi'), '___')
+}
+
 function sentenceWithBlank(word: Word): string | null {
   const escaped = word.spelling.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const matcher = new RegExp(`\\b${escaped}\\w*\\b`, 'i')
@@ -180,11 +189,18 @@ export function buildQuestions(
     } else if (type === 'collocation_choice') {
       const correctPhrase = word.collocations[0]!.phrase
       prompt = `为 “${word.spelling}” 选择正确的词组搭配`
-      options = pickOptions(
+      // 全部选项都挖空目标单词：正确项不再是唯一含目标词的选项；
+      // 挖空后撞车的选项去重，剩不到 2 项时走后面的 letter_fill 回落。
+      const masked = new Map<string, string>()
+      for (const option of pickOptions(
         correctPhrase,
         word.pos,
         optionPool(word, allWords, 'collocation_choice'),
-      )
+      )) {
+        const value = maskWordInPhrase(option, word.spelling)
+        if (!masked.has(value.toLowerCase())) masked.set(value.toLowerCase(), value)
+      }
+      options = [...masked.values()]
       hint = word.chineseDef
     }
 
@@ -257,6 +273,17 @@ export function applyManualQuestion(
       (option) => option.trim().toLowerCase() === manual.correctAnswer.trim().toLowerCase(),
     )
     options = hasAnswer ? [...manual.options] : [...manual.options, manual.correctAnswer]
+    if (type === 'collocation_choice') {
+      // 与自动生成题一致：选项挖空目标单词；管理员已挖空的选项与刚补的原答案
+      // 挖空后会撞车，去重后剩不到 2 项则返回 null 回落到自动生成题。
+      const masked = new Map<string, string>()
+      for (const option of options) {
+        const value = maskWordInPhrase(option, word.spelling)
+        if (!masked.has(value.toLowerCase())) masked.set(value.toLowerCase(), value)
+      }
+      options = [...masked.values()]
+      if (options.length < 2) return null
+    }
   }
 
   return {

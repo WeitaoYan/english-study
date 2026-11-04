@@ -74,7 +74,6 @@ const form = reactive({
   chineseDef: '',
   englishDef: '',
   difficulty: 1,
-  dataSource: '',
   enabled: true,
 })
 
@@ -162,7 +161,6 @@ function resetForm() {
   form.chineseDef = ''
   form.englishDef = ''
   form.difficulty = 1
-  form.dataSource = ''
   form.enabled = true
   examplesText.value = ''
   collocationsText.value = ''
@@ -183,7 +181,6 @@ function openEdit(word: AdminWord) {
   form.chineseDef = word.chineseDef
   form.englishDef = word.englishDef || ''
   form.difficulty = word.difficulty
-  form.dataSource = word.dataSource || ''
   form.enabled = word.enabled
   examplesText.value = serializeExamples(word.examples)
   collocationsText.value = serializeCollocations(word.collocations)
@@ -210,7 +207,6 @@ async function save() {
       chineseDef: form.chineseDef.trim(),
       englishDef: form.englishDef.trim() || null,
       difficulty: Number(form.difficulty) || 1,
-      dataSource: form.dataSource.trim() || null,
       enabled: form.enabled,
       examples: parseExamples(examplesText.value),
       collocations: parseCollocations(collocationsText.value),
@@ -490,10 +486,6 @@ onMounted(async () => {
         <div class="sm:col-span-2">
           <label class="label" for="word-english">英文释义</label>
           <input id="word-english" v-model="form.englishDef" class="input" maxlength="500" placeholder="a round fruit with red or green skin">
-        </div>
-        <div>
-          <label class="label" for="word-source">数据来源</label>
-          <input id="word-source" v-model="form.dataSource" class="input" maxlength="100" placeholder="人教版词汇表">
         </div>
         <label class="flex items-end gap-2.5 pb-2">
           <input v-model="form.enabled" type="checkbox" class="size-4 accent-[#2f5f4c]">

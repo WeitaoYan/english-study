@@ -57,7 +57,6 @@ export interface Word {
   chineseDef: string
   englishDef: string | null
   difficulty: number
-  dataSource: string | null
   hasImage: boolean
   imageId: string | null
   imageUrl: string | null

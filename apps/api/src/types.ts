@@ -44,7 +44,6 @@ export interface WordRow {
   chinese_def: string
   english_def: string | null
   difficulty: number
-  data_source: string | null
   has_image: number
   image_id: string | null
   enabled: number

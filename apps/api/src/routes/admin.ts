@@ -424,7 +424,6 @@ const wordSchema = z.object({
   chineseDef: z.string().trim().min(1, '请填写中文释义').max(300),
   englishDef: z.string().trim().max(500).nullable().optional(),
   difficulty: z.number().int().min(1).max(5).default(1),
-  dataSource: z.string().trim().max(100).nullable().optional(),
   enabled: z.boolean().default(true),
   examples: z.array(exampleSchema).max(10).default([]),
   collocations: z.array(collocationSchema).max(10).default([]),
@@ -443,8 +442,8 @@ admin.post('/words', async (c) => {
   const id = uuid('w')
   await c.env.DB.prepare(
     `INSERT INTO word (id, spelling, phonetic, pos, chinese_def, english_def, difficulty,
-      data_source, has_image, enabled, examples, collocations)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)`,
+      has_image, enabled, examples, collocations)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)`,
   ).bind(
     id,
     body.spelling,
@@ -453,7 +452,6 @@ admin.post('/words', async (c) => {
     body.chineseDef,
     body.englishDef || null,
     body.difficulty,
-    body.dataSource || null,
     body.enabled ? 1 : 0,
     JSON.stringify(body.examples),
     JSON.stringify(body.collocations),
@@ -465,7 +463,7 @@ admin.patch('/words/:id', async (c) => {
   const body = await parseBody(c, wordSchema.partial())
   const map: Record<string, string> = {
     spelling: 'spelling', phonetic: 'phonetic', pos: 'pos', chineseDef: 'chinese_def',
-    englishDef: 'english_def', difficulty: 'difficulty', dataSource: 'data_source',
+    englishDef: 'english_def', difficulty: 'difficulty',
     enabled: 'enabled',
   }
   const updates: string[] = []
@@ -543,8 +541,8 @@ admin.post('/words/import', async (c) => {
       const id = uuid('w')
       await c.env.DB.prepare(
         `INSERT INTO word (id, spelling, phonetic, pos, chinese_def, english_def,
-          difficulty, data_source, has_image, enabled, examples, collocations)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?)`,
+          difficulty, has_image, enabled, examples, collocations)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?)`,
       ).bind(
         id,
         spelling,
@@ -553,7 +551,6 @@ admin.post('/words/import', async (c) => {
         chineseDef,
         row.english_def || row['英文释义'] || null,
         difficulty,
-        row.data_source || row['数据来源'] || '批量导入',
         JSON.stringify(examples),
         JSON.stringify(collocations),
       ).run()

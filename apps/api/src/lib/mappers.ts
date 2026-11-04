@@ -18,7 +18,6 @@ export function mapWord(row: WordRow): Word {
     chineseDef: row.chinese_def,
     englishDef: row.english_def,
     difficulty: row.difficulty,
-    dataSource: row.data_source,
     hasImage: bool(row.has_image),
     imageId: row.image_id,
     imageUrl: row.image_url || null,

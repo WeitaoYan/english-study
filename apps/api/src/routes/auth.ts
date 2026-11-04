@@ -20,7 +20,6 @@ function publicUser(user: UserRow, switchedFromParent: { id: string; nickname: s
     id: user.id,
     role: user.role,
     nickname: user.nickname,
-    phone: user.phone,
     email: user.email,
     enabled: Boolean(user.enabled),
     switchedFromParent,
@@ -31,23 +30,17 @@ function issueToken(env: Env, user: UserRow, options: { parentId?: string; paren
   return createToken(env, user, options)
 }
 
-// 登录标识：手机号或邮箱。兼容旧客户端仍传 phone 字段的情况。
+// 登录只走邮箱：手机号逻辑已整体删除。
 const loginSchema = z.object({
-  identifier: z.string().trim().min(1, '请输入手机号或邮箱').optional(),
-  phone: z.string().trim().optional(),
+  email: z.string().trim().toLowerCase().email('请输入正确的邮箱'),
   password: z.string().min(6, '密码至少 6 位'),
 })
 
 auth.post('/login', async (c) => {
   const body = await parseBody(c, loginSchema)
-  const identifier = (body.identifier || body.phone || '').trim()
-  if (!identifier) return c.json({ error: '请输入手机号或邮箱' }, 400)
-  const isEmail = identifier.includes('@')
   const user = await c.env.DB.prepare(
-    isEmail
-      ? 'SELECT * FROM user WHERE lower(email) = lower(?)'
-      : 'SELECT * FROM user WHERE phone = ?',
-  ).bind(identifier).first<UserRow>()
+    'SELECT * FROM user WHERE lower(email) = lower(?)',
+  ).bind(body.email).first<UserRow>()
   if (!user) {
     return c.json({ error: '账号或密码不正确' }, 401)
   }
@@ -80,7 +73,7 @@ auth.post('/register', async (c) => {
   const familyId = uuid('f')
   await c.env.DB.batch([
     c.env.DB.prepare(
-      'INSERT INTO user (id, role, nickname, phone, email, password_hash, enabled) VALUES (?, ?, ?, NULL, ?, ?, 1)',
+      'INSERT INTO user (id, role, nickname, email, password_hash, enabled) VALUES (?, ?, ?, ?, ?, 1)',
     ).bind(id, 'parent', body.nickname, body.email, await hashPassword(body.password)),
     c.env.DB.prepare('INSERT INTO family (id, parent_user_id) VALUES (?, ?)').bind(familyId, id),
   ])

@@ -902,12 +902,12 @@ admin.get('/users', async (c) => {
   const values: unknown[] = []
   if (role) { conditions.push('u.role = ?'); values.push(role) }
   if (search) {
-    conditions.push('(u.nickname LIKE ? OR u.phone LIKE ? OR u.email LIKE ?)')
-    values.push(`%${search}%`, `%${search}%`, `%${search}%`)
+    conditions.push('(u.nickname LIKE ? OR u.email LIKE ?)')
+    values.push(`%${search}%`, `%${search}%`)
   }
   const { results } = await c.env.DB.prepare(
-    `SELECT u.id, u.role, u.nickname, u.phone, u.email, u.enabled, u.created_at,
-       p.nickname AS parent_name, p.phone AS parent_phone, p.email AS parent_email
+    `SELECT u.id, u.role, u.nickname, u.email, u.enabled, u.created_at,
+       p.nickname AS parent_name, p.email AS parent_email
      FROM user u
      LEFT JOIN user p ON p.id = u.parent_id
      WHERE ${conditions.join(' AND ')}
@@ -918,67 +918,48 @@ admin.get('/users', async (c) => {
       id: row.id,
       role: row.role,
       nickname: row.nickname,
-      phone: row.phone,
       email: row.email,
       enabled: Boolean(row.enabled),
       createdAt: row.created_at,
       parentName: row.parent_name,
-      parentPhone: row.parent_phone,
       parentEmail: row.parent_email,
     })),
   })
 })
 
-// 管理员创建账号：手机号与邮箱至少填一个（学生也可能只有邮箱；家长创建的孩子账号不走这条，
-// 由家长在自己账号内创建，那条才允许两个都不填）。
+// 管理员创建账号只走邮箱（手机号逻辑已删除；家长创建的孩子账号不走这条，
+// 由家长在自己账号内创建，那条才允许没有邮箱）。
 const userSchema = z.object({
   role: z.enum(['student', 'parent', 'admin']),
   nickname: z.string().trim().min(1, '请填写昵称').max(50),
-  phone: z.string().trim().regex(/^1\d{10}$/, '请输入正确的手机号').optional().nullable(),
-  email: z.string().trim().toLowerCase().email('请输入正确的邮箱').optional().nullable(),
+  email: z.string().trim().toLowerCase().email('请输入正确的邮箱'),
   password: z.string().min(6, '密码至少 6 位').max(100),
-}).refine((value) => Boolean(value.phone || value.email), { message: '请填写手机号或邮箱' })
+})
 
 admin.post('/users', async (c) => {
   const body = await parseBody(c, userSchema)
-  if (body.phone) {
-    const existing = await c.env.DB.prepare('SELECT id FROM user WHERE phone = ?').bind(body.phone).first()
-    if (existing) return c.json({ error: '该手机号已存在' }, 409)
-  }
-  if (body.email) {
-    const existing = await c.env.DB.prepare('SELECT id FROM user WHERE lower(email) = lower(?)').bind(body.email).first()
-    if (existing) return c.json({ error: '该邮箱已存在' }, 409)
-  }
+  const existing = await c.env.DB.prepare('SELECT id FROM user WHERE lower(email) = lower(?)').bind(body.email).first()
+  if (existing) return c.json({ error: '该邮箱已存在' }, 409)
   const id = uuid('u')
   await c.env.DB.prepare(
-    'INSERT INTO user (id, role, nickname, phone, email, password_hash, enabled) VALUES (?, ?, ?, ?, ?, ?, 1)',
-  ).bind(id, body.role, body.nickname, body.phone || null, body.email || null, await hashPassword(body.password)).run()
+    'INSERT INTO user (id, role, nickname, email, password_hash, enabled) VALUES (?, ?, ?, ?, ?, 1)',
+  ).bind(id, body.role, body.nickname, body.email, await hashPassword(body.password)).run()
   return c.json({ id }, 201)
 })
 
 admin.patch('/users/:id', async (c) => {
   const body = await parseBody(c, z.object({
     nickname: z.string().trim().min(1).max(50).optional(),
-    phone: z.string().trim().regex(/^1\d{10}$/).nullable().optional(),
-    email: z.string().trim().toLowerCase().email('请输入正确的邮箱').nullable().optional(),
+    email: z.string().trim().toLowerCase().email('请输入正确的邮箱').optional(),
     password: z.string().min(6).max(100).optional(),
     enabled: z.boolean().optional(),
   }))
   const updates: string[] = []
   const values: unknown[] = []
   if (body.nickname !== undefined) { updates.push('nickname = ?'); values.push(body.nickname) }
-  if (body.phone !== undefined) {
-    if (body.phone) {
-      const existing = await c.env.DB.prepare('SELECT id FROM user WHERE phone = ? AND id <> ?').bind(body.phone, c.req.param('id')).first()
-      if (existing) return c.json({ error: '该手机号已存在' }, 409)
-    }
-    updates.push('phone = ?'); values.push(body.phone)
-  }
   if (body.email !== undefined) {
-    if (body.email) {
-      const existing = await c.env.DB.prepare('SELECT id FROM user WHERE lower(email) = lower(?) AND id <> ?').bind(body.email, c.req.param('id')).first()
-      if (existing) return c.json({ error: '该邮箱已存在' }, 409)
-    }
+    const existing = await c.env.DB.prepare('SELECT id FROM user WHERE lower(email) = lower(?) AND id <> ?').bind(body.email, c.req.param('id')).first()
+    if (existing) return c.json({ error: '该邮箱已存在' }, 409)
     updates.push('email = ?'); values.push(body.email)
   }
   if (body.enabled !== undefined) { updates.push('enabled = ?'); values.push(body.enabled ? 1 : 0) }
@@ -996,9 +977,9 @@ admin.patch('/users/:id', async (c) => {
 admin.get('/families', async (c) => {
   const { results } = await c.env.DB.prepare(
     `SELECT f.id AS family_id, f.parent_user_id,
-       p.nickname AS parent_name, p.phone AS parent_phone,
+       p.nickname AS parent_name, p.email AS parent_email,
        fm.id AS member_id, fm.student_user_id, fm.relation, fm.status,
-       s.nickname AS student_name, s.phone AS student_phone
+       s.nickname AS student_name, s.email AS student_email
      FROM family f
      JOIN user p ON p.id = f.parent_user_id
      LEFT JOIN family_member fm ON fm.family_id = f.id
@@ -1010,7 +991,7 @@ admin.get('/families', async (c) => {
     id: string
     parentUserId: string
     parentName: string
-    parentPhone: string
+    parentEmail: string | null
     members: Array<Record<string, unknown>>
   }>()
   for (const row of results || []) {
@@ -1020,7 +1001,7 @@ admin.get('/families', async (c) => {
         id: row.family_id as string,
         parentUserId: row.parent_user_id as string,
         parentName: row.parent_name as string,
-        parentPhone: row.parent_phone as string,
+        parentEmail: row.parent_email as string | null,
         members: [],
       }
       map.set(row.family_id as string, family)
@@ -1030,7 +1011,7 @@ admin.get('/families', async (c) => {
         id: row.member_id,
         studentUserId: row.student_user_id,
         studentName: row.student_name,
-        studentPhone: row.student_phone,
+        studentEmail: row.student_email,
         relation: row.relation,
         status: row.status,
       })

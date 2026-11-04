@@ -6,7 +6,6 @@ import {
   Gift,
   Loader2,
   Plus,
-  UserPlus,
   Users,
 } from 'lucide-vue-next'
 import type { ChildSummary } from '@english-study/shared'
@@ -17,10 +16,6 @@ const auth = useAuth()
 
 const children = ref<ChildSummary[]>([])
 const loading = ref(true)
-const bindOpen = ref(false)
-const bindForm = reactive({ phone: '', relation: '孩子' })
-const binding = ref(false)
-const bindError = ref('')
 const createOpen = ref(false)
 const createForm = reactive({ nickname: '', relation: '孩子' })
 const creating = ref(false)
@@ -40,30 +35,6 @@ async function load() {
     toast.error(errorMessage(error, '孩子列表加载失败'))
   } finally {
     loading.value = false
-  }
-}
-
-async function bind() {
-  bindError.value = ''
-  if (!/^1\d{10}$/.test(bindForm.phone.trim())) {
-    bindError.value = '请输入正确的学生手机号'
-    return
-  }
-  binding.value = true
-  try {
-    await api.post('/parent/bind', {
-      phone: bindForm.phone.trim(),
-      relation: bindForm.relation.trim() || '孩子',
-    })
-    toast.success('绑定邀请已发送，等待学生确认')
-    bindOpen.value = false
-    bindForm.phone = ''
-    bindForm.relation = '孩子'
-    await load()
-  } catch (error) {
-    bindError.value = errorMessage(error, '绑定失败')
-  } finally {
-    binding.value = false
   }
 }
 
@@ -119,10 +90,6 @@ onMounted(load)
           <Plus :size="16" />
           创建孩子账号
         </button>
-        <button class="btn-secondary" @click="bindOpen = true">
-          <UserPlus :size="16" />
-          绑定已有孩子
-        </button>
       </template>
     </PageHeader>
 
@@ -168,7 +135,6 @@ onMounted(load)
                   <span class="chip">{{ child.relation }}</span>
                   <span v-if="child.pendingRewards" class="chip-clay">{{ child.pendingRewards }} 条待确认</span>
                 </div>
-                <p class="mt-1 text-[11px] text-muted">{{ child.phone || '家长创建 · 无手机号' }}</p>
                 <div class="mt-4 grid grid-cols-3 gap-2">
                   <div class="rounded-xl bg-paper/80 px-3 py-2.5">
                     <p class="text-[9px] text-muted">今日答题</p>
@@ -214,9 +180,9 @@ onMounted(load)
                   <p class="text-base font-medium text-ink">{{ child.nickname }}</p>
                   <span class="chip-clay">待学生确认</span>
                 </div>
-                <p class="mt-1 text-[11px] text-muted">{{ child.phone || '家长创建 · 无手机号' }} · {{ child.relation }}</p>
+                <p class="mt-1 text-[11px] text-muted">{{ child.relation }}</p>
                 <p class="mt-3 text-xs leading-relaxed text-muted">
-                  绑定邀请已发送。学生登录后，在“奖励进度”页确认即可查看数据。
+                  待学生确认。学生登录后，在“奖励进度”页确认即可查看数据。
                 </p>
               </div>
             </div>
@@ -227,7 +193,7 @@ onMounted(load)
       <EmptyState
         v-else
         title="还没有孩子账号"
-        description="直接创建孩子账号，无需手机号；也可以绑定已有学生账号的手机号，学生确认后即可查看学习报告。"
+        description="直接创建孩子账号，无需邮箱；管理员也可以在管理端建立家庭绑定。"
       >
         <template #icon><Users :size="18" /></template>
         <template #action>
@@ -242,7 +208,7 @@ onMounted(load)
     <Modal
       :open="createOpen"
       title="创建孩子账号"
-      description="孩子无需手机号和邮箱，创建后立即启用；家长登录后可切换到孩子视角，每个孩子各自完成自己的练习与复习。"
+      description="孩子无需邮箱，创建后立即启用；家长登录后可切换到孩子视角，每个孩子各自完成自己的练习与复习。"
       @close="createOpen = false"
     >
       <div class="space-y-4">
@@ -279,48 +245,5 @@ onMounted(load)
       </template>
     </Modal>
 
-    <Modal
-      :open="bindOpen"
-      title="绑定孩子"
-      description="学生需要在自己的账号中确认绑定。平台不会自动通过。"
-      @close="bindOpen = false"
-    >
-      <div class="space-y-4">
-        <div>
-          <label class="label" for="bind-phone">学生手机号</label>
-          <input
-            id="bind-phone"
-            v-model="bindForm.phone"
-            class="input"
-            type="tel"
-            inputmode="numeric"
-            maxlength="11"
-            placeholder="请输入学生账号手机号"
-          >
-        </div>
-        <div>
-          <label class="label" for="bind-relation">关系</label>
-          <select id="bind-relation" v-model="bindForm.relation" class="input">
-            <option value="孩子">孩子</option>
-            <option value="女儿">女儿</option>
-            <option value="儿子">儿子</option>
-            <option value="学生">学生</option>
-          </select>
-        </div>
-        <p v-if="bindError" class="rounded-xl border border-danger/15 bg-danger-soft px-3.5 py-2.5 text-xs text-danger">
-          {{ bindError }}
-        </p>
-        <div class="rounded-xl bg-paper px-3.5 py-3 text-[10px] leading-relaxed text-muted">
-          演示学生账号：13800000002。绑定后学生需在“奖励进度”页确认。
-        </div>
-      </div>
-      <template #footer>
-        <button class="btn-secondary" @click="bindOpen = false">取消</button>
-        <button class="btn-primary" :disabled="binding" @click="bind">
-          <Loader2 v-if="binding" :size="15" class="animate-spin" />
-          发送绑定邀请
-        </button>
-      </template>
-    </Modal>
   </div>
 </template>

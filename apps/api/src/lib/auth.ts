@@ -120,12 +120,11 @@ export const requireAuth: MiddlewareHandler<AppEnv> = async (c, next) => {
   const sub = typeof payload.sub === 'string' ? payload.sub : ''
   if (!sub) throw new HTTPException(401, { message: '登录状态无效' })
   const user = await c.env.DB.prepare(
-    'SELECT id, role, nickname, phone, email, enabled FROM user WHERE id = ?',
+    'SELECT id, role, nickname, email, enabled FROM user WHERE id = ?',
   ).bind(sub).first<{
     id: string
     role: 'student' | 'parent' | 'admin'
     nickname: string
-    phone: string | null
     email: string | null
     enabled: number
   }>()
@@ -160,7 +159,6 @@ export const requireAuth: MiddlewareHandler<AppEnv> = async (c, next) => {
     id: user.id,
     role: user.role,
     nickname: user.nickname,
-    phone: user.phone,
     email: user.email,
     enabled: Boolean(user.enabled),
     switchedFromParent,

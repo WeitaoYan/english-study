@@ -55,7 +55,7 @@ async function submit() {
       <p class="eyebrow mt-9">家长注册</p>
       <h2 class="mt-2 font-display text-3xl tracking-tight text-ink">用邮箱创建家长账号</h2>
       <p class="mt-2.5 text-sm leading-relaxed text-muted">
-        注册后进入家长端，在自己账号内创建孩子账号；孩子无需手机号，家长登录后可切换到孩子视角，
+        注册后进入家长端，在自己账号内创建孩子账号；孩子无需邮箱，家长登录后可切换到孩子视角，
         每个孩子各自完成自己的练习与复习。
       </p>
 

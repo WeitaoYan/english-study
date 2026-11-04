@@ -11,7 +11,7 @@
     "db:migrate:remote": "wrangler d1 migrations apply english-study --remote",
     "db:seed": "wrangler d1 execute english-study --local --file=./seed.sql",
     "db:seed:remote": "wrangler d1 execute english-study --remote --file=./seed.sql",
-    "db:reset": "wrangler d1 execute english-study --local --file=./migrations/0001_init.sql && wrangler d1 execute english-study --local --file=./migrations/0002_tts_review.sql && wrangler d1 execute english-study --local --file=./migrations/0003_email_and_child_accounts.sql && wrangler d1 execute english-study --local --file=./seed.sql"
+    "db:reset": "wrangler d1 execute english-study --local --file=./migrations/0001_init.sql && wrangler d1 execute english-study --local --file=./migrations/0002_tts_review.sql && wrangler d1 execute english-study --local --file=./migrations/0003_email_and_child_accounts.sql && wrangler d1 execute english-study --local --file=./migrations/0004_drop_phone.sql && wrangler d1 execute english-study --local --file=./seed.sql"
   },
   "dependencies": {
     "hono": "^4.13.16",

@@ -180,7 +180,7 @@ async function signOut() {
         <div class="flex items-center justify-between gap-2">
           <div class="min-w-0">
             <p class="truncate text-xs font-medium text-ink">{{ auth.user.value.nickname }}</p>
-            <p class="text-[11px] text-muted">{{ auth.user.value.phone || auth.user.value.email || '无联系方式' }}</p>
+            <p class="text-[11px] text-muted">{{ auth.user.value.email || '无邮箱（家长创建的孩子账号）' }}</p>
           </div>
           <button class="btn-ghost size-9 !p-0" title="退出登录" @click="signOut">
             <LogOut :size="16" />

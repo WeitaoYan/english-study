@@ -37,12 +37,12 @@ export function useAuth() {
     return user.value
   }
 
-  async function login(identifier: string, password: string) {
+  async function login(email: string, password: string) {
     loading.value = true
     const api = useApi()
     try {
       const response = await api.post<{ user: UserSummary; token: string }>('/auth/login', {
-        identifier,
+        email,
         password,
       })
       applySession(response.user, response.token)

@@ -19,20 +19,19 @@ interface AdminUser {
   id: string
   role: Role
   nickname: string
-  phone: string | null
   email: string | null
   enabled: boolean
   createdAt: string
   parentName: string | null
   parentPhone: string | null
-  parentEmail?: string | null
+  parentEmail: string | null
 }
 
 interface FamilyMember {
   id: string
   studentUserId: string
   studentName: string
-  studentPhone: string | null
+  studentEmail: string | null
   relation: string
   status: 'pending' | 'active' | 'rejected'
 }
@@ -64,7 +63,6 @@ const userError = ref('')
 const userForm = reactive({
   role: 'student' as Role,
   nickname: '',
-  phone: '',
   email: '',
   password: '',
   enabled: true,
@@ -105,7 +103,6 @@ const filteredUsers = computed(() => {
     if (roleFilter.value && user.role !== roleFilter.value) return false
     if (!keyword) return true
     return user.nickname.toLowerCase().includes(keyword)
-      || (user.phone || '').includes(keyword)
       || (user.email || '').toLowerCase().includes(keyword)
   })
 })
@@ -139,7 +136,6 @@ function openCreateUser() {
   editingUserId.value = ''
   userForm.role = 'student'
   userForm.nickname = ''
-  userForm.phone = ''
   userForm.email = ''
   userForm.password = ''
   userForm.enabled = true
@@ -151,7 +147,6 @@ function openEditUser(user: AdminUser) {
   editingUserId.value = user.id
   userForm.role = user.role
   userForm.nickname = user.nickname
-  userForm.phone = user.phone || ''
   userForm.email = user.email || ''
   userForm.password = ''
   userForm.enabled = user.enabled
@@ -165,16 +160,8 @@ async function saveUser() {
     userError.value = '请填写昵称'
     return
   }
-  if (userForm.phone.trim() && !/^1\d{10}$/.test(userForm.phone.trim())) {
-    userError.value = '请输入正确的 11 位手机号'
-    return
-  }
-  if (userForm.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userForm.email.trim())) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userForm.email.trim())) {
     userError.value = '请输入正确的邮箱'
-    return
-  }
-  if (!userForm.phone.trim() && !userForm.email.trim()) {
-    userError.value = '请填写手机号或邮箱（家长创建的孩子账号除外，那条不走这里）'
     return
   }
   if (!editingUserId.value && userForm.password.length < 6) {
@@ -190,8 +177,7 @@ async function saveUser() {
     if (editingUserId.value) {
       const payload: Record<string, unknown> = {
         nickname: userForm.nickname.trim(),
-        phone: userForm.phone.trim() || null,
-        email: userForm.email.trim().toLowerCase() || null,
+        email: userForm.email.trim().toLowerCase(),
         enabled: userForm.enabled,
       }
       if (userForm.password) payload.password = userForm.password
@@ -201,8 +187,7 @@ async function saveUser() {
       await api.post('/admin/users', {
         role: userForm.role,
         nickname: userForm.nickname.trim(),
-        phone: userForm.phone.trim() || null,
-        email: userForm.email.trim().toLowerCase() || null,
+        email: userForm.email.trim().toLowerCase(),
         password: userForm.password,
       })
       toast.success('账号已创建')
@@ -347,7 +332,7 @@ onMounted(load)
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div class="relative flex-1">
               <Search :size="15" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-              <input v-model="search" class="input !pl-9" placeholder="搜索昵称或手机号">
+              <input v-model="search" class="input !pl-9" placeholder="搜索昵称或邮箱">
             </div>
             <select v-model="roleFilter" class="input !w-auto !py-2">
               <option value="">全部角色</option>
@@ -365,7 +350,7 @@ onMounted(load)
               <tr>
                 <th>账号</th>
                 <th>角色</th>
-                <th>联系方式</th>
+                <th>邮箱</th>
                 <th>家长关联</th>
                 <th>状态</th>
                 <th>创建时间</th>
@@ -376,9 +361,9 @@ onMounted(load)
               <tr v-for="user in filteredUsers" :key="user.id">
                 <td><p class="font-medium text-ink">{{ user.nickname }}</p></td>
                 <td><span :class="roleTone[user.role]" class="!py-0.5">{{ roleLabels[user.role] }}</span></td>
-                <td><span class="text-xs">{{ user.phone || user.email || '无联系方式' }}</span></td>
+                <td><span class="text-xs">{{ user.email || '无邮箱' }}</span></td>
                 <td>
-                  <span v-if="user.parentName" class="text-xs">{{ user.parentName }} · {{ user.parentPhone || user.parentEmail || '无联系方式' }}</span>
+                  <span v-if="user.parentName" class="text-xs">{{ user.parentName }} · {{ user.parentEmail || '无邮箱' }}</span>
                   <span v-else class="text-[10px] text-muted">—</span>
                 </td>
                 <td><span :class="user.enabled ? 'chip-forest' : 'chip-danger'" class="!py-0.5">{{ user.enabled ? '启用' : '停用' }}</span></td>
@@ -434,7 +419,7 @@ onMounted(load)
                         {{ memberStatusLabels[member.status] }}
                       </span>
                     </div>
-                    <p class="mt-0.5 text-[10px] text-muted">{{ member.studentPhone }}</p>
+                    <p class="mt-0.5 text-[10px] text-muted">{{ member.studentEmail || '无邮箱' }}</p>
                   </div>
                 </div>
                 <div class="flex shrink-0 items-center gap-1.5">
@@ -499,11 +484,7 @@ onMounted(load)
           <input id="account-name" v-model="userForm.nickname" class="input" maxlength="50" placeholder="林小满">
         </div>
         <div>
-          <label class="label" for="account-phone">手机号（与邮箱至少填一个）</label>
-          <input id="account-phone" v-model="userForm.phone" class="input" type="tel" inputmode="numeric" maxlength="11" placeholder="13800000000">
-        </div>
-        <div>
-          <label class="label" for="account-email">邮箱（与手机号至少填一个）</label>
+          <label class="label" for="account-email">邮箱</label>
           <input id="account-email" v-model="userForm.email" class="input" type="email" placeholder="parent@example.com">
         </div>
         <div>
@@ -539,7 +520,7 @@ onMounted(load)
           <select id="bind-parent" v-model="bindForm.parentId" class="input">
             <option value="" disabled>请选择家长</option>
             <option v-for="parent in parentOptions" :key="parent.id" :value="parent.id">
-              {{ parent.nickname }} · {{ parent.phone || parent.email || '无联系方式' }}
+              {{ parent.nickname }} · {{ parent.email || '无邮箱' }}
             </option>
           </select>
         </div>
@@ -548,7 +529,7 @@ onMounted(load)
           <select id="bind-student" v-model="bindForm.studentId" class="input">
             <option value="" disabled>请选择学生</option>
             <option v-for="student in studentOptions" :key="student.id" :value="student.id">
-              {{ student.nickname }} · {{ student.phone || student.email || '无联系方式' }}
+              {{ student.nickname }} · {{ student.email || '无邮箱' }}
             </option>
           </select>
         </div>
@@ -581,7 +562,7 @@ onMounted(load)
     >
       <div v-if="removeMember" class="rounded-xl border border-line bg-paper/70 px-4 py-3.5">
         <p class="text-sm font-medium text-ink">{{ removeMember.studentName }}</p>
-        <p class="mt-1 text-[11px] text-muted">{{ removeMember.studentPhone }} · {{ removeMember.relation }}</p>
+        <p class="mt-1 text-[11px] text-muted">{{ removeMember.studentEmail || '无邮箱' }} · {{ removeMember.relation }}</p>
       </div>
       <template #footer>
         <button class="btn-secondary" @click="removeOpen = false">取消</button>

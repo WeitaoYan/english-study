@@ -13,7 +13,6 @@ export interface AuthUser {
   id: string
   role: Role
   nickname: string
-  phone: string | null
   email: string | null
   enabled: boolean
   switchedFromParent?: { id: string; nickname: string } | null
@@ -30,7 +29,6 @@ export interface UserRow {
   id: string
   role: Role
   nickname: string
-  phone: string | null
   email: string | null
   password_hash: string
   parent_id: string | null

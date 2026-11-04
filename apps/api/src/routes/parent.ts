@@ -22,7 +22,6 @@ interface ChildRow {
   relation: string
   status: 'pending' | 'active' | 'rejected'
   nickname: string
-  phone: string | null
 }
 
 async function getFamilyId(env: AppEnv['Bindings'], parentId: string): Promise<string | null> {
@@ -43,7 +42,7 @@ async function ensureFamily(env: AppEnv['Bindings'], parentId: string): Promise<
 async function getChildren(env: AppEnv['Bindings'], parentId: string): Promise<ChildRow[]> {
   const { results } = await env.DB.prepare(
     `SELECT fm.id AS member_id, fm.family_id, fm.student_user_id, fm.relation, fm.status,
-       u.nickname, u.phone
+       u.nickname
      FROM family_member fm
      JOIN family f ON f.id = fm.family_id
      JOIN user u ON u.id = fm.student_user_id
@@ -158,7 +157,6 @@ parent.get('/children', async (c) => {
     data.push({
       id: child.student_user_id,
       nickname: child.nickname,
-      phone: child.phone,
       relation: child.relation,
       status: child.status,
       today: {
@@ -180,7 +178,7 @@ parent.get('/children', async (c) => {
   return c.json({ data })
 })
 
-// 家长在自己账号内创建孩子账号：孩子无需手机号、无需邮箱、无需绑定邀请，创建即启用。
+// 家长在自己账号内创建孩子账号：孩子无需邮箱、无需绑定邀请，创建即启用。
 // 孩子账号没有可直接登录的标识与密码（密码存的是一次性随机值且不展示），只能由家长切换视角进入；
 // 每个孩子都是独立 user 行，练习、记忆、激励都按 student_user_id 隔离，互不干扰。
 parent.post('/children', async (c) => {
@@ -195,7 +193,7 @@ parent.post('/children', async (c) => {
   const unusablePassword = crypto.randomUUID()
   await c.env.DB.batch([
     c.env.DB.prepare(
-      'INSERT INTO user (id, role, nickname, phone, email, password_hash, parent_id, enabled) VALUES (?, ?, ?, NULL, NULL, ?, ?, 1)',
+      'INSERT INTO user (id, role, nickname, email, password_hash, parent_id, enabled) VALUES (?, ?, ?, NULL, ?, ?, 1)',
     ).bind(childId, 'student', body.nickname, await hashPassword(unusablePassword), user.id),
     c.env.DB.prepare(
       `INSERT INTO family_member (id, family_id, student_user_id, relation, status, enabled)
@@ -208,43 +206,6 @@ parent.post('/children', async (c) => {
     relation: body.relation,
     status: 'active',
   }, 201)
-})
-
-parent.post('/bind', async (c) => {
-  const user = c.get('user')
-  const body = await parseBody(c, z.object({
-    phone: z.string().trim().regex(/^1\d{10}$/, '请输入正确的学生手机号'),
-    relation: z.string().trim().min(1).max(20).default('孩子'),
-  }))
-  const student = await c.env.DB.prepare(
-    `SELECT id, nickname, phone FROM user WHERE phone = ? AND role = 'student' AND enabled = 1`,
-  ).bind(body.phone).first<{ id: string; nickname: string; phone: string }>()
-  if (!student) return c.json({ error: '未找到该手机号对应的学生账号' }, 404)
-  if (student.id === user.id) return c.json({ error: '不能绑定自己' }, 400)
-
-  const familyId = await ensureFamily(c.env, user.id)
-  const existing = await c.env.DB.prepare(
-    'SELECT id, status FROM family_member WHERE family_id = ? AND student_user_id = ?',
-  ).bind(familyId, student.id).first<{ id: string; status: string }>()
-  if (existing?.status === 'active') return c.json({ error: '该学生已绑定' }, 409)
-  if (existing?.status === 'pending') return c.json({ error: '已发送绑定邀请，等待学生确认' }, 409)
-
-  if (existing) {
-    await c.env.DB.prepare(
-      `UPDATE family_member SET status = 'pending', enabled = 0, relation = ? WHERE id = ?`,
-    ).bind(body.relation, existing.id).run()
-  } else {
-    await c.env.DB.prepare(
-      `INSERT INTO family_member (id, family_id, student_user_id, relation, status, enabled)
-       VALUES (?, ?, ?, ?, 'pending', 0)`,
-    ).bind(uuid('fm'), familyId, student.id, body.relation).run()
-  }
-
-  return c.json({
-    ok: true,
-    pending: true,
-    student: { id: student.id, nickname: student.nickname },
-  })
 })
 
 parent.get('/children/:id/report', async (c) => {
@@ -351,7 +312,7 @@ parent.get('/children/:id/report', async (c) => {
   ).bind(child.family_id, child.student_user_id).first<{ total: number }>()
 
   return c.json({
-    child: { id: child.student_user_id, nickname: child.nickname, phone: child.phone },
+    child: { id: child.student_user_id, nickname: child.nickname },
     today: {
       answered: todayStats.answered,
       correct: todayStats.correct,

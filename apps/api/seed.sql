@@ -1,8 +1,8 @@
 -- Demo data for local development & preview.
--- Demo accounts:
---   学生 13800000002 / demo1234
---   家长 13800000001 / demo1234
---   管理员 13800000000 / admin1234
+-- Demo accounts (email login only):
+--   学生 student@example.com / demo1234
+--   家长 parent@example.com / demo1234
+--   管理员 admin@example.com / admin1234
 
 DELETE FROM parent_word_focus;
 DELETE FROM incentive_event;
@@ -21,12 +21,12 @@ DELETE FROM family_member;
 DELETE FROM family;
 DELETE FROM user;
 
-INSERT INTO user (id, role, nickname, phone, password_hash, enabled) VALUES
-  ('u-admin', 'admin', '系统管理员', '13800000000', 'pbkdf2$120000$admin-demo-salt$ab6c42b32c5ea4bb9f7d7e7b77a0db5a37736df3d752b8c03aca7e500d976525', 1),
-  ('u-parent', 'parent', '林妈妈', '13800000001', 'pbkdf2$120000$parent-demo-salt$b3deb2ae8ccd953dcc157aadb1b92d797def67aa911dc5cc01e771200e1b57dd', 1),
-  ('u-student', 'student', '林小满', '13800000002', 'pbkdf2$120000$student-demo-salt$27a5a7cd82fbfe513fba5654127b4b8c84cf770e4bf80c54800de0290c6af70d', 1),
-  ('u-student-2', 'student', '周予安', '13800000003', 'pbkdf2$120000$student-demo-salt$27a5a7cd82fbfe513fba5654127b4b8c84cf770e4bf80c54800de0290c6af70d', 1),
-  ('u-parent-2', 'parent', '周爸爸', '13800000004', 'pbkdf2$120000$parent-demo-salt$b3deb2ae8ccd953dcc157aadb1b92d797def67aa911dc5cc01e771200e1b57dd', 1);
+INSERT INTO user (id, role, nickname, email, password_hash, enabled) VALUES
+  ('u-admin', 'admin', '系统管理员', 'admin@example.com', 'pbkdf2$120000$admin-demo-salt$ab6c42b32c5ea4bb9f7d7e7b77a0db5a37736df3d752b8c03aca7e500d976525', 1),
+  ('u-parent', 'parent', '林妈妈', 'parent@example.com', 'pbkdf2$120000$parent-demo-salt$b3deb2ae8ccd953dcc157aadb1b92d797def67aa911dc5cc01e771200e1b57dd', 1),
+  ('u-student', 'student', '林小满', 'student@example.com', 'pbkdf2$120000$student-demo-salt$27a5a7cd82fbfe513fba5654127b4b8c84cf770e4bf80c54800de0290c6af70d', 1),
+  ('u-student-2', 'student', '周予安', 'student2@example.com', 'pbkdf2$120000$student-demo-salt$27a5a7cd82fbfe513fba5654127b4b8c84cf770e4bf80c54800de0290c6af70d', 1),
+  ('u-parent-2', 'parent', '周爸爸', 'parent2@example.com', 'pbkdf2$120000$parent-demo-salt$b3deb2ae8ccd953dcc157aadb1b92d797def67aa911dc5cc01e771200e1b57dd', 1);
 
 INSERT INTO family (id, parent_user_id) VALUES ('f-1', 'u-parent');
 INSERT INTO family (id, parent_user_id) VALUES ('f-2', 'u-parent-2');

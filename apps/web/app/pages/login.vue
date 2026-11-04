@@ -7,7 +7,7 @@ const auth = useAuth()
 const route = useRoute()
 const toast = useToast()
 
-const identifier = ref('')
+const email = ref('')
 const password = ref('')
 const error = ref('')
 const submitting = ref(false)
@@ -17,7 +17,7 @@ const demos = [
   {
     role: '学生',
     name: '林小满',
-    phone: '13800000002',
+    email: 'student@example.com',
     password: 'demo1234',
     icon: GraduationCap,
     tone: 'bg-forest-soft text-forest',
@@ -25,7 +25,7 @@ const demos = [
   {
     role: '家长',
     name: '林妈妈',
-    phone: '13800000001',
+    email: 'parent@example.com',
     password: 'demo1234',
     icon: Users,
     tone: 'bg-clay-soft text-clay',
@@ -33,7 +33,7 @@ const demos = [
   {
     role: '管理员',
     name: '系统管理员',
-    phone: '13800000000',
+    email: 'admin@example.com',
     password: 'admin1234',
     icon: ShieldCheck,
     tone: 'bg-ocean-soft text-ocean',
@@ -42,10 +42,9 @@ const demos = [
 
 async function submit() {
   error.value = ''
-  const value = identifier.value.trim()
-  const isEmail = value.includes('@')
-  if (isEmail ? !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) : !/^1\d{10}$/.test(value)) {
-    error.value = isEmail ? '请输入正确的邮箱' : '请输入 11 位手机号'
+  const value = email.value.trim().toLowerCase()
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    error.value = '请输入正确的邮箱'
     return
   }
   if (password.value.length < 6) {
@@ -59,7 +58,7 @@ async function submit() {
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : ''
     await navigateTo(redirect && redirect !== '/login' ? redirect : auth.home.value)
   } catch (err) {
-    error.value = errorMessage(err, '登录失败，请检查账号和密码')
+    error.value = errorMessage(err, '登录失败，请检查邮箱和密码')
   } finally {
     submitting.value = false
   }
@@ -68,10 +67,10 @@ async function submit() {
 async function demoLogin(demo: (typeof demos)[number]) {
   error.value = ''
   demoLoading.value = demo.role
-  identifier.value = demo.phone
+  email.value = demo.email
   password.value = demo.password
   try {
-    await auth.login(demo.phone, demo.password)
+    await auth.login(demo.email, demo.password)
     toast.success(`已进入${demo.role}演示`)
     await navigateTo(auth.home.value)
   } catch (err) {
@@ -149,19 +148,19 @@ async function demoLogin(demo: (typeof demos)[number]) {
         <p class="eyebrow">欢迎回来</p>
         <h2 class="mt-2 font-display text-3xl tracking-tight text-ink">登录学习空间</h2>
         <p class="mt-2.5 text-sm leading-relaxed text-muted">
-          使用手机号或邮箱登录，进入各自的工作台。家长可以用邮箱注册，注册后在自己账号内创建孩子账号，孩子无需手机号。
+          使用邮箱登录，进入各自的工作台。家长可以用邮箱注册，注册后在自己账号内创建孩子账号，孩子无需邮箱。
         </p>
 
         <form class="mt-8 space-y-4" @submit.prevent="submit">
           <div>
-            <label class="label" for="identifier">手机号或邮箱</label>
+            <label class="label" for="email">邮箱</label>
             <input
-              id="identifier"
-              v-model="identifier"
+              id="email"
+              v-model="email"
               class="input"
-              type="text"
+              type="email"
               autocomplete="username"
-              placeholder="请输入手机号或邮箱"
+              placeholder="请输入邮箱"
             >
           </div>
           <div>
@@ -206,7 +205,7 @@ async function demoLogin(demo: (typeof demos)[number]) {
             </span>
             <span class="min-w-0 flex-1">
               <span class="block text-sm font-medium text-ink">{{ demo.role }} · {{ demo.name }}</span>
-              <span class="mt-0.5 block text-[10px] text-muted">{{ demo.phone }} / {{ demo.password }}</span>
+              <span class="mt-0.5 block text-[10px] text-muted">{{ demo.email }} / {{ demo.password }}</span>
             </span>
             <Loader2 v-if="demoLoading === demo.role" :size="15" class="animate-spin text-muted" />
             <ArrowRight v-else :size="15" class="text-muted transition group-hover:translate-x-0.5 group-hover:text-forest" />

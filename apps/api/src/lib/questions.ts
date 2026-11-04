@@ -144,7 +144,7 @@ export function buildQuestions(
         optionPool(word, allWords, 'definition_choice'),
       )
     } else if (type === 'letter_fill') {
-      prompt = '补全字母，写出完整的英文单词'
+      prompt = '在空里填上缺少的字母'
       stem = maskSpelling(word.spelling)
       hint = word.chineseDef
     } else if (type === 'sentence_fill') {
@@ -155,7 +155,7 @@ export function buildQuestions(
         hint = word.chineseDef
       } else {
         type = 'letter_fill'
-        prompt = '补全字母，写出完整的英文单词'
+        prompt = '在空里填上缺少的字母'
         stem = maskSpelling(word.spelling)
         hint = word.chineseDef
       }
@@ -190,7 +190,7 @@ export function buildQuestions(
 
     if (options && options.length < 2) {
       type = 'letter_fill'
-      prompt = '补全字母，写出完整的英文单词'
+      prompt = '在空里填上缺少的字母'
       stem = maskSpelling(word.spelling)
       hint = word.chineseDef
       options = null
@@ -234,7 +234,7 @@ export interface ManualQuestion {
 
 const TYPE_PROMPTS: Record<QuestionType, string> = {
   definition_choice: '根据中文释义，选择对应的英文单词',
-  letter_fill: '补全字母，写出完整的英文单词',
+  letter_fill: '在空里填上缺少的字母',
   sentence_fill: '读句子，填写缺少的单词',
   image_choice: '看图，选择对应的英文单词',
   audio_choice: '听发音，选择对应的英文单词',

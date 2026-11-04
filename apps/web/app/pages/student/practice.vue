@@ -33,6 +33,87 @@ const emptyMessage = ref('')
 const index = ref(0)
 const inputAnswer = ref('')
 const selected = ref('')
+const fillLetters = ref<string[]>([])
+const fillBox = ref<HTMLElement | null>(null)
+
+interface LetterSlot { char: string; blank: boolean; blankIndex: number }
+
+// 补全题：把后端 stem（形如 a _ _ l e）解析成“单词内填空”；
+// 解析失败（人工题 stem 不是打码格式）时返回 null，走回原来的整词输入框。
+const letterSlots = computed<LetterSlot[] | null>(() => {
+  if (current.value?.type !== 'letter_fill' || !current.value.stem) return null
+  const tokens = current.value.stem.split(' ')
+  if (!tokens.length) return null
+  let blankIndex = 0
+  const slots: LetterSlot[] = []
+  for (const token of tokens) {
+    if (token === '_') {
+      slots.push({ char: '', blank: true, blankIndex })
+      blankIndex += 1
+    } else if (token.length === 1) {
+      slots.push({ char: token, blank: false, blankIndex: -1 })
+    } else {
+      return null
+    }
+  }
+  return slots.some((slot) => slot.blank) ? slots : null
+})
+const blankCount = computed(() => letterSlots.value?.filter((slot) => slot.blank).length ?? 0)
+const fillComplete = computed(() => {
+  if (!blankCount.value) return false
+  return Array.from({ length: blankCount.value }, (_, i) => fillLetters.value[i]).every(Boolean)
+})
+function assembledFill() {
+  if (!letterSlots.value) return ''
+  return letterSlots.value.map((slot) => (slot.blank ? (fillLetters.value[slot.blankIndex] || '') : slot.char)).join('')
+}
+function focusBlank(i: number) {
+  const inputs = fillBox.value?.querySelectorAll('input')
+  const el = inputs?.[i] as HTMLInputElement | undefined
+  if (el) {
+    el.focus()
+    el.select()
+  }
+}
+function onFillInput(blankIndex: number, event: Event) {
+  const el = event.target as HTMLInputElement
+  const letter = el.value.replace(/[^a-zA-Z]/g, '').slice(-1).toLowerCase()
+  fillLetters.value[blankIndex] = letter
+  el.value = letter
+  if (letter) focusBlank(blankIndex + 1)
+}
+function onFillKeydown(blankIndex: number, event: KeyboardEvent) {
+  if (event.key === 'Backspace' && !fillLetters.value[blankIndex]) {
+    event.preventDefault()
+    if (blankIndex > 0) {
+      fillLetters.value[blankIndex - 1] = ''
+      focusBlank(blankIndex - 1)
+    }
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault()
+    focusBlank(blankIndex - 1)
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault()
+    focusBlank(blankIndex + 1)
+  } else if (event.key === 'Enter' && fillComplete.value) {
+    event.preventDefault()
+    submitAnswer(assembledFill())
+  }
+}
+function onFillPaste(event: ClipboardEvent) {
+  const text = event.clipboardData?.getData('text').replace(/[^a-zA-Z]/g, '').toLowerCase()
+  if (!text) return
+  event.preventDefault()
+  const target = event.target as HTMLInputElement
+  const start = Number(target.dataset.blankIndex || 0)
+  text.split('').forEach((ch, offset) => {
+    if (start + offset < blankCount.value) fillLetters.value[start + offset] = ch
+  })
+  focusBlank(Math.min(start + text.length, blankCount.value - 1))
+}
+watch(() => current.value?.key, () => {
+  fillLetters.value = []
+})
 const result = ref<AnswerResult | null>(null)
 const submitting = ref(false)
 const answeredCount = ref(0)
@@ -162,6 +243,7 @@ function next() {
   index.value += 1
   inputAnswer.value = ''
   selected.value = ''
+  fillLetters.value = []
   result.value = null
   questionStart.value = Date.now()
   if (import.meta.client) window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -328,7 +410,7 @@ onMounted(start)
             <p class="mt-2 text-[10px] text-muted">可重复播放，不记录播放次数</p>
           </div>
 
-          <div v-if="current.stem" class="mt-5 rounded-2xl border border-line bg-white px-5 py-6 text-center">
+          <div v-if="current.stem && !(current.type === 'letter_fill' && letterSlots)" class="mt-5 rounded-2xl border border-line bg-white px-5 py-6 text-center">
             <p
               class="font-display text-xl leading-relaxed tracking-wide text-ink sm:text-2xl"
               :class="current.type === 'letter_fill' ? 'font-mono !text-2xl !tracking-[0.28em]' : ''"
@@ -358,6 +440,48 @@ onMounted(start)
               <Check v-if="result && normalize(option) === normalize(result.correctAnswer)" :size="15" />
               <X v-else-if="result && normalize(option) === normalize(selected) && !result.isCorrect" :size="15" />
             </button>
+          </div>
+
+          <div v-else-if="letterSlots" class="mt-6">
+            <p class="label text-center">在空里填字母</p>
+            <div ref="fillBox" class="flex flex-wrap items-start justify-center gap-1.5 sm:gap-2">
+              <template v-for="(slot, slotIndex) in letterSlots" :key="slotIndex">
+                <span
+                  v-if="!slot.blank"
+                  class="grid size-11 place-items-center font-mono text-2xl font-medium text-ink sm:size-12"
+                >{{ slot.char }}</span>
+                <input
+                  v-else
+                  :value="fillLetters[slot.blankIndex] || ''"
+                  :data-blank-index="slot.blankIndex"
+                  :disabled="Boolean(result) || submitting"
+                  :autofocus="slot.blankIndex === 0"
+                  class="size-11 rounded-xl border text-center font-mono text-2xl outline-none transition sm:size-12"
+                  :class="result
+                    ? (result.isCorrect ? 'border-forest/40 bg-forest-soft text-forest-deep' : 'border-danger/30 bg-danger-soft text-danger')
+                    : 'border-line-strong bg-white focus:border-forest/50 focus:ring-2 focus:ring-forest/20'"
+                  maxlength="1"
+                  autocapitalize="none"
+                  autocomplete="off"
+                  autocorrect="off"
+                  spellcheck="false"
+                  @input="onFillInput(slot.blankIndex, $event)"
+                  @keydown="onFillKeydown(slot.blankIndex, $event)"
+                  @paste="onFillPaste"
+                >
+              </template>
+            </div>
+            <div v-if="!result" class="mt-4 flex justify-center">
+              <button
+                class="btn-primary !px-6"
+                :disabled="submitting || !fillComplete"
+                @click="submitAnswer(assembledFill())"
+              >
+                <Loader2 v-if="submitting" :size="16" class="animate-spin" />
+                <template v-else>提交</template>
+              </button>
+            </div>
+            <p v-if="!result && !fillComplete" class="mt-2 text-center text-[11px] text-muted">把每个空都填上才能提交</p>
           </div>
 
           <form v-else class="mt-6" @submit.prevent="submitAnswer(inputAnswer)">

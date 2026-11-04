@@ -114,6 +114,13 @@ npm run deploy:web
 
 注意：Workers 的 WebCrypto 不支持超过 100000 次的 PBKDF2 迭代，密码哈希统一用 100000 次（本地 Node 能跑 120000 次，线上会 500，这条是实测踩过的坑）。
 
+## 单词库数据
+
+- 中小学词汇（2022 课标三级词汇表口径，约 1600 词）存在 `apps/api/data/words-batch-*.sql`（10 批，按首字母分），每行 `INSERT OR IGNORE`，id 为 `w-<拼写小写>`，重跑可去重。
+- 导入（在 `apps/api` 目录下逐批跑）：`wrangler d1 execute english-study --remote --file=./data/words-batch-01-ab.sql`，其余批次同理。
+- 注意：`seed.sql` 重跑会先清空 `word` 表，之后必须重新导入这批文件；新词 `tts_status` 默认 `pending`，听音题需管理员在发音审核页通过后才出题。
+- 新词只进单词库，未绑定到课本单元；要进单元练习，需在管理端把词绑到单元。
+
 ## 常用命令
 
 ```bash

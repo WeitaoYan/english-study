@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, BookOpen, Check, GraduationCap, Loader2, RefreshCw, ShieldCheck, Users } from 'lucide-vue-next'
+import { ArrowRight, BookOpen, Check, Loader2, RefreshCw, ShieldCheck, Users } from 'lucide-vue-next'
 
 definePageMeta({ layout: false })
 
@@ -13,15 +13,8 @@ const error = ref('')
 const submitting = ref(false)
 const demoLoading = ref('')
 
+// 学生没有独立登录入口，不出现在演示账号里：家长登录后在孩子卡片点「进入孩子视角」。
 const demos = [
-  {
-    role: '学生',
-    name: '林小满',
-    email: 'student@example.com',
-    password: 'demo1234',
-    icon: GraduationCap,
-    tone: 'bg-forest-soft text-forest',
-  },
   {
     role: '家长',
     name: '林妈妈',
@@ -212,7 +205,11 @@ async function demoLogin(demo: (typeof demos)[number]) {
           </button>
         </div>
 
-        <p class="mt-8 text-center text-xs text-muted">
+        <p class="mt-6 text-center text-[11px] leading-relaxed text-muted">
+          学生没有独立登录入口：家长登录后，在孩子卡片点「进入孩子视角」即可进入孩子端。
+        </p>
+
+        <p class="mt-4 text-center text-xs text-muted">
           家长还没有账号？
           <NuxtLink to="/register" class="font-medium text-forest underline underline-offset-2">用邮箱注册</NuxtLink>
         </p>

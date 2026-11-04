@@ -26,6 +26,12 @@
       "bucket_name": "english-study-images"
     }
   ],
+  "routes": [
+    {
+      "pattern": "api.english.ikber.cc",
+      "custom_domain": true
+    }
+  ],
   "triggers": {
     "crons": ["0 16 * * *"]
   },

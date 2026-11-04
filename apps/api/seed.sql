@@ -1,8 +1,9 @@
 -- Demo data for local development & preview.
 -- Demo accounts (email login only):
---   学生 student@example.com / demo1234
---   家长 parent@example.com / demo1234
+--   家长 parent@example.com / demo1234（名下虚拟子账号：林小满）
+--   家长 parent2@example.com / demo1234（名下虚拟子账号：周予安）
 --   管理员 admin@example.com / admin1234
+-- 学生没有邮箱、不能独立登录，只能由家长切换进入。
 
 DELETE FROM parent_word_focus;
 DELETE FROM incentive_event;
@@ -24,8 +25,10 @@ DELETE FROM user;
 INSERT INTO user (id, role, nickname, email, password_hash, enabled) VALUES
   ('u-admin', 'admin', '系统管理员', 'admin@example.com', 'pbkdf2$100000$admin-demo-salt$e688d0d2f75df9fc0d80d2f29a178fe59f45d7c822939cf9e3ebe4f32de5263a', 1),
   ('u-parent', 'parent', '林妈妈', 'parent@example.com', 'pbkdf2$100000$parent-demo-salt$03b10c918411e0be9bf74dfe09a82a1278a73cf725b9f874a80742dc4c6d3b90', 1),
-  ('u-student', 'student', '林小满', 'student@example.com', 'pbkdf2$100000$student-demo-salt$7177139d2629d9452a8f9cd23af3b149d615b846d01c85ddf6a946c3293da8be', 1),
-  ('u-student-2', 'student', '周予安', 'student2@example.com', 'pbkdf2$100000$student-demo-salt$7177139d2629d9452a8f9cd23af3b149d615b846d01c85ddf6a946c3293da8be', 1),
+  -- 演示学生是家长账号内的虚拟子账号，没有邮箱、不能独立登录；
+  -- 密码哈希只是占位，登录入口按角色拦 student，且邮箱为空也查不到账号。
+  ('u-student', 'student', '林小满', NULL, 'pbkdf2$100000$student-demo-salt$7177139d2629d9452a8f9cd23af3b149d615b846d01c85ddf6a946c3293da8be', 1),
+  ('u-student-2', 'student', '周予安', NULL, 'pbkdf2$100000$student-demo-salt$7177139d2629d9452a8f9cd23af3b149d615b846d01c85ddf6a946c3293da8be', 1),
   ('u-parent-2', 'parent', '周爸爸', 'parent2@example.com', 'pbkdf2$100000$parent-demo-salt$03b10c918411e0be9bf74dfe09a82a1278a73cf725b9f874a80742dc4c6d3b90', 1);
 
 INSERT INTO family (id, parent_user_id) VALUES ('f-1', 'u-parent');

@@ -134,7 +134,7 @@ async function load() {
 
 function openCreateUser() {
   editingUserId.value = ''
-  userForm.role = 'student'
+  userForm.role = 'parent'
   userForm.nickname = ''
   userForm.email = ''
   userForm.password = ''
@@ -160,7 +160,8 @@ async function saveUser() {
     userError.value = '请填写昵称'
     return
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userForm.email.trim())) {
+  const editingStudent = Boolean(editingUserId.value) && userForm.role === 'student'
+  if (!editingStudent && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userForm.email.trim())) {
     userError.value = '请输入正确的邮箱'
     return
   }
@@ -177,9 +178,10 @@ async function saveUser() {
     if (editingUserId.value) {
       const payload: Record<string, unknown> = {
         nickname: userForm.nickname.trim(),
-        email: userForm.email.trim().toLowerCase(),
         enabled: userForm.enabled,
       }
+      // 虚拟学生没有邮箱字段，不随编辑补上邮箱。
+      if (!editingStudent) payload.email = userForm.email.trim().toLowerCase()
       if (userForm.password) payload.password = userForm.password
       await api.patch(`/admin/users/${editingUserId.value}`, payload)
       toast.success('账号已更新')
@@ -473,17 +475,19 @@ onMounted(load)
       <div class="space-y-4">
         <div>
           <label class="label" for="account-role">角色</label>
-          <select id="account-role" v-model="userForm.role" class="input" :disabled="Boolean(editingUserId)">
-            <option value="student">学生</option>
+          <select v-if="!(editingUserId && userForm.role === 'student')" id="account-role" v-model="userForm.role" class="input" :disabled="Boolean(editingUserId)">
             <option value="parent">家长</option>
             <option value="admin">管理员</option>
           </select>
+          <p v-else class="rounded-xl border border-line bg-paper/70 px-3.5 py-2.5 text-sm text-ink">
+            学生 · 虚拟子账号（由家长创建，没有独立登录入口）
+          </p>
         </div>
         <div>
           <label class="label" for="account-name">昵称</label>
           <input id="account-name" v-model="userForm.nickname" class="input" maxlength="50" placeholder="林小满">
         </div>
-        <div>
+        <div v-if="!(editingUserId && userForm.role === 'student')">
           <label class="label" for="account-email">邮箱</label>
           <input id="account-email" v-model="userForm.email" class="input" type="email" placeholder="parent@example.com">
         </div>

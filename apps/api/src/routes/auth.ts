@@ -51,6 +51,10 @@ auth.post('/login', async (c) => {
   if (!valid) {
     return c.json({ error: '账号或密码不正确' }, 401)
   }
+  // 学生是家长账号内的虚拟子账号，没有独立登录入口，只能由家长切换进入。
+  if (user.role === 'student') {
+    return c.json({ error: '学生账号没有独立登录入口，请由家长账号切换进入' }, 403)
+  }
   const token = await issueToken(c.env, user)
   setAuthCookie(c, c.env, token)
   return c.json({ user: publicUser(user), token })

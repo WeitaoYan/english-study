@@ -87,16 +87,16 @@ npm run dev:web
 | --- | --- | --- |
 | 管理员 | `admin@example.com` | `admin1234` |
 | 家长 | `parent@example.com` | `demo1234` |
-| 学生 | `student@example.com` | `demo1234` |
-| 学生 | `student2@example.com` | `demo1234` |
 | 家长 | `parent2@example.com` | `demo1234` |
+
+学生没有独立登录账号：演示家长 `parent@example.com` 名下已有虚拟子账号林小满、演示家长 `parent2@example.com` 名下已有周予安，家长登录后点孩子卡片的「进入孩子视角」即可进入孩子端。
 
 正式使用前请创建新的管理员账号并修改演示密码。家长也可以不用演示账号：直接在登录页点“用邮箱注册”创建家长账号。
 
 ## 线上部署（Cloudflare，Yanweitao@hotmail.com 账号）
 
 - 前端：<https://english.ikber.cc>（Worker `weitaoyan-english-study-apps-web`，自定义域名）
-- API：<https://english-study-api.yanweitao.workers.dev/api>（Worker `english-study-api`）
+- API：<https://api.english.ikber.cc/api>（Worker `english-study-api`，自定义域名）
 - D1：`english-study`（`c125b631-7ef8-4701-a3f4-c8d62f2fa8d1`），R2：`english-study-images`，线上已跑完迁移 0001–0004 并导入演示数据
 - `JWT_SECRET` 只存在 Cloudflare Secret 里，不进仓库；不要把本地 `.dev.vars` 的值当线上密钥用
 
@@ -108,7 +108,7 @@ npm run deploy:api
 npm run db:migrate:remote -w @english-study/api
 npm run db:seed:remote -w @english-study/api
 # Web：构建后，在 .output/server/wrangler.json 里补上 routes（english.ikber.cc 自定义域名）
-# 与 vars（NUXT_PUBLIC_API_BASE=https://english-study-api.yanweitao.workers.dev/api），再部署
+# 与 vars（NUXT_PUBLIC_API_BASE=https://api.english.ikber.cc/api），再部署
 npm run deploy:web
 ```
 

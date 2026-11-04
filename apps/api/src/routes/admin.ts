@@ -927,10 +927,10 @@ admin.get('/users', async (c) => {
   })
 })
 
-// 管理员创建账号只走邮箱（手机号逻辑已删除；家长创建的孩子账号不走这条，
-// 由家长在自己账号内创建，那条才允许没有邮箱）。
+// 管理员创建账号只走邮箱且只建家长/管理员（手机号逻辑已删除）。
+// 学生账号不走这条：学生是家长账号内的虚拟子账号，只能由家长在自己账号内创建。
 const userSchema = z.object({
-  role: z.enum(['student', 'parent', 'admin']),
+  role: z.enum(['parent', 'admin']),
   nickname: z.string().trim().min(1, '请填写昵称').max(50),
   email: z.string().trim().toLowerCase().email('请输入正确的邮箱'),
   password: z.string().min(6, '密码至少 6 位').max(100),
@@ -954,6 +954,13 @@ admin.patch('/users/:id', async (c) => {
     password: z.string().min(6).max(100).optional(),
     enabled: z.boolean().optional(),
   }))
+  // 学生是虚拟子账号，不能通过改邮箱获得独立登录入口。
+  if (body.email !== undefined) {
+    const target = await c.env.DB.prepare('SELECT role FROM user WHERE id = ?').bind(c.req.param('id')).first<{ role: string }>()
+    if (target?.role === 'student') {
+      return c.json({ error: '学生是虚拟子账号，不能设置邮箱登录' }, 400)
+    }
+  }
   const updates: string[] = []
   const values: unknown[] = []
   if (body.nickname !== undefined) { updates.push('nickname = ?'); values.push(body.nickname) }

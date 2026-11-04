@@ -459,8 +459,9 @@ student.post('/practice/answer', async (c) => {
       explanation = manual.explanation || explanation
     }
   }
-  // 搭配题选项已挖空目标单词：孩子提交的是挖空后的选项（如“a ___ peel”），
-  // 判对挖空形式与完整短语两种；返回给前端的 correctAnswer 仍是完整短语，便于答错时学习。
+  // 搭配题判分兼容两种提交：完整短语（现行模板置换后的选项就是完整短语），
+  // 以及挖空形式（上一版挖空方案产生的会话仍在有效期内，照样判对）。
+  // 返回给前端的 correctAnswer 仍是完整短语，便于答错时学习。
   const isCorrect = normalizeAnswer(body.answer) === normalizeAnswer(correctAnswer)
     || (type === 'collocation_choice'
       && normalizeAnswer(body.answer) === normalizeAnswer(maskWordInPhrase(correctAnswer, planned.wordSpelling)))

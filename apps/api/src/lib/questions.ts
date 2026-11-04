@@ -31,7 +31,10 @@ function availableTypes(word: Word): QuestionType[] {
   if (word.spelling.replace(/[^a-zA-Z]/g, '').length >= 3) types.push('letter_fill')
   if (word.examples.length > 0) types.push('sentence_fill')
   if (word.imageUrl && word.imageStatus === 'approved') types.push('image_choice')
-  if (word.collocations.length > 0) types.push('collocation_choice')
+  // 搭配题要求短语里确实含有该词：模板置换需要从短语里挖出该词，
+  // 短语里没有该词的单词不出搭配题（否则干扰项无法生成）。
+  if (word.collocations.length > 0
+    && maskWordInPhrase(word.collocations[0]!.phrase, word.spelling) !== word.collocations[0]!.phrase) types.push('collocation_choice')
   // 听音题不依赖音频文件，改用浏览器 TTS：只有管理员试听审核通过的单词才可出题，
   // 与“看图题只有已审核图片才可出题”同款门禁。audioUrl 只是历史字段，前端并不播放它。
   if (word.ttsStatus === 'approved') types.push('audio_choice')
@@ -58,9 +61,16 @@ function optionPool(
       .map((word) => ({ value: word.spelling, pos: word.pos }))
   }
   if (type === 'collocation_choice') {
+    // 干扰项 = 其他词的搭配模板（把该词挖空）填上目标词：这样每个选项都含目标词一次、
+    // 且没有任何空位，孩子既不能靠“含不含目标词”排除，也不能靠“有没有空位”排除，
+    // 只能靠搭配本身判断。短语里没有该词的单词进不了模板池（挖不出模板）。
     return allWords
-      .filter((word) => word.id !== correct.id && word.enabled && word.collocations.length > 0)
-      .map((word) => ({ value: word.collocations[0]!.phrase, pos: word.pos }))
+      .filter((word) => word.id !== correct.id && word.enabled && word.collocations.length > 0
+        && maskWordInPhrase(word.collocations[0]!.phrase, word.spelling) !== word.collocations[0]!.phrase)
+      .map((word) => ({
+        value: fillCollocationTemplate(maskWordInPhrase(word.collocations[0]!.phrase, word.spelling), correct.spelling),
+        pos: word.pos,
+      }))
   }
   return allWords
     .filter((word) => word.id !== correct.id && word.enabled)
@@ -99,13 +109,23 @@ function maskSpelling(spelling: string): string {
     .join(' ')
 }
 
-/** 搭配题：把短语里的目标单词挖空成 ___，避免孩子只凭“选项里有这个词”蒙对。
- *  只挖完整单词（含复数 s/es），不挖它作为别的词一部分的情况（如 cat 不挖 catch）。
- *  挖空后孩子必须靠剩下的词判断哪个搭配属于目标单词，例如 banana 一题：
- *  “a ___ peel”对“read a book”“walk the dog”，得知道 banana 配 peel 才选得出来。 */
+/** 搭配题模板：把短语里的目标单词挖空成 ___，得到该词的搭配模板
+ *  （如 walk the dog → walk the ___）。只挖完整单词（含复数 s/es），
+ *  不挖它作为别的词一部分的情况（如 cat 不挖 catch）。 */
 export function maskWordInPhrase(phrase: string, spelling: string): string {
   const escaped = spelling.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   return phrase.replace(new RegExp(`\\b${escaped}(s|es)?\\b`, 'gi'), '___')
+}
+
+/** 把搭配模板的空位填上目标词，并顺手修正空位前的冠词
+ *  （an ___ + 辅音开头 → a ___；a ___ + 元音开头 → an ___，如 an ___ tree + dog → a dog tree），
+ *  避免干扰项因冠词错误一眼被排除。 */
+export function fillCollocationTemplate(template: string, spelling: string): string {
+  const withArticle = template.replace(/\b(a|an) ___/gi, (match) => {
+    const article = /^[aeiouAEIOU]/.test(spelling) ? 'an' : 'a'
+    return /^[A-Z]/.test(match) ? article[0]!.toUpperCase() + article.slice(1) + ' ___' : `${article} ___`
+  })
+  return withArticle.replace(/___/g, spelling)
 }
 
 function sentenceWithBlank(word: Word): string | null {
@@ -189,18 +209,11 @@ export function buildQuestions(
     } else if (type === 'collocation_choice') {
       const correctPhrase = word.collocations[0]!.phrase
       prompt = `为 “${word.spelling}” 选择正确的词组搭配`
-      // 全部选项都挖空目标单词：正确项不再是唯一含目标词的选项；
-      // 挖空后撞车的选项去重，剩不到 2 项时走后面的 letter_fill 回落。
-      const masked = new Map<string, string>()
-      for (const option of pickOptions(
+      options = pickOptions(
         correctPhrase,
         word.pos,
         optionPool(word, allWords, 'collocation_choice'),
-      )) {
-        const value = maskWordInPhrase(option, word.spelling)
-        if (!masked.has(value.toLowerCase())) masked.set(value.toLowerCase(), value)
-      }
-      options = [...masked.values()]
+      )
       hint = word.chineseDef
     }
 
@@ -273,17 +286,6 @@ export function applyManualQuestion(
       (option) => option.trim().toLowerCase() === manual.correctAnswer.trim().toLowerCase(),
     )
     options = hasAnswer ? [...manual.options] : [...manual.options, manual.correctAnswer]
-    if (type === 'collocation_choice') {
-      // 与自动生成题一致：选项挖空目标单词；管理员已挖空的选项与刚补的原答案
-      // 挖空后会撞车，去重后剩不到 2 项则返回 null 回落到自动生成题。
-      const masked = new Map<string, string>()
-      for (const option of options) {
-        const value = maskWordInPhrase(option, word.spelling)
-        if (!masked.has(value.toLowerCase())) masked.set(value.toLowerCase(), value)
-      }
-      options = [...masked.values()]
-      if (options.length < 2) return null
-    }
   }
 
   return {

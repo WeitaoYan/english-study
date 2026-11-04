@@ -74,8 +74,17 @@ export async function enrichWordWithAI(env: AppEnv['Bindings'], spelling: string
     max_tokens: 900,
     temperature: 0.3,
   })
-  const response = (result as { response?: unknown }).response
-  if (typeof response !== 'string') throw new Error('AI 没有返回内容，请重试')
+  // Workers AI 返回形状有两种：旧式 { response: string }，以及 OpenAI 兼容的
+  // { choices: [{ message: { content: string } }] }（线上实测走后者），两种都接受。
+  const raw = result as { response?: unknown; choices?: Array<{ message?: { content?: unknown } }> }
+  const response = typeof raw?.response === 'string'
+    ? raw.response
+    : typeof raw?.choices?.[0]?.message?.content === 'string'
+      ? raw.choices[0]!.message!.content as string
+      : typeof result === 'string'
+        ? result
+        : null
+  if (response === null) throw new Error('AI 没有返回内容，请重试')
 
   const data = extractJson(response) as Record<string, unknown>
   const chineseDef = asString(data.chineseDef, 300)

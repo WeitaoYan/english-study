@@ -71,6 +71,49 @@ const coverOptions = [
   { value: 'sand', label: '沙金', class: 'bg-[#b59a66]' },
 ]
 
+// 现行中小学英语教材版本（按 2024 年义务教育国家课程教学用书目录口径整理）：
+// 小学 20 余种、初中 10 种左右；“（2024）”为 2022 课标修订后的新版。
+// “人教版”“外研版”两个笼统项保留：种子课本与口头习惯仍用这两个名字。
+const TEXTBOOK_VERSION_GROUPS = [
+  { label: '常用版本', options: ['人教版', '外研版'] },
+  {
+    label: '小学',
+    options: [
+      '人教PEP版', '人教新起点版', '人教精通版',
+      '外研版（一起）', '外研版（三起）',
+      '译林版（三起）', '译林版（一起）',
+      '北师大版（一起）', '北师大版（三起）',
+      '冀教版（一起）', '冀教版（三起）',
+      '沪教牛津版', '沪教版', '湘少版', '教科版', '陕旅版', '川教版',
+      '辽师大版', '闽教版', '鲁科版', '科普版', '接力版', '北京版',
+      '重大版', '粤教粤人版', '湘鲁版', '新世纪版', '清华版',
+    ],
+  },
+  {
+    label: '初中',
+    options: ['仁爱版', '牛津深圳版', '牛津上海版', '鲁教版（五四制）', '人教版（五四学制）', '北京课改版'],
+  },
+  {
+    label: '2024 新版',
+    options: [
+      '人教PEP版（2024）', '外研版（三起点）（2024）', '译林版（三起）（2024）',
+      '人教精通版（2024）', '北师大版（三起）（2024）', '冀教版（三起）（2024）',
+      '湘少版（三起）（2024）', '人教版（2024）', '外研版（2024）', '译林版（2024）',
+      '沪教牛津版（2024）', '沪教版（五四学制）（2024）', '冀教版（2024）',
+      '鲁教版（五四学制）（2024）', '北师大版（2024）', '仁爱科普版（2024）',
+    ],
+  },
+]
+
+// 编辑旧课本时，若其版本不在选项里，单独补一项，避免下拉框显示空白。
+const versionGroups = computed(() => {
+  const all = TEXTBOOK_VERSION_GROUPS.flatMap((group) => group.options)
+  if (form.version && !all.includes(form.version)) {
+    return [...TEXTBOOK_VERSION_GROUPS, { label: '历史版本', options: [form.version] }]
+  }
+  return TEXTBOOK_VERSION_GROUPS
+})
+
 const filtered = computed(() => {
   const keyword = search.value.trim().toLowerCase()
   return textbooks.value.filter((textbook) => {
@@ -307,7 +350,11 @@ onMounted(load)
         </div>
         <div>
           <label class="label" for="tb-version">教材版本</label>
-          <input id="tb-version" v-model="form.version" class="input" maxlength="50" placeholder="人教版 / 外研版">
+          <select id="tb-version" v-model="form.version" class="input">
+            <optgroup v-for="group in versionGroups" :key="group.label" :label="group.label">
+              <option v-for="version in group.options" :key="version" :value="version">{{ version }}</option>
+            </optgroup>
+          </select>
         </div>
         <div>
           <label class="label" for="tb-grade">年级</label>

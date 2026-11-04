@@ -75,6 +75,7 @@ const form = reactive({
   englishDef: '',
   difficulty: 1,
   enabled: true,
+  autoFill: true,
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
@@ -162,6 +163,7 @@ function resetForm() {
   form.englishDef = ''
   form.difficulty = 1
   form.enabled = true
+  form.autoFill = true
   examplesText.value = ''
   collocationsText.value = ''
   formError.value = ''
@@ -182,6 +184,7 @@ function openEdit(word: AdminWord) {
   form.englishDef = word.englishDef || ''
   form.difficulty = word.difficulty
   form.enabled = word.enabled
+  form.autoFill = false
   examplesText.value = serializeExamples(word.examples)
   collocationsText.value = serializeCollocations(word.collocations)
   formError.value = ''
@@ -190,11 +193,12 @@ function openEdit(word: AdminWord) {
 
 async function save() {
   formError.value = ''
+  const autoFillCreate = form.autoFill && !editingId.value
   if (!form.spelling.trim()) {
     formError.value = '请填写单词拼写'
     return
   }
-  if (!form.chineseDef.trim()) {
+  if (!autoFillCreate && !form.chineseDef.trim()) {
     formError.value = '请填写中文释义'
     return
   }
@@ -206,7 +210,7 @@ async function save() {
       pos: form.pos.trim() || null,
       chineseDef: form.chineseDef.trim(),
       englishDef: form.englishDef.trim() || null,
-      difficulty: Number(form.difficulty) || 1,
+      difficulty: autoFillCreate ? undefined : Number(form.difficulty) || 1,
       enabled: form.enabled,
       examples: parseExamples(examplesText.value),
       collocations: parseCollocations(collocationsText.value),
@@ -215,8 +219,8 @@ async function save() {
       await api.patch(`/admin/words/${editingId.value}`, payload)
       toast.success('单词已更新')
     } else {
-      await api.post('/admin/words', payload)
-      toast.success('单词已创建')
+      const created = await api.post<{ aiFilled?: boolean }>('/admin/words', { ...payload, autoFill: form.autoFill })
+      toast.success(created.aiFilled ? '单词已创建，内容由 AI 补充' : '单词已创建')
     }
     modalOpen.value = false
     await load()
@@ -457,6 +461,16 @@ onMounted(async () => {
       @close="modalOpen = false"
     >
       <div class="grid gap-4 sm:grid-cols-2">
+        <label v-if="!editingId" class="flex items-center gap-2.5 sm:col-span-2">
+          <input v-model="form.autoFill" type="checkbox" class="size-4 accent-[#2f5f4c]">
+          <span class="text-xs text-ink-soft">只填拼写，其余内容由 AI 自动补充</span>
+        </label>
+        <p
+          v-if="form.autoFill && !editingId"
+          class="rounded-xl bg-paper px-3.5 py-2.5 text-[10px] leading-relaxed text-muted sm:col-span-2"
+        >
+          音标、词性、释义、难度、例句与搭配将由 Cloudflare AI 补充；手动填写的内容优先生效。
+        </p>
         <div>
           <label class="label" for="word-spelling">拼写</label>
           <input id="word-spelling" v-model="form.spelling" class="input" maxlength="80" placeholder="apple">
@@ -469,7 +483,7 @@ onMounted(async () => {
           <label class="label" for="word-pos">词性</label>
           <input id="word-pos" v-model="form.pos" class="input" maxlength="30" placeholder="n. / v. / adj.">
         </div>
-        <div>
+        <div v-if="editingId || !form.autoFill">
           <label class="label" for="word-difficulty">难度</label>
           <select id="word-difficulty" v-model.number="form.difficulty" class="input">
             <option :value="1">1 级</option>

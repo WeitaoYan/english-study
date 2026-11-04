@@ -26,6 +26,9 @@
       "bucket_name": "english-study-images"
     }
   ],
+  "ai": {
+    "binding": "AI"
+  },
   "routes": [
     {
       "pattern": "api.english.ikber.cc",

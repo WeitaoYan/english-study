@@ -3,10 +3,12 @@ import type { Role } from '@english-study/shared'
 export interface Env {
   DB: D1Database
   IMAGES?: R2Bucket
+  AI?: Ai
   JWT_SECRET: string
   APP_ENV?: string
   COOKIE_DOMAIN?: string
   CORS_ORIGINS?: string
+  AI_MODEL?: string
 }
 
 export interface AuthUser {

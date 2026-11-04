@@ -7,6 +7,7 @@ import { parseBody, queryInt } from '../lib/http'
 import { mapWord } from '../lib/mappers'
 import { parseCsv, parseListCell } from '../lib/csv'
 import { safeJson, uuid, nowIso } from '../lib/utils'
+import { enrichWordWithAI } from '../lib/ai'
 import type { WordRow } from '../types'
 
 const admin = new Hono<AppEnv>()
@@ -429,6 +430,13 @@ const wordSchema = z.object({
   collocations: z.array(collocationSchema).max(10).default([]),
 })
 
+/** 新增单词：允许只填拼写，其余留空字段由 Workers AI 补充。 */
+const wordCreateSchema = wordSchema.extend({
+  chineseDef: z.string().trim().max(300).optional(),
+  difficulty: z.number().int().min(1).max(5).optional(),
+  autoFill: z.boolean().default(false),
+})
+
 admin.get('/words/:id', async (c) => {
   const row = await c.env.DB.prepare(
     `SELECT ${ADMIN_WORD_COLUMNS} FROM word w WHERE w.id = ?`,
@@ -438,7 +446,26 @@ admin.get('/words/:id', async (c) => {
 })
 
 admin.post('/words', async (c) => {
-  const body = await parseBody(c, wordSchema)
+  const body = await parseBody(c, wordCreateSchema)
+  let { phonetic, pos, chineseDef, englishDef, difficulty, examples, collocations } = body
+
+  if (body.autoFill) {
+    if (!c.env.AI) return c.json({ error: 'AI 自动补充未启用，请先在 wrangler.jsonc 配置 AI 绑定' }, 503)
+    try {
+      const enrichment = await enrichWordWithAI(c.env, body.spelling)
+      phonetic = phonetic || enrichment.phonetic
+      pos = pos || enrichment.pos
+      chineseDef = chineseDef || enrichment.chineseDef
+      englishDef = englishDef || enrichment.englishDef
+      difficulty = difficulty ?? enrichment.difficulty
+      if (!examples.length) examples = enrichment.examples
+      if (!collocations.length) collocations = enrichment.collocations
+    } catch (error) {
+      return c.json({ error: error instanceof Error ? error.message : 'AI 补充失败，请稍后重试' }, 502)
+    }
+  }
+  if (!chineseDef) return c.json({ error: '请填写中文释义，或开启 AI 自动补充' }, 400)
+
   const id = uuid('w')
   await c.env.DB.prepare(
     `INSERT INTO word (id, spelling, phonetic, pos, chinese_def, english_def, difficulty,
@@ -447,16 +474,16 @@ admin.post('/words', async (c) => {
   ).bind(
     id,
     body.spelling,
-    body.phonetic || null,
-    body.pos || null,
-    body.chineseDef,
-    body.englishDef || null,
-    body.difficulty,
+    phonetic || null,
+    pos || null,
+    chineseDef,
+    englishDef || null,
+    difficulty ?? 1,
     body.enabled ? 1 : 0,
-    JSON.stringify(body.examples),
-    JSON.stringify(body.collocations),
+    JSON.stringify(examples),
+    JSON.stringify(collocations),
   ).run()
-  return c.json({ id }, 201)
+  return c.json({ id, aiFilled: body.autoFill }, 201)
 })
 
 admin.patch('/words/:id', async (c) => {

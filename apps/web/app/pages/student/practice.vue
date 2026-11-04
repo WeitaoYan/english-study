@@ -33,6 +33,10 @@ const emptyMessage = ref('')
 const index = ref(0)
 const inputAnswer = ref('')
 const selected = ref('')
+// 后台确认中的题目 key（用于显示“正在同步”）；pendingConfirms 里的请求结算前必须等完，
+// 否则 finish 从库里算成绩会漏掉还在路上的那一题。
+const confirmingKey = ref<string | null>(null)
+const pendingConfirms = new Set<Promise<void>>()
 const fillLetters = ref<string[]>([])
 const fillBox = ref<HTMLElement | null>(null)
 
@@ -201,6 +205,17 @@ async function start() {
   }
 }
 
+// 本地先判：只有答案就是拼写本身的题型才能判，且人工题除外
+// （人工题的正确答案只在服务端，搭配题的正确短语也不在下发字段里）。
+// 这 5 种题的答案本来就随题目下发（wordSpelling），本地判不新增泄题面。
+function localVerdict(value: string): { isCorrect: boolean; correctAnswer: string } | null {
+  const question = current.value
+  if (!question || question.questionId) return null
+  if (!['definition_choice', 'letter_fill', 'sentence_fill', 'image_choice', 'audio_choice'].includes(question.type)) return null
+  if (!question.wordSpelling) return null
+  return { isCorrect: normalize(value) === normalize(question.wordSpelling), correctAnswer: question.wordSpelling }
+}
+
 async function submitAnswer(value: string) {
   if (!current.value || !session.value || result.value || submitting.value) return
   const trimmed = value.trim()
@@ -208,15 +223,70 @@ async function submitAnswer(value: string) {
     toast.error('请先填写或选择答案')
     return
   }
+  const question = current.value
+  const sessionId = session.value.sessionId
+  const questionKey = question.key
+  const duration = Math.min(3600000, Date.now() - questionStart.value)
+  const verdict = localVerdict(trimmed)
+  if (verdict) {
+    // 即时反馈：先判先显示，不等服务端；服务端在后台确认，补齐解析与记忆强度。
+    // 服务端仍是最终裁决：若它判得不一样（正常情况下不会发生），修正正确数。
+    result.value = { isCorrect: verdict.isCorrect, correctAnswer: verdict.correctAnswer, explanation: '', mastery: null }
+    answeredCount.value += 1
+    if (verdict.isCorrect) correctCount.value += 1
+    confirmingKey.value = questionKey
+    const confirm = (async () => {
+      let lastError: unknown = null
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const response = await api.post<AnswerResult>('/student/practice/answer', {
+            sessionId,
+            wordId: question.wordId,
+            type: question.type,
+            answer: trimmed,
+            prompt: question.stem || question.prompt,
+            durationMs: duration,
+          })
+          if (current.value?.key === questionKey) {
+            if (response.isCorrect !== verdict.isCorrect) {
+              correctCount.value += response.isCorrect ? 1 : -1
+            }
+            result.value = response
+          } else if (response.isCorrect !== verdict.isCorrect) {
+            correctCount.value += response.isCorrect ? 1 : -1
+          }
+          return
+        } catch (err) {
+          lastError = err
+          if (attempt === 0) await new Promise((resolve) => setTimeout(resolve, 800))
+        }
+      }
+      // 两次都失败：本地 verdict 已显示，但这题成绩未落库，明确告诉用户，别静默丢分。
+      toast.error(errorMessage(lastError, '成绩同步失败，这题可能没记上分，请检查网络'))
+    })()
+    pendingConfirms.add(confirm)
+    void confirm.then(
+      () => {
+        pendingConfirms.delete(confirm)
+        if (confirmingKey.value === questionKey) confirmingKey.value = null
+      },
+      () => {
+        pendingConfirms.delete(confirm)
+        if (confirmingKey.value === questionKey) confirmingKey.value = null
+      },
+    )
+    return
+  }
+  // 搭配题 / 人工题：前端判不了，等服务端返回（原逻辑）。
   submitting.value = true
   try {
     const response = await api.post<AnswerResult>('/student/practice/answer', {
-      sessionId: session.value.sessionId,
-      wordId: current.value.wordId,
-      type: current.value.type,
+      sessionId,
+      wordId: question.wordId,
+      type: question.type,
       answer: trimmed,
-      prompt: current.value.stem || current.value.prompt,
-      durationMs: Math.min(3600000, Date.now() - questionStart.value),
+      prompt: question.stem || question.prompt,
+      durationMs: duration,
     })
     result.value = response
     answeredCount.value += 1
@@ -253,6 +323,8 @@ async function finish() {
   if (!session.value || finishing.value) return
   finishing.value = true
   try {
+    // 结算按库里记录算：先等完还在路上的后台确认，否则最后一题可能没记上就结算了。
+    if (pendingConfirms.size) await Promise.allSettled([...pendingConfirms])
     const response = await api.post<PracticeSummary>(
       `/student/practice/sessions/${session.value.sessionId}/finish`,
     )
@@ -531,8 +603,9 @@ onMounted(start)
                 <p v-if="!result.isCorrect" class="mt-1 text-xs text-ink-soft">
                   正确答案：<span class="font-mono font-semibold">{{ result.correctAnswer }}</span>
                 </p>
-                <p class="mt-2 text-xs leading-relaxed text-ink-soft">{{ result.explanation }}</p>
-                <div class="mt-3 flex items-center gap-2 text-[10px] text-muted">
+                <p v-if="result.explanation" class="mt-2 text-xs leading-relaxed text-ink-soft">{{ result.explanation }}</p>
+                <p v-if="confirmingKey === current.key" class="mt-2 text-[10px] text-muted">成绩正在同步…</p>
+                <div v-if="result.mastery" class="mt-3 flex items-center gap-2 text-[10px] text-muted">
                   <span>记忆强度</span>
                   <MasteryMeter :strength="result.mastery.strength" compact />
                   <span>{{ result.mastery.strength }} / 5</span>

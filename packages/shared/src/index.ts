@@ -158,7 +158,8 @@ export interface AnswerResult {
   isCorrect: boolean
   correctAnswer: string
   explanation: string
-  mastery: Mastery
+  // 本地先判时 mastery 为 null（解析与记忆强度等服务端后台确认后补齐）。
+  mastery: Mastery | null
 }
 
 export interface PracticeSummary {

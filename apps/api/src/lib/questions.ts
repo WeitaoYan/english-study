@@ -6,13 +6,15 @@ import { safeJson } from './utils'
 
 // 听音放在第 5 位（与看图题相邻）：若放在原来的第 7 位，6 词的单元一局永远轮不到听音题，
 // 发音审核通过了也出不来题，审核就白做了。轮换仍保证一局内题型多样。
+// 搭配题已暂停（2026-11-04）：模板置换的干扰项本身就是错误句子，孩子看多了反而加深错误印象，
+// 故先取消该题型：轮换与可用题型里都不再出它，人工题入口也一并关闭；
+// 底层生成函数（buildQuestions 分支、模板置换）保留，日后若恢复只需加回轮换与可用题型。
 const TYPE_ROTATION: QuestionType[] = [
   'definition_choice',
   'letter_fill',
   'sentence_fill',
   'image_choice',
   'audio_choice',
-  'collocation_choice',
   'definition_choice',
 ]
 
@@ -31,10 +33,6 @@ function availableTypes(word: Word): QuestionType[] {
   if (word.spelling.replace(/[^a-zA-Z]/g, '').length >= 3) types.push('letter_fill')
   if (word.examples.length > 0) types.push('sentence_fill')
   if (word.imageUrl && word.imageStatus === 'approved') types.push('image_choice')
-  // 搭配题要求短语里确实含有该词：模板置换需要从短语里挖出该词，
-  // 短语里没有该词的单词不出搭配题（否则干扰项无法生成）。
-  if (word.collocations.length > 0
-    && maskWordInPhrase(word.collocations[0]!.phrase, word.spelling) !== word.collocations[0]!.phrase) types.push('collocation_choice')
   // 听音题不依赖音频文件，改用浏览器 TTS：只有管理员试听审核通过的单词才可出题，
   // 与“看图题只有已审核图片才可出题”同款门禁。audioUrl 只是历史字段，前端并不播放它。
   if (word.ttsStatus === 'approved') types.push('audio_choice')
@@ -276,6 +274,8 @@ export function applyManualQuestion(
   word: Word,
   manual: ManualQuestion,
 ): QuestionPayload | null {
+  // 搭配题已暂停：人工题也不再出该题型，返回 null 回落到自动生成题。
+  if (manual.type === 'collocation_choice') return null
   const type = manual.type
   if (type === 'image_choice' && !(word.imageUrl && word.imageStatus === 'approved')) return null
   if (type === 'audio_choice' && word.ttsStatus !== 'approved') return null

@@ -789,7 +789,8 @@ admin.patch('/pronunciation/:wordId', async (c) => {
 const questionSchema = z.object({
   wordId: z.string().min(1),
   unitId: z.string().nullable().optional(),
-  type: z.enum(['definition_choice', 'letter_fill', 'sentence_fill', 'image_choice', 'audio_choice', 'collocation_choice']),
+  // 搭配题已暂停：人工题也不再接受该题型。
+  type: z.enum(['definition_choice', 'letter_fill', 'sentence_fill', 'image_choice', 'audio_choice']),
   stem: z.string().trim().min(1, '请填写题干').max(1000),
   options: z.array(z.string().max(200)).max(10).default([]),
   correctAnswer: z.string().trim().min(1, '请填写正确答案').max(200),

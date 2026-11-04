@@ -11,6 +11,7 @@ import {
   Target,
   TrendingUp,
   Users,
+  Volume2,
 } from 'lucide-vue-next'
 import type { AdminStats } from '@english-study/shared'
 import {
@@ -141,6 +142,26 @@ onMounted(load)
               进入图片管理
               <ArrowRight :size="13" />
             </NuxtLink>
+            <div class="mt-4 border-t border-line/70 pt-4">
+              <div class="flex items-center justify-between">
+                <p class="text-[11px] text-muted">发音审核（TTS 听音题）</p>
+                <Volume2 :size="14" class="text-muted" />
+              </div>
+              <div class="mt-2 grid grid-cols-2 gap-2">
+                <div class="rounded-xl bg-forest-soft/70 px-3 py-2.5">
+                  <p class="text-[9px] text-muted">已通过</p>
+                  <p class="mt-1 text-sm font-medium text-forest">{{ data.pronunciation.approved }}</p>
+                </div>
+                <div class="rounded-xl bg-clay-soft/70 px-3 py-2.5">
+                  <p class="text-[9px] text-muted">待审核</p>
+                  <p class="mt-1 text-sm font-medium text-clay">{{ data.pronunciation.pending }}</p>
+                </div>
+              </div>
+              <NuxtLink to="/admin/pronunciation" class="btn-secondary mt-3 w-full btn-sm">
+                进入发音审核
+                <ArrowRight :size="13" />
+              </NuxtLink>
+            </div>
           </section>
 
           <section class="card p-5">

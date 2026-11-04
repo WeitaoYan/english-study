@@ -71,7 +71,7 @@
   - **补全字母**：显示部分字母，补全完整拼写。
   - **句子填空**：从例句中挖空，填写正确单词。
   - **看图选词**：显示图片，选择对应单词（仅当单词有可用图片时出现）。
-  - **听音选词**：播放发音，选择对应单词（仅当单词有音频时出现）。
+  - **听音选词**：播放浏览器 TTS 发音，选择对应单词（仅当单词发音审核通过时出现；发音由管理员在管理端试听审核，平台不自动通过）。
   - **搭配选择**：选择正确的词组搭配。
 - 每题答完后立即反馈正确/错误。
 - 显示正确答案和解析（释义、例句、搭配）。
@@ -223,7 +223,7 @@
 |---|---|---|
 | Textbook | id, name, version, grade, semester, status | 课本表 |
 | Unit | id, textbook_id, unit_no, unit_name, sort_order | 单元表 |
-| Word | id, spelling, phonetic, pos, chinese_def, english_def, difficulty, data_source, has_image, image_id, enabled | 单词表 |
+| Word | id, spelling, phonetic, pos, chinese_def, english_def, difficulty, data_source, has_image, image_id, enabled, tts_status, tts_review_note, tts_reviewed_at | 单词表，tts_status：pending/approved/rejected，默认 pending |
 | UnitWord | id, unit_id, word_id, sort_order, enabled | 单元-单词关联表 |
 
 ### 6.3 图片与音频
@@ -262,7 +262,7 @@
 | 补全字母 | 单词拼写长度 ≥ 3 |
 | 句子填空 | 单词有可用例句 |
 | 看图选词 | `has_image = true` 且 `image_status = approved` |
-| 听音选词 | 单词有可用音频 |
+| 听音选词 | 发音审核通过（`tts_status = approved`，TTS 发音，不依赖音频文件） |
 | 搭配选择 | 单词有可用搭配数据 |
 
 ### 7.2 出题优先级

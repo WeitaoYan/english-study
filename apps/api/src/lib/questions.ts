@@ -4,14 +4,16 @@ import type { WordRow } from '../types'
 import { mapWord } from './mappers'
 import { safeJson } from './utils'
 
+// 听音放在第 5 位（与看图题相邻）：若放在原来的第 7 位，6 词的单元一局永远轮不到听音题，
+// 发音审核通过了也出不来题，审核就白做了。轮换仍保证一局内题型多样。
 const TYPE_ROTATION: QuestionType[] = [
   'definition_choice',
   'letter_fill',
   'sentence_fill',
   'image_choice',
+  'audio_choice',
   'collocation_choice',
   'definition_choice',
-  'audio_choice',
 ]
 
 function shuffle<T>(values: T[]): T[] {
@@ -30,7 +32,9 @@ function availableTypes(word: Word): QuestionType[] {
   if (word.examples.length > 0) types.push('sentence_fill')
   if (word.imageUrl && word.imageStatus === 'approved') types.push('image_choice')
   if (word.collocations.length > 0) types.push('collocation_choice')
-  if (word.audioUrl) types.push('audio_choice')
+  // 听音题不依赖音频文件，改用浏览器 TTS：只有管理员试听审核通过的单词才可出题，
+  // 与“看图题只有已审核图片才可出题”同款门禁。audioUrl 只是历史字段，前端并不播放它。
+  if (word.ttsStatus === 'approved') types.push('audio_choice')
   return types.length ? types : ['definition_choice']
 }
 
@@ -245,7 +249,7 @@ export function applyManualQuestion(
 ): QuestionPayload | null {
   const type = manual.type
   if (type === 'image_choice' && !(word.imageUrl && word.imageStatus === 'approved')) return null
-  if (type === 'audio_choice' && !word.audioUrl) return null
+  if (type === 'audio_choice' && word.ttsStatus !== 'approved') return null
 
   let options: string[] | null = null
   if (manual.options.length) {

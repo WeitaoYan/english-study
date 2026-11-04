@@ -95,7 +95,7 @@ onMounted(load)
             <span class="chip-forest !py-0.5">补全字母</span>
             <span class="chip-forest !py-0.5">句子填空</span>
             <span class="chip-forest !py-0.5">看图选词</span>
-            <span class="ml-auto">有图单词才会出现看图题</span>
+            <span class="ml-auto">有图单词才会出现看图题 · 发音已审核的单词才会出现听音题</span>
           </div>
         </div>
       </section>

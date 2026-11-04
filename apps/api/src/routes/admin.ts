@@ -97,6 +97,25 @@ admin.get('/stats', async (c) => {
     pending_events: number
   }>()
 
+  // 发音审核计数：旧库未跑 0002 迁移时 tts_status 列不存在，降级为 0 而不是让整个看板挂掉。
+  let pronunciation = { pending: 0, approved: 0, rejected: 0 }
+  try {
+    const tts = await c.env.DB.prepare(
+      `SELECT
+         SUM(CASE WHEN tts_status = 'pending' THEN 1 ELSE 0 END) AS pending,
+         SUM(CASE WHEN tts_status = 'approved' THEN 1 ELSE 0 END) AS approved,
+         SUM(CASE WHEN tts_status = 'rejected' THEN 1 ELSE 0 END) AS rejected
+       FROM word WHERE enabled = 1`,
+    ).first<{ pending: number; approved: number; rejected: number }>()
+    pronunciation = {
+      pending: tts?.pending || 0,
+      approved: tts?.approved || 0,
+      rejected: tts?.rejected || 0,
+    }
+  } catch {
+    pronunciation = { pending: 0, approved: 0, rejected: 0 }
+  }
+
   const { results: recent } = await c.env.DB.prepare(
     `SELECT e.*, u.nickname AS student_name
      FROM incentive_event e JOIN user u ON u.id = e.student_user_id
@@ -129,6 +148,7 @@ admin.get('/stats', async (c) => {
         ? Math.round(((coverage.with_image || 0) / coverage.total_words) * 100)
         : 0,
     },
+    pronunciation,
     incentives: {
       rules: coverage?.rules || 0,
       familiesWithRules: coverage?.families_with_rules || 0,
@@ -720,6 +740,52 @@ admin.patch('/images/:id', async (c) => {
       ).bind(pending?.total ? 1 : 0, nowIso(), image.word_id).run()
     }
   }
+  return c.json({ ok: true })
+})
+
+// 发音审核：与图片审核同款流程，但审核对象是浏览器 TTS 发音本身，没有文件上传。
+// 管理员在审核页点播放试听（与学生端同一 speechSynthesis 参数），确认无误后通过；
+// 只有 tts_status = 'approved' 的单词才会进入听音选词出题池。
+admin.get('/pronunciation', async (c) => {
+  const status = c.req.query('status') || 'pending'
+  if (!['pending', 'approved', 'rejected'].includes(status)) {
+    return c.json({ error: '审核状态不正确' }, 400)
+  }
+  const search = c.req.query('search')?.trim()
+  const limit = queryInt(c.req.query('limit'), 200, 1, 200)
+  const conditions: string[] = ['w.enabled = 1', 'w.tts_status = ?']
+  const values: unknown[] = [status]
+  if (search) {
+    conditions.push('(w.spelling LIKE ? OR w.chinese_def LIKE ?)')
+    values.push(`%${search}%`, `%${search}%`)
+  }
+  const where = conditions.join(' AND ')
+  const total = await c.env.DB.prepare(
+    `SELECT COUNT(*) AS total FROM word w WHERE ${where}`,
+  ).bind(...values).first<{ total: number }>()
+  const { results } = await c.env.DB.prepare(
+    `SELECT ${ADMIN_WORD_COLUMNS} FROM word w WHERE ${where}
+     ORDER BY w.spelling LIMIT ?`,
+  ).bind(...values, limit).all<AdminWordRow>()
+  return c.json({
+    data: (results || []).map(mapAdminWord),
+    total: total?.total || 0,
+  })
+})
+
+admin.patch('/pronunciation/:wordId', async (c) => {
+  const body = await parseBody(c, z.object({
+    status: z.enum(['approved', 'rejected']),
+    note: z.string().max(300).optional(),
+  }))
+  const word = await c.env.DB.prepare(
+    'SELECT id FROM word WHERE id = ?',
+  ).bind(c.req.param('wordId')).first<{ id: string }>()
+  if (!word) return c.json({ error: '单词不存在' }, 404)
+  await c.env.DB.prepare(
+    `UPDATE word SET tts_status = ?, tts_review_note = ?, tts_reviewed_at = ?,
+       updated_at = ? WHERE id = ?`,
+  ).bind(body.status, body.note || null, nowIso(), nowIso(), word.id).run()
   return c.json({ ok: true })
 })
 

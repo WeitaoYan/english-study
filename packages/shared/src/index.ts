@@ -43,6 +43,9 @@ export interface Collocation {
   zh?: string
 }
 
+/** TTS 发音审核状态，与图片审核对齐：默认待审核，只有已通过才可出听音题。 */
+export type TtsStatus = 'pending' | 'approved' | 'rejected'
+
 export interface Word {
   id: string
   spelling: string
@@ -60,6 +63,9 @@ export interface Word {
   examples: ExampleSentence[]
   collocations: Collocation[]
   audioUrl: string | null
+  ttsStatus: TtsStatus
+  ttsReviewNote: string | null
+  ttsReviewedAt: string | null
 }
 
 export interface Mastery {
@@ -359,6 +365,11 @@ export interface AdminStats {
     pendingImages: number
     imageRate: number
   }
+  pronunciation: {
+    pending: number
+    approved: number
+    rejected: number
+  }
   incentives: {
     rules: number
     familiesWithRules: number
@@ -371,6 +382,12 @@ export interface AdminStats {
 export interface FilterOption {
   label: string
   value: string
+}
+
+export const TTS_STATUS_LABELS: Record<TtsStatus, string> = {
+  pending: '待审核',
+  approved: '已通过',
+  rejected: '已驳回',
 }
 
 export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {

@@ -84,6 +84,15 @@ const canAiAdd = computed(() => {
   if (!spelling || !/^[a-z]+(?:[ '-][a-z]+)*$/.test(spelling)) return false
   return !searchResults.value.some((word) => word.spelling.toLowerCase() === spelling)
 })
+// 完全匹配的词已在本单元时：它会从可添加列表里被过滤掉，界面上只剩近似词，
+// 容易让人误以为“没有完全匹配的词、AI 入口也没出现”——直接把状态说清楚。
+const exactInUnit = computed(() => {
+  if (searching.value) return null
+  const spelling = normalizedSearch.value
+  if (!spelling) return null
+  const found = searchResults.value.find((word) => word.spelling.toLowerCase() === spelling)
+  return found && unitWordIds.value.has(found.id) ? found.spelling : null
+})
 let searchTimer: ReturnType<typeof setTimeout> | null = null
 
 const totalWords = computed(() => units.value.reduce((sum, unit) => sum + unit.wordCount, 0))
@@ -474,6 +483,9 @@ onBeforeUnmount(() => {
             <input v-model="wordSearch" class="input !pl-9" placeholder="输入拼写或释义搜索" @input="onSearchInput" @keyup.enter="searchLibrary">
           </div>
           <div class="mt-3 max-h-[340px] space-y-2 overflow-y-auto pr-1">
+            <p v-if="exactInUnit" class="rounded-xl bg-forest-soft/60 px-3 py-2 text-[11px] text-forest-deep">
+              「{{ exactInUnit }}」已在本单元，无需重复添加。
+            </p>
             <div v-if="searching" class="flex items-center gap-2 py-4 text-xs text-muted">
               <Loader2 :size="14" class="animate-spin" />
               正在搜索

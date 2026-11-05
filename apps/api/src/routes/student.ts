@@ -12,6 +12,7 @@ import {
   getCalendar,
   getTextbookProgress,
   getUnitProgress,
+  isTextbookAssigned,
   getWordById,
   getWordsForUnit,
   getWordsForUnits,
@@ -108,8 +109,15 @@ student.get('/dashboard', async (c) => {
        COALESCE(SUM(CASE WHEN strength >= 3 THEN 1 ELSE 0 END), 0) AS mastered_words,
        COALESCE(SUM(CASE WHEN is_weak = 1 THEN 1 ELSE 0 END), 0) AS weak_words,
        COALESCE(SUM(CASE WHEN is_weak = 1 OR (next_review_time IS NOT NULL AND next_review_time <= ?) THEN 1 ELSE 0 END), 0) AS due_today
-     FROM word_mastery WHERE user_id = ?`,
-  ).bind(nowIso(), user.id).first<{
+     FROM word_mastery wm WHERE wm.user_id = ?
+       -- 首页统计只算指定课本里的词：未指定的课本即使以前学过，也不计入待复习数。
+       AND EXISTS (
+         SELECT 1 FROM unit_word uw
+         JOIN unit u ON u.id = uw.unit_id AND uw.enabled = 1
+         JOIN child_textbook ct ON ct.textbook_id = u.textbook_id AND ct.student_user_id = ?
+         WHERE uw.word_id = wm.word_id
+       )`,
+  ).bind(nowIso(), user.id, user.id).first<{
     learned_words: number
     mastered_words: number
     weak_words: number
@@ -186,6 +194,8 @@ student.get('/textbooks/:id', async (c) => {
     cover_color: string
   }>()
   if (!textbook) return c.json({ error: '课本不存在' }, 404)
+  // 未被家长指定的课本直接 404，孩子按 id 猜也打不开。
+  if (!(await isTextbookAssigned(c.env, user.id, textbook.id))) return c.json({ error: '课本不存在' }, 404)
   const units = await getUnitProgress(c.env, user.id, textbook.id)
   const all = await getTextbookProgress(c.env, user.id)
   const summary = all.find((item) => item.id === textbook.id)
@@ -229,6 +239,8 @@ student.get('/units/:id', async (c) => {
     semester: string
   }>()
   if (!unit) return c.json({ error: '单元不存在' }, 404)
+  // 单元所属课本未被指定时，单元详情也打不开。
+  if (!(await isTextbookAssigned(c.env, user.id, unit.textbook_id))) return c.json({ error: '单元不存在' }, 404)
   const progressRows = await getUnitProgress(c.env, user.id, unit.textbook_id)
   const progress = progressRows.find((row) => row.id === unitId)
   const words = (await getWordsForUnit(c.env, user.id, unitId)).map(mapJoinedWord)
@@ -265,9 +277,16 @@ student.get('/review', async (c) => {
      JOIN word w ON w.id = wm.word_id AND w.enabled = 1
      WHERE wm.user_id = ?
        AND (wm.is_weak = 1 OR (wm.next_review_time IS NOT NULL AND wm.next_review_time <= ?))
+       -- 今日复习只出指定课本里的词。
+       AND EXISTS (
+         SELECT 1 FROM unit_word uw
+         JOIN unit u ON u.id = uw.unit_id AND uw.enabled = 1
+         JOIN child_textbook ct ON ct.textbook_id = u.textbook_id AND ct.student_user_id = ?
+         WHERE uw.word_id = wm.word_id
+       )
      ORDER BY wm.is_weak DESC, wm.next_review_time ASC
      LIMIT 100`,
-  ).bind(user.id, now).all<JoinedWordRow>()
+  ).bind(user.id, now, user.id).all<JoinedWordRow>()
 
   const words: ReviewWord[] = (results || []).map((row) => {
     const word = mapJoinedWord(row)
@@ -299,6 +318,14 @@ student.post('/practice/sessions', async (c) => {
     if (!body.wordId) return c.json({ error: '缺少单词参数' }, 400)
     const word = await getWordById(c.env, user.id, body.wordId)
     if (!word) return c.json({ error: '单词不存在' }, 404)
+    // 单词练：该词须属于一本被指定的课本（词可能在多个单元里，任一单元的课本被指定即可）。
+    const inAssigned = await c.env.DB.prepare(
+      `SELECT 1 FROM unit_word uw
+       JOIN unit u ON u.id = uw.unit_id
+       JOIN child_textbook ct ON ct.textbook_id = u.textbook_id AND ct.student_user_id = ?
+       WHERE uw.word_id = ? AND uw.enabled = 1`,
+    ).bind(user.id, body.wordId).first()
+    if (!inAssigned) return c.json({ error: '该单词所在的课本未指定给孩子' }, 403)
     selected = [word]
     unitId = word.unit_id || null
   } else if (body.mode === 'review') {
@@ -308,12 +335,26 @@ student.post('/practice/sessions', async (c) => {
        JOIN word w ON w.id = wm.word_id AND w.enabled = 1
        WHERE wm.user_id = ?
          AND (wm.is_weak = 1 OR (wm.next_review_time IS NOT NULL AND wm.next_review_time <= ?))
+         AND EXISTS (
+           SELECT 1 FROM unit_word uw
+           JOIN unit u ON u.id = uw.unit_id AND uw.enabled = 1
+           JOIN child_textbook ct ON ct.textbook_id = u.textbook_id AND ct.student_user_id = ?
+           WHERE uw.word_id = wm.word_id
+         )
        ORDER BY wm.is_weak DESC, wm.next_review_time ASC
        LIMIT ?`,
-    ).bind(user.id, now, body.limit).all<JoinedWordRow>()
+    ).bind(user.id, now, user.id, body.limit).all<JoinedWordRow>()
     selected = results || []
   } else {
     if (!body.unitId) return c.json({ error: '请选择单元' }, 400)
+    const unitRow = await c.env.DB.prepare(
+      'SELECT textbook_id FROM unit WHERE id = ?',
+    ).bind(body.unitId).first<{ textbook_id: string }>()
+    if (!unitRow) return c.json({ error: '该单元不存在' }, 404)
+    // 单元所属课本未被家长指定时，拒绝开局。
+    if (!(await isTextbookAssigned(c.env, user.id, unitRow.textbook_id))) {
+      return c.json({ error: '该单元的课本未指定给孩子' }, 403)
+    }
     const all = await getWordsForUnit(c.env, user.id, body.unitId)
     const due = all.filter(
       (row) => row.wm_is_weak === 1 || (row.wm_next_review_time && row.wm_next_review_time <= now),

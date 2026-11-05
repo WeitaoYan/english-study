@@ -158,8 +158,8 @@ onMounted(load)
           </div>
           <EmptyState
             v-else
-            title="还没有可用课本"
-            description="请等待管理员发布课本后再开始学习。"
+            title="还没有指定课本"
+            description="家长还没有给你指定课本，请让家长在孩子详情里指定后再开始学习。"
           >
             <template #icon><BookOpen :size="18" /></template>
           </EmptyState>

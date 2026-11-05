@@ -103,6 +103,18 @@ export interface Textbook {
   progress: number
 }
 
+// 家长给孩子指定课本时用的选项：全部已发布课本 + 是否已指定给该孩子。
+export interface ChildTextbookOption {
+  id: string
+  name: string
+  version: string
+  grade: string
+  semester: string
+  coverColor: string
+  unitCount: number
+  assigned: boolean
+}
+
 export interface Unit {
   id: string
   textbookId: string

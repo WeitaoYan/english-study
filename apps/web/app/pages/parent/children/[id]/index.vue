@@ -9,12 +9,13 @@ import {
   FileText,
   Gift,
   Info,
+  Loader2,
   RefreshCw,
   Target,
   TrendingUp,
   Users,
 } from 'lucide-vue-next'
-import type { ParentReport } from '@english-study/shared'
+import type { ChildTextbookOption, ParentReport } from '@english-study/shared'
 import { formatDateTimeCN } from '@english-study/shared'
 
 const route = useRoute()
@@ -24,6 +25,42 @@ const toast = useToast()
 const data = ref<ParentReport | null>(null)
 const loading = ref(true)
 const days = ref(7)
+
+const textbooks = ref<ChildTextbookOption[]>([])
+const textbooksLoading = ref(false)
+const selectedTextbookIds = ref<string[]>([])
+const savingTextbooks = ref(false)
+
+const textbooksDirty = computed(() => {
+  const current = textbooks.value.filter((item) => item.assigned).map((item) => item.id).sort().join(',')
+  return [...selectedTextbookIds.value].sort().join(',') !== current
+})
+
+async function loadTextbooks() {
+  textbooksLoading.value = true
+  try {
+    const result = await api.get<{ data: ChildTextbookOption[] }>(`/parent/children/${route.params.id}/textbooks`)
+    textbooks.value = result.data || []
+    selectedTextbookIds.value = textbooks.value.filter((item) => item.assigned).map((item) => item.id)
+  } catch (error) {
+    toast.error(errorMessage(error, '课本列表加载失败'))
+  } finally {
+    textbooksLoading.value = false
+  }
+}
+
+async function saveTextbooks() {
+  savingTextbooks.value = true
+  try {
+    await api.put(`/parent/children/${route.params.id}/textbooks`, { textbookIds: selectedTextbookIds.value })
+    textbooks.value = textbooks.value.map((item) => ({ ...item, assigned: selectedTextbookIds.value.includes(item.id) }))
+    toast.success('已更新指定课本')
+  } catch (error) {
+    toast.error(errorMessage(error, '保存失败'))
+  } finally {
+    savingTextbooks.value = false
+  }
+}
 
 async function load() {
   loading.value = true
@@ -43,7 +80,10 @@ async function setDays(value: number) {
   await load()
 }
 
-onMounted(load)
+onMounted(() => {
+  load()
+  loadTextbooks()
+})
 </script>
 
 <template>
@@ -104,6 +144,38 @@ onMounted(load)
           :icon="CalendarRange"
           tone="clay"
         />
+      </section>
+
+      <section class="card mt-6 p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="eyebrow">指定课本</p>
+            <h2 class="mt-1 section-title">孩子能看到的课本</h2>
+            <p class="mt-1 text-xs text-muted">只勾选的课本会出现在孩子端；没指定的课本孩子看不到，也练不了。</p>
+          </div>
+          <button class="btn-primary btn-sm" :disabled="savingTextbooks || !textbooksDirty" @click="saveTextbooks">
+            <Loader2 v-if="savingTextbooks" :size="14" class="animate-spin" />
+            保存指定
+          </button>
+        </div>
+        <div v-if="textbooksLoading" class="mt-4 space-y-2">
+          <div v-for="index in 3" :key="index" class="skeleton h-12" />
+        </div>
+        <div v-else-if="textbooks.length" class="mt-4 space-y-2">
+          <label
+            v-for="textbook in textbooks"
+            :key="textbook.id"
+            class="flex cursor-pointer items-center gap-3 rounded-xl border border-line/70 bg-white/60 px-3.5 py-3 transition hover:border-forest/25"
+          >
+            <input v-model="selectedTextbookIds" type="checkbox" :value="textbook.id" class="size-4 accent-[#2f5f4c]">
+            <span class="min-w-0 flex-1">
+              <span class="block text-sm font-medium text-ink">{{ textbook.name }}</span>
+              <span class="mt-0.5 block text-[11px] text-muted">{{ textbook.version }} · {{ textbook.grade }}{{ textbook.semester }} · {{ textbook.unitCount }} 个单元</span>
+            </span>
+            <span v-if="textbook.assigned" class="chip">已指定</span>
+          </label>
+        </div>
+        <p v-else class="mt-4 text-xs text-muted">暂无已发布的课本，请等待管理员发布。</p>
       </section>
 
       <div class="mt-6 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">

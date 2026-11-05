@@ -155,12 +155,22 @@ export interface UnitProgressRow {
   last_studied_at: string | null
 }
 
+/** 孩子是否被家长指定了这本课本。 */
+export async function isTextbookAssigned(env: Env, studentId: string, textbookId: string): Promise<boolean> {
+  const row = await env.DB.prepare(
+    'SELECT id FROM child_textbook WHERE student_user_id = ? AND textbook_id = ?',
+  ).bind(studentId, textbookId).first<{ id: string }>()
+  return Boolean(row)
+}
+
 export async function getTextbookProgress(env: Env, userId: string) {
   const now = new Date().toISOString()
+  // 学生端课本列表只返回家长指定的课本：未指定的一本都不出。
   const { results: textbooks } = await env.DB.prepare(
     `SELECT t.*,
        (SELECT COUNT(*) FROM unit u WHERE u.textbook_id = t.id) AS unit_count
      FROM textbook t
+     JOIN child_textbook ct ON ct.textbook_id = t.id AND ct.student_user_id = ?
      WHERE t.status = 'published'
      ORDER BY
        CASE t.grade
@@ -170,7 +180,7 @@ export async function getTextbookProgress(env: Env, userId: string) {
          ELSE 10 END,
        CASE t.semester WHEN '上册' THEN 1 ELSE 2 END,
        t.name`,
-  ).all<TextbookRow & { unit_count: number }>()
+  ).bind(userId).all<TextbookRow & { unit_count: number }>()
 
   const { results: progress } = await env.DB.prepare(
     `SELECT u.textbook_id,

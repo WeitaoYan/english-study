@@ -1,4 +1,4 @@
-type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'DELETE'
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export function useApi() {
   const config = useRuntimeConfig()
@@ -45,6 +45,8 @@ export function useApi() {
     get: <T>(path: string, options: Record<string, unknown> = {}) => request<T>('GET', path, options),
     post: <T>(path: string, body?: unknown, options: Record<string, unknown> = {}) =>
       request<T>('POST', path, { body, ...options }),
+    put: <T>(path: string, body?: unknown, options: Record<string, unknown> = {}) =>
+      request<T>('PUT', path, { body, ...options }),
     patch: <T>(path: string, body?: unknown, options: Record<string, unknown> = {}) =>
       request<T>('PATCH', path, { body, ...options }),
     delete: <T>(path: string, options: Record<string, unknown> = {}) => request<T>('DELETE', path, options),

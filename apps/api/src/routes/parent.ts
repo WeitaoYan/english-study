@@ -208,6 +208,82 @@ parent.post('/children', async (c) => {
   }, 201)
 })
 
+// 家长给孩子指定课本：孩子只能看到被指定的课本。
+// 列表返回全部已发布课本 + 是否已指定；保存时整体替换该孩子的指定关系。
+parent.get('/children/:id/textbooks', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const { results } = await c.env.DB.prepare(
+    `SELECT t.id, t.name, t.version, t.grade, t.semester, t.cover_color,
+       (SELECT COUNT(*) FROM unit u WHERE u.textbook_id = t.id) AS unit_count,
+       CASE WHEN ct.id IS NULL THEN 0 ELSE 1 END AS assigned
+     FROM textbook t
+     LEFT JOIN child_textbook ct
+       ON ct.textbook_id = t.id AND ct.parent_user_id = ? AND ct.student_user_id = ?
+     WHERE t.status = 'published'
+     ORDER BY
+       CASE t.grade
+         WHEN '一年级' THEN 1 WHEN '二年级' THEN 2 WHEN '三年级' THEN 3
+         WHEN '四年级' THEN 4 WHEN '五年级' THEN 5 WHEN '六年级' THEN 6
+         WHEN '七年级' THEN 7 WHEN '八年级' THEN 8 WHEN '九年级' THEN 9
+         ELSE 10 END,
+       CASE t.semester WHEN '上册' THEN 1 ELSE 2 END,
+       t.name`,
+  ).bind(user.id, child.student_user_id).all<{
+    id: string
+    name: string
+    version: string
+    grade: string
+    semester: string
+    cover_color: string
+    unit_count: number
+    assigned: number
+  }>()
+  return c.json({
+    data: (results || []).map((row) => ({
+      id: row.id,
+      name: row.name,
+      version: row.version,
+      grade: row.grade,
+      semester: row.semester,
+      coverColor: row.cover_color,
+      unitCount: row.unit_count,
+      assigned: row.assigned === 1,
+    })),
+  })
+})
+
+parent.put('/children/:id/textbooks', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const body = await parseBody(c, z.object({
+    textbookIds: z.array(z.string()).max(50).default([]),
+  }))
+  const uniqueIds = [...new Set(body.textbookIds)]
+  if (uniqueIds.length) {
+    const placeholders = uniqueIds.map(() => '?').join(',')
+    const { results } = await c.env.DB.prepare(
+      `SELECT id FROM textbook WHERE id IN (${placeholders}) AND status = 'published'`,
+    ).bind(...uniqueIds).all<{ id: string }>()
+    const valid = new Set((results || []).map((row) => row.id))
+    if (uniqueIds.some((id) => !valid.has(id))) {
+      return c.json({ error: '包含未发布或不存在的课本' }, 400)
+    }
+  }
+  await c.env.DB.batch([
+    c.env.DB.prepare(
+      'DELETE FROM child_textbook WHERE parent_user_id = ? AND student_user_id = ?',
+    ).bind(user.id, child.student_user_id),
+    ...uniqueIds.map((textbookId) => c.env.DB.prepare(
+      `INSERT INTO child_textbook (id, parent_user_id, student_user_id, textbook_id, assigned_at)
+       VALUES (?, ?, ?, ?, ?)`,
+    ).bind(uuid('ct'), user.id, child.student_user_id, textbookId, nowIso())),
+  ])
+  return c.json({ data: uniqueIds })
+})
+
 parent.get('/children/:id/report', async (c) => {
   const user = c.get('user')
   const child = await getChild(c.env, user.id, c.req.param('id'))

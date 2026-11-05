@@ -128,6 +128,24 @@ auth.post('/switch-back', requireAuth, async (c) => {
   return c.json({ user: publicUser(parent), token })
 })
 
+// 刷新令牌：凭未过期的令牌换一张新的（有效期重新算 7 天）。
+// 前端在令牌快到期时自动调用：7 天内只要打开过就一直续上，只有超过
+// 7 天没打开、令牌彻底过期后才需要重新登录。requireAuth 已验证过令牌
+// 且重新查了账号状态：账号被停用、孩子被解绑时刷不过，直接 401/403。
+// 孩子视角令牌刷新后仍保留来源家长（switchedFromParent），切回仍需验密。
+auth.post('/refresh', requireAuth, async (c) => {
+  const current = c.get('user')
+  const token = await createToken(
+    c.env,
+    { id: current.id, role: current.role, nickname: current.nickname },
+    current.switchedFromParent
+      ? { parentId: current.switchedFromParent.id, parentName: current.switchedFromParent.nickname }
+      : {},
+  )
+  setAuthCookie(c, c.env, token)
+  return c.json({ user: current, token })
+})
+
 auth.post('/logout', (c) => {
   clearAuthCookie(c, c.env)
   return c.json({ ok: true })

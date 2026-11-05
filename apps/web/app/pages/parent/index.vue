@@ -39,6 +39,7 @@ async function load() {
 }
 
 async function createChild() {
+  if (creating.value) return
   createError.value = ''
   if (!createForm.nickname.trim()) {
     createError.value = '请填写孩子昵称'
@@ -63,6 +64,7 @@ async function createChild() {
 }
 
 async function switchToChild(child: ChildSummary) {
+  if (switchingId.value) return
   switchingId.value = child.id
   try {
     await auth.switchToChild(child.id)

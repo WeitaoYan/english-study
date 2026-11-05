@@ -50,6 +50,7 @@ async function loadTextbooks() {
 }
 
 async function saveTextbooks() {
+  if (savingTextbooks.value) return
   savingTextbooks.value = true
   try {
     await api.put(`/parent/children/${route.params.id}/textbooks`, { textbookIds: selectedTextbookIds.value })

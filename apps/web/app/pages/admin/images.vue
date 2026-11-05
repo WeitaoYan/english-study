@@ -67,7 +67,6 @@ const uploadResults = ref<WordOption[]>([])
 const uploadSearching = ref(false)
 const uploading = ref(false)
 const uploadError = ref('')
-let uploadTimer: ReturnType<typeof setTimeout> | null = null
 
 const tabs: Array<{ key: TabKey; label: string }> = [
   { key: 'pending', label: '待审核' },
@@ -108,7 +107,7 @@ function askReview(image: ImageRow, status: 'approved' | 'rejected') {
 }
 
 async function submitReview() {
-  if (!reviewTarget.value) return
+  if (!reviewTarget.value || reviewing.value) return
   reviewing.value = true
   try {
     await api.patch(`/admin/images/${reviewTarget.value.id}`, {
@@ -160,10 +159,7 @@ async function searchWords() {
   }
 }
 
-function onUploadSearch() {
-  if (uploadTimer) clearTimeout(uploadTimer)
-  uploadTimer = setTimeout(searchWords, 320)
-}
+const onUploadSearch = useDebouncedFn(searchWords, 320).run
 
 function selectWord(word: WordOption) {
   uploadWordId.value = word.id
@@ -178,6 +174,7 @@ function onFileChange(event: Event) {
 }
 
 async function submitUpload() {
+  if (uploading.value) return
   uploadError.value = ''
   if (!uploadWordId.value) {
     uploadError.value = '请先选择要上传图片的单词'
@@ -208,9 +205,6 @@ async function submitUpload() {
 }
 
 onMounted(load)
-onBeforeUnmount(() => {
-  if (uploadTimer) clearTimeout(uploadTimer)
-})
 </script>
 
 <template>

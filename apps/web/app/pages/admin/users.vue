@@ -155,6 +155,7 @@ function openEditUser(user: AdminUser) {
 }
 
 async function saveUser() {
+  if (savingUser.value) return
   userError.value = ''
   if (!userForm.nickname.trim()) {
     userError.value = '请填写昵称'

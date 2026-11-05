@@ -54,7 +54,6 @@ const wordSearch = ref('')
 const wordResults = ref<WordOption[]>([])
 const wordSearching = ref(false)
 const selectedWordLabel = ref('')
-let wordTimer: ReturnType<typeof setTimeout> | null = null
 
 const deleteOpen = ref(false)
 const deleteTarget = ref<QuestionRow | null>(null)
@@ -134,10 +133,7 @@ async function searchWords() {
   }
 }
 
-function onWordSearch() {
-  if (wordTimer) clearTimeout(wordTimer)
-  wordTimer = setTimeout(searchWords, 320)
-}
+const onWordSearch = useDebouncedFn(searchWords, 320).run
 
 function selectWord(word: WordOption) {
   form.wordId = word.id
@@ -192,6 +188,7 @@ async function openEdit(question: QuestionRow) {
 }
 
 async function save() {
+  if (saving.value) return
   formError.value = ''
   if (!form.wordId) {
     formError.value = '请选择关联单词'
@@ -258,9 +255,6 @@ async function remove() {
 }
 
 onMounted(load)
-onBeforeUnmount(() => {
-  if (wordTimer) clearTimeout(wordTimer)
-})
 </script>
 
 <template>

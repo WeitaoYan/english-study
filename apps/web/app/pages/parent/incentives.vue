@@ -148,6 +148,7 @@ function buildParams(): Record<string, string | number> {
 }
 
 async function save() {
+  if (saving.value) return
   formError.value = ''
   if (!form.rewardDescription.trim()) {
     formError.value = '请填写奖励内容，例如“周末多玩 30 分钟”'

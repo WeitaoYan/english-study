@@ -171,6 +171,7 @@ function openEdit(textbook: AdminTextbook) {
 }
 
 async function save() {
+  if (saving.value) return
   formError.value = ''
   if (!form.name.trim()) {
     formError.value = '请填写课本名称'

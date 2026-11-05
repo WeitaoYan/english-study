@@ -56,6 +56,7 @@ async function load() {
 }
 
 async function acceptInvite(id: string) {
+  if (processing.value) return
   processing.value = id
   try {
     await api.post(`/family/invites/${id}/accept`)
@@ -69,6 +70,7 @@ async function acceptInvite(id: string) {
 }
 
 async function rejectInvite(id: string) {
+  if (processing.value) return
   processing.value = id
   try {
     await api.post(`/family/invites/${id}/reject`)

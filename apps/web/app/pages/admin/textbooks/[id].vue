@@ -93,8 +93,6 @@ const exactInUnit = computed(() => {
   const found = searchResults.value.find((word) => word.spelling.toLowerCase() === spelling)
   return found && unitWordIds.value.has(found.id) ? found.spelling : null
 })
-let searchTimer: ReturnType<typeof setTimeout> | null = null
-
 const totalWords = computed(() => units.value.reduce((sum, unit) => sum + unit.wordCount, 0))
 const unitWordIds = computed(() => new Set(unitWords.value.map((word) => word.id)))
 const availableResults = computed(() => searchResults.value.filter((word) => !unitWordIds.value.has(word.id)))
@@ -136,6 +134,7 @@ function openEditUnit(unit: AdminUnit) {
 }
 
 async function saveUnit() {
+  if (savingUnit.value) return
   unitError.value = ''
   if (!unitForm.unitName.trim()) {
     unitError.value = '请填写单元名称'
@@ -221,15 +220,10 @@ async function searchLibrary() {
   }
 }
 
-function onSearchInput() {
-  if (searchTimer) clearTimeout(searchTimer)
-  searchTimer = setTimeout(() => {
-    searchLibrary()
-  }, 320)
-}
+const onSearchInput = useDebouncedFn(searchLibrary, 320).run
 
 async function addWord(word: LibraryWord) {
-  if (!activeUnit.value) return
+  if (!activeUnit.value || addingId.value === word.id) return
   addingId.value = word.id
   try {
     await api.post(`/admin/units/${activeUnit.value.id}/words`, {
@@ -246,7 +240,7 @@ async function addWord(word: LibraryWord) {
 }
 
 async function addWordBySpelling() {
-  if (!activeUnit.value || !canAiAdd.value) return
+  if (!activeUnit.value || !canAiAdd.value || addingSpelling.value) return
   addingSpelling.value = true
   try {
     const result = await api.post<{ wordId: string; created: boolean }>(`/admin/units/${activeUnit.value.id}/words`, {
@@ -265,7 +259,7 @@ async function addWordBySpelling() {
 }
 
 async function removeWord(word: LibraryWord) {
-  if (!activeUnit.value) return
+  if (!activeUnit.value || removingId.value === word.id) return
   removingId.value = word.id
   try {
     await api.delete(`/admin/units/${activeUnit.value.id}/words/${word.id}`)
@@ -280,9 +274,6 @@ async function removeWord(word: LibraryWord) {
 }
 
 onMounted(load)
-onBeforeUnmount(() => {
-  if (searchTimer) clearTimeout(searchTimer)
-})
 </script>
 
 <template>
@@ -486,6 +477,15 @@ onBeforeUnmount(() => {
             <p v-if="exactInUnit" class="rounded-xl bg-forest-soft/60 px-3 py-2 text-[11px] text-forest-deep">
               「{{ exactInUnit }}」已在本单元，无需重复添加。
             </p>
+            <div v-if="canAiAdd" class="rounded-xl border border-dashed border-line bg-paper/70 px-3 py-3">
+              <p class="text-[11px] leading-relaxed text-ink-soft">库中没有「{{ normalizedSearch }}」</p>
+              <button class="btn-primary btn-sm mt-2" :disabled="addingSpelling" @click="addWordBySpelling">
+                <Loader2 v-if="addingSpelling" :size="12" class="animate-spin" />
+                <Sparkles v-else :size="12" />
+                {{ addingSpelling ? 'AI 正在补充内容…' : '用 AI 加词并加入单元' }}
+              </button>
+              <p class="mt-1.5 text-[10px] leading-relaxed text-muted">由 AI 自动补充音标、释义、例句与搭配，新词发音默认待审核。</p>
+            </div>
             <div v-if="searching" class="flex items-center gap-2 py-4 text-xs text-muted">
               <Loader2 :size="14" class="animate-spin" />
               正在搜索
@@ -509,15 +509,6 @@ onBeforeUnmount(() => {
             <p v-else class="py-6 text-center text-[11px] text-muted">
               {{ searchResults.length ? '搜索结果都已在本单元' : wordSearch.trim() ? '库中没有相关单词' : '输入关键词搜索单词库' }}
             </p>
-            <div v-if="canAiAdd" class="mt-3 rounded-xl border border-dashed border-line bg-paper/70 px-3 py-3">
-              <p class="text-[11px] leading-relaxed text-ink-soft">库中没有「{{ normalizedSearch }}」</p>
-              <button class="btn-primary btn-sm mt-2" :disabled="addingSpelling" @click="addWordBySpelling">
-                <Loader2 v-if="addingSpelling" :size="12" class="animate-spin" />
-                <Sparkles v-else :size="12" />
-                {{ addingSpelling ? 'AI 正在补充内容…' : '用 AI 加词并加入单元' }}
-              </button>
-              <p class="mt-1.5 text-[10px] leading-relaxed text-muted">由 AI 自动补充音标、释义、例句与搭配，新词发音默认待审核。</p>
-            </div>
           </div>
         </section>
       </div>

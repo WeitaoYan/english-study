@@ -13,6 +13,7 @@ const error = ref('')
 const submitting = ref(false)
 
 async function submit() {
+  if (submitting.value) return
   error.value = ''
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
     error.value = '请输入正确的邮箱'

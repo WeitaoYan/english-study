@@ -106,7 +106,7 @@ function openNote(event: IncentiveEvent) {
 }
 
 async function saveNote() {
-  if (!noteTarget.value) return
+  if (!noteTarget.value || savingNote.value) return
   savingNote.value = true
   try {
     await api.patch(`/parent/ledger/${noteTarget.value.id}`, {

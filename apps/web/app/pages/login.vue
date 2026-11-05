@@ -13,6 +13,7 @@ const error = ref('')
 const submitting = ref(false)
 
 async function submit() {
+  if (submitting.value) return
   error.value = ''
   const value = email.value.trim().toLowerCase()
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {

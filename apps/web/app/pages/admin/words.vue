@@ -117,6 +117,9 @@ function applyFilters() {
   load()
 }
 
+// 单词库搜索原来只有回车才触发：输入时防抖 300ms 自动搜。
+const debouncedApplyFilters = useDebouncedFn(applyFilters, 300).run
+
 function goPage(next: number) {
   if (next < 1 || next > totalPages.value) return
   page.value = next
@@ -192,6 +195,7 @@ function openEdit(word: AdminWord) {
 }
 
 async function save() {
+  if (saving.value) return
   formError.value = ''
   const autoFillCreate = form.autoFill && !editingId.value
   if (!form.spelling.trim()) {
@@ -349,7 +353,7 @@ onMounted(async () => {
       <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div class="relative flex-1">
           <Search :size="15" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input v-model="search" class="input !pl-9" placeholder="搜索拼写或中文释义" @keyup.enter="applyFilters">
+          <input v-model="search" class="input !pl-9" placeholder="搜索拼写或中文释义" @input="debouncedApplyFilters" @keyup.enter="applyFilters">
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <select v-model="hasImage" class="input !w-auto !py-2" @change="applyFilters">

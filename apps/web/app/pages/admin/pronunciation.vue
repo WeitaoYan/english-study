@@ -36,8 +36,6 @@ const tabs: Array<{ key: TabKey; label: string }> = [
   { key: 'rejected', label: '已驳回' },
 ]
 
-let searchTimer: ReturnType<typeof setTimeout> | null = null
-
 // 与学生端练习页完全相同的发音参数：美式英语、语速 0.82。
 // 审核听到的就是学生听到的（同一台设备、同一浏览器内）；换设备后语音可能略有差异。
 function speak(word: string) {
@@ -75,10 +73,7 @@ async function changeTab(tab: TabKey) {
   await load()
 }
 
-function onSearchInput() {
-  if (searchTimer) clearTimeout(searchTimer)
-  searchTimer = setTimeout(load, 320)
-}
+const onSearchInput = useDebouncedFn(load, 320).run
 
 function askReview(word: PronunciationRow, status: 'approved' | 'rejected') {
   reviewTarget.value = word
@@ -88,7 +83,7 @@ function askReview(word: PronunciationRow, status: 'approved' | 'rejected') {
 }
 
 async function submitReview() {
-  if (!reviewTarget.value) return
+  if (!reviewTarget.value || reviewing.value) return
   reviewing.value = true
   try {
     await api.patch(`/admin/pronunciation/${reviewTarget.value.id}`, {
@@ -108,7 +103,6 @@ async function submitReview() {
 
 onMounted(load)
 onBeforeUnmount(() => {
-  if (searchTimer) clearTimeout(searchTimer)
   if (import.meta.client && 'speechSynthesis' in window) window.speechSynthesis.cancel()
 })
 </script>

@@ -56,13 +56,14 @@ onMounted(load)
     >
       <template #actions>
         <NuxtLink
-          v-if="data?.words.length"
+          v-if="data?.words.length && data.remainingToday > 0"
           to="/student/practice?mode=review"
           class="btn-primary"
         >
           <RotateCcw :size="16" />
           一键复习今日全部
         </NuxtLink>
+        <span v-else-if="data && data.remainingToday === 0" class="text-xs text-muted">今日复习已完成，明天再来</span>
       </template>
     </PageHeader>
 
@@ -73,7 +74,7 @@ onMounted(load)
         <div class="card p-5">
           <p class="text-[11px] text-muted">今日待复习</p>
           <p class="mt-2 font-display text-3xl text-ink">{{ data.words.length }}</p>
-          <p class="mt-1 text-[10px] text-muted">{{ data.date }}</p>
+          <p class="mt-1 text-[10px] text-muted">{{ data.date }} · 今日还可复习 {{ data.remainingToday }} 题（每天 {{ data.dailyLimit }} 题）</p>
         </div>
         <div class="card p-5">
           <p class="text-[11px] text-muted">其中薄弱词</p>

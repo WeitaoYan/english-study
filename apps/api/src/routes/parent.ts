@@ -284,6 +284,30 @@ parent.put('/children/:id/textbooks', async (c) => {
   return c.json({ data: uniqueIds })
 })
 
+// 家长设置孩子每日复习题数（默认 10，只管复习模式，不管新词单元练习）。
+parent.get('/children/:id/settings', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const row = await c.env.DB.prepare(
+    'SELECT review_daily_limit FROM family_member WHERE id = ?',
+  ).bind(child.member_id).first<{ review_daily_limit: number }>()
+  return c.json({ reviewDailyLimit: row?.review_daily_limit ?? 10 })
+})
+
+parent.put('/children/:id/settings', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const body = await parseBody(c, z.object({
+    reviewDailyLimit: z.number().int().min(5).max(50),
+  }))
+  await c.env.DB.prepare(
+    'UPDATE family_member SET review_daily_limit = ? WHERE id = ?',
+  ).bind(body.reviewDailyLimit, child.member_id).run()
+  return c.json({ reviewDailyLimit: body.reviewDailyLimit })
+})
+
 parent.get('/children/:id/report', async (c) => {
   const user = c.get('user')
   const child = await getChild(c.env, user.id, c.req.param('id'))

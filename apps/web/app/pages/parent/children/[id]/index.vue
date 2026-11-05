@@ -81,9 +81,44 @@ async function setDays(value: number) {
   await load()
 }
 
+const reviewDailyLimit = ref(10)
+const savedReviewDailyLimit = ref(10)
+const savingReviewLimit = ref(false)
+
+async function loadReviewLimit() {
+  try {
+    const result = await api.get<{ reviewDailyLimit: number }>(`/parent/children/${route.params.id}/settings`)
+    reviewDailyLimit.value = result.reviewDailyLimit || 10
+    savedReviewDailyLimit.value = reviewDailyLimit.value
+  } catch (error) {
+    toast.error(errorMessage(error, '复习设置加载失败'))
+  }
+}
+
+function clampReviewLimit() {
+  if (!Number.isFinite(reviewDailyLimit.value)) reviewDailyLimit.value = savedReviewDailyLimit.value
+  reviewDailyLimit.value = Math.min(50, Math.max(5, Math.round(reviewDailyLimit.value)))
+}
+
+async function saveReviewLimit() {
+  if (savingReviewLimit.value) return
+  clampReviewLimit()
+  savingReviewLimit.value = true
+  try {
+    await api.put(`/parent/children/${route.params.id}/settings`, { reviewDailyLimit: reviewDailyLimit.value })
+    savedReviewDailyLimit.value = reviewDailyLimit.value
+    toast.success('已更新每日复习题数')
+  } catch (error) {
+    toast.error(errorMessage(error, '保存失败'))
+  } finally {
+    savingReviewLimit.value = false
+  }
+}
+
 onMounted(() => {
   load()
   loadTextbooks()
+  loadReviewLimit()
 })
 </script>
 
@@ -177,6 +212,26 @@ onMounted(() => {
           </label>
         </div>
         <p v-else class="mt-4 text-xs text-muted">暂无已发布的课本，请等待管理员发布。</p>
+      </section>
+
+      <section class="card mt-6 p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="eyebrow">每日复习</p>
+            <h2 class="mt-1 section-title">每天复习多少题</h2>
+            <p class="mt-1 text-xs text-muted">只算复习模式的题目，不管新词单元练习；每天 0 点重置，到量后当天不再开复习局。</p>
+          </div>
+          <button class="btn-primary btn-sm" :disabled="savingReviewLimit || reviewDailyLimit === savedReviewDailyLimit" @click="saveReviewLimit">
+            <Loader2 v-if="savingReviewLimit" :size="14" class="animate-spin" />
+            保存
+          </button>
+        </div>
+        <div class="mt-4 flex items-center gap-2">
+          <button class="btn-ghost btn-sm" :disabled="reviewDailyLimit <= 5" @click="reviewDailyLimit = Math.max(5, reviewDailyLimit - 5)">− 5</button>
+          <input v-model.number="reviewDailyLimit" type="number" min="5" max="50" class="input w-20 text-center !py-2" @change="clampReviewLimit">
+          <span class="text-xs text-muted">题 / 天（5–50）</span>
+          <button class="btn-ghost btn-sm" :disabled="reviewDailyLimit >= 50" @click="reviewDailyLimit = Math.min(50, reviewDailyLimit + 5)">+ 5</button>
+        </div>
       </section>
 
       <div class="mt-6 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">

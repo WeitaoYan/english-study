@@ -194,6 +194,10 @@ export interface ReviewQueue {
   words: ReviewWord[]
   weakCount: number
   dueCount: number
+  // 家长设的每日复习题数与今日进度：剩 0 时当天不再开复习局。
+  dailyLimit: number
+  reviewedToday: number
+  remainingToday: number
 }
 
 export interface CalendarDay {

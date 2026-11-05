@@ -36,8 +36,32 @@ const sessionSchema = z.object({
   mode: z.enum(['unit', 'review', 'word']).default('unit'),
   unitId: z.string().optional(),
   wordId: z.string().optional(),
-  limit: z.number().int().min(1).max(30).default(10),
+  // 复习模式的题数不由这里定：后端按家长设的每日限额与当日已答题数算；
+  // 单元模式不传时默认 10。
+  limit: z.number().int().min(1).max(50).optional(),
 })
+
+// 家长给孩子设的每日复习题数（默认 10），存在 family_member 上。
+async function getReviewDailyLimit(env: AppEnv['Bindings'], studentId: string): Promise<number> {
+  const row = await env.DB.prepare(
+    `SELECT fm.review_daily_limit AS review_daily_limit
+     FROM family_member fm JOIN family f ON f.id = fm.family_id
+     WHERE fm.student_user_id = ? AND fm.status = 'active' AND fm.enabled = 1
+     ORDER BY fm.created_at LIMIT 1`,
+  ).bind(studentId).first<{ review_daily_limit: number }>()
+  const value = row?.review_daily_limit
+  return typeof value === 'number' && value >= 1 && value <= 50 ? value : 10
+}
+
+// 孩子今天已答的复习题数（每道题一条 practice_record，按中国日期算）。
+async function countReviewedToday(env: AppEnv['Bindings'], studentId: string, today: string): Promise<number> {
+  const row = await env.DB.prepare(
+    `SELECT COUNT(*) AS total FROM practice_record pr
+     JOIN practice_session ps ON ps.id = pr.session_id
+     WHERE ps.user_id = ? AND ps.mode = 'review' AND date(pr.answered_at, '+8 hours') = ?`,
+  ).bind(studentId, today).first<{ total: number }>()
+  return row?.total || 0
+}
 
 interface ManualQuestionRow {
   id: string
@@ -297,11 +321,16 @@ student.get('/review', async (c) => {
       reason: isWeak && isDue ? 'both' : isWeak ? 'weak' : 'due',
     }
   })
+  const dailyLimit = await getReviewDailyLimit(c.env, user.id)
+  const reviewedToday = await countReviewedToday(c.env, user.id, dateKeyInCN())
   return c.json({
     date: dateKeyInCN(),
     words,
     weakCount: words.filter((word) => word.mastery?.isWeak).length,
     dueCount: words.length,
+    dailyLimit,
+    reviewedToday,
+    remainingToday: Math.max(0, dailyLimit - reviewedToday),
   })
 })
 
@@ -329,6 +358,23 @@ student.post('/practice/sessions', async (c) => {
     selected = [word]
     unitId = word.unit_id || null
   } else if (body.mode === 'review') {
+    // 每日复习题数是家长设的：今天已答的先扣掉，剩多少取多少；到量了直接
+    // 返回“今日复习已完成”，不再开局。前端不传 limit，后端说了算。
+    const dailyLimit = await getReviewDailyLimit(c.env, user.id)
+    const reviewedToday = await countReviewedToday(c.env, user.id, dateKeyInCN())
+    const remaining = dailyLimit - reviewedToday
+    if (remaining <= 0) {
+      return c.json({
+        sessionId: '',
+        mode,
+        unitId,
+        totalCount: 0,
+        questions: [],
+        empty: true,
+        message: '今日复习已完成，明天再来',
+      })
+    }
+    const limit = Math.min(body.limit ?? remaining, remaining)
     const { results } = await c.env.DB.prepare(
       `SELECT ${WORD_COLUMNS}, ${MASTERY_COLUMNS}
        FROM word_mastery wm
@@ -343,7 +389,7 @@ student.post('/practice/sessions', async (c) => {
          )
        ORDER BY wm.is_weak DESC, wm.next_review_time ASC
        LIMIT ?`,
-    ).bind(user.id, now, user.id, body.limit).all<JoinedWordRow>()
+    ).bind(user.id, now, user.id, limit).all<JoinedWordRow>()
     selected = results || []
   } else {
     if (!body.unitId) return c.json({ error: '请选择单元' }, 400)
@@ -361,7 +407,7 @@ student.post('/practice/sessions', async (c) => {
     )
     const fresh = all.filter((row) => !row.wm_id)
     const rest = all.filter((row) => !due.includes(row) && !fresh.includes(row))
-    selected = [...due, ...fresh, ...rest].slice(0, body.limit)
+    selected = [...due, ...fresh, ...rest].slice(0, body.limit ?? 10)
     if (!all.length) return c.json({ error: '该单元暂无启用单词' }, 404)
   }
 

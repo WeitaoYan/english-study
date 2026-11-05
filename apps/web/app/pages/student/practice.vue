@@ -179,7 +179,9 @@ async function start() {
       : route.query.wordId
         ? 'word'
         : 'unit'
-    const body: Record<string, unknown> = { mode, limit: mode === 'review' ? 20 : 10 }
+    // 复习题数由后端按家长设的每日限额算，前端不传；单元练习默认 10 题。
+    const body: Record<string, unknown> = { mode }
+    if (mode === 'unit') body.limit = 10
     if (route.query.unitId) body.unitId = String(route.query.unitId)
     if (route.query.wordId) body.wordId = String(route.query.wordId)
     if (mode === 'unit' && !body.unitId) {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  ArrowLeft,
   BookOpen,
   ChevronLeft,
   ChevronRight,
@@ -34,8 +35,15 @@ interface ImportResult {
   errors: Array<{ row: number; message: string }>
 }
 
+const route = useRoute()
 const api = useApi()
 const toast = useToast()
+
+// 从单元管理页跳过来编辑单词时才有：编辑完可原路返回课本页。
+const returnTo = computed(() => {
+  const value = route.query.returnTo
+  return typeof value === 'string' && value.startsWith('/admin/textbooks/') ? value : ''
+})
 
 const words = ref<AdminWord[]>([])
 const total = ref(0)
@@ -327,11 +335,27 @@ async function runImport() {
 
 onMounted(async () => {
   await Promise.all([load(), loadUnits()])
+  // 从单元管理页带 ?edit=单词 id 跳过来时，直接打开该词的编辑框。
+  const editId = route.query.edit
+  if (typeof editId === 'string' && editId) {
+    try {
+      const result = await api.get<{ data: AdminWord }>(`/admin/words/${editId}`)
+      openEdit(result.data)
+    } catch (error) {
+      toast.error(errorMessage(error, '单词加载失败'))
+    }
+  }
 })
 </script>
 
 <template>
   <div>
+    <div v-if="returnTo" class="mb-5">
+      <NuxtLink :to="returnTo" class="btn-ghost -ml-2">
+        <ArrowLeft :size="15" />
+        返回课本
+      </NuxtLink>
+    </div>
     <PageHeader
       eyebrow="管理端 · 单词库"
       title="维护单词内容"

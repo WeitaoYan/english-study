@@ -440,11 +440,15 @@ admin.get('/words', async (c) => {
   const total = await c.env.DB.prepare(
     `SELECT COUNT(*) AS total FROM word w WHERE ${where}`,
   ).bind(...values).first<{ total: number }>()
+  // 搜索时完全匹配拼写的排第一位：避免匹配太多时精确词被挤出当页。
+  const orderBy = search
+    ? 'CASE WHEN lower(w.spelling) = ? THEN 0 ELSE 1 END, w.updated_at DESC, w.spelling'
+    : 'w.updated_at DESC, w.spelling'
   const { results } = await c.env.DB.prepare(
     `SELECT ${ADMIN_WORD_COLUMNS} FROM word w WHERE ${where}
-     ORDER BY w.updated_at DESC, w.spelling
+     ORDER BY ${orderBy}
      LIMIT ? OFFSET ?`,
-  ).bind(...values, limit, (page - 1) * limit).all<AdminWordRow>()
+  ).bind(...values, ...(search ? [search.toLowerCase()] : []), limit, (page - 1) * limit).all<AdminWordRow>()
   return c.json({
     data: (results || []).map(mapAdminWord),
     total: total?.total || 0,

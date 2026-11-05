@@ -95,7 +95,15 @@ const exactInUnit = computed(() => {
 })
 const totalWords = computed(() => units.value.reduce((sum, unit) => sum + unit.wordCount, 0))
 const unitWordIds = computed(() => new Set(unitWords.value.map((word) => word.id)))
-const availableResults = computed(() => searchResults.value.filter((word) => !unitWordIds.value.has(word.id)))
+const availableResults = computed(() => {
+  const list = searchResults.value.filter((word) => !unitWordIds.value.has(word.id))
+  const spelling = normalizedSearch.value
+  if (!spelling) return list
+  // 完全匹配的单词排第一位，其余保持原顺序。
+  const exact = list.filter((word) => word.spelling.toLowerCase() === spelling)
+  const rest = list.filter((word) => word.spelling.toLowerCase() !== spelling)
+  return [...exact, ...rest]
+})
 
 async function load() {
   loading.value = true
@@ -456,6 +464,9 @@ onMounted(load)
                 <p class="text-xs font-medium text-ink">{{ word.spelling }}</p>
                 <p class="truncate text-[10px] text-muted">{{ word.chineseDef }}</p>
               </div>
+              <NuxtLink :to="`/admin/words?edit=${word.id}&returnTo=/admin/textbooks/${route.params.id}`" class="btn-ghost btn-sm" title="编辑单词">
+                <Pencil :size="13" />
+              </NuxtLink>
               <button class="btn-ghost btn-sm !text-danger" :disabled="removingId === word.id" @click="removeWord(word)">
                 <Loader2 v-if="removingId === word.id" :size="13" class="animate-spin" />
                 <MinusCircle v-else :size="13" />

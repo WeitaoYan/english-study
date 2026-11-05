@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  ArrowLeftRight,
   BarChart3,
   BookMarked,
   BookOpen,
@@ -146,6 +147,15 @@ async function signOut() {
         <p class="mt-0.5 text-[11px] text-muted">{{ roleMeta.note }}</p>
       </div>
 
+      <button
+        v-if="auth.isChildView.value"
+        class="btn-secondary mt-3 w-full"
+        @click="switchBackOpen = true"
+      >
+        <ArrowLeftRight :size="16" />
+        切回家长身份
+      </button>
+
       <nav class="mt-7 flex-1 space-y-1">
         <p class="eyebrow mb-2 px-3">导航</p>
         <NuxtLink
@@ -229,6 +239,15 @@ async function signOut() {
           <p class="mt-1 text-sm font-medium text-ink">{{ auth.user.value.nickname }}</p>
         </div>
 
+        <button
+          v-if="auth.isChildView.value"
+          class="btn-secondary mt-3 w-full"
+          @click="switchBackOpen = true"
+        >
+          <ArrowLeftRight :size="16" />
+          切回家长身份
+        </button>
+
         <nav class="mt-5 flex-1 space-y-1 overflow-y-auto">
           <NuxtLink
             v-for="item in navItems"
@@ -253,18 +272,6 @@ async function signOut() {
 
     <main class="lg:pl-[264px]">
       <div class="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
-        <div
-          v-if="auth.isChildView.value"
-          class="mb-6 flex flex-col gap-3 rounded-2xl border border-clay/25 bg-clay-soft/60 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between"
-        >
-          <p class="text-xs leading-relaxed text-ink-soft">
-            正在以 <span class="font-medium text-ink">{{ auth.user.value?.nickname }}</span> 的视角查看。
-            家长端已锁定，切回家长身份需要验证家长密码。
-          </p>
-          <button class="btn-primary btn-sm shrink-0" @click="switchBackOpen = true">
-            切回家长身份
-          </button>
-        </div>
         <slot />
       </div>
     </main>

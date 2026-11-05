@@ -351,18 +351,62 @@ admin.get('/units/:id/words', async (c) => {
 
 admin.post('/units/:id/words', async (c) => {
   const body = await parseBody(c, z.object({
-    wordId: z.string().min(1),
+    wordId: z.string().min(1).optional(),
+    // 传 spelling 时：先按拼写（不区分大小写）查库，有则直接挂入；
+    // 库中没有则调用 AI 加词（与 POST /admin/words 的 autoFill 同款补充）建词后再挂入。
+    spelling: z.string().trim().min(1).max(80).optional(),
     sortOrder: z.number().int().min(0).optional(),
   }))
+  let wordId = body.wordId
+  let created = false
+  if (!wordId) {
+    const spelling = body.spelling?.toLowerCase()
+    if (!spelling) return c.json({ error: '请指定单词' }, 400)
+    if (!/^[a-z]+(?:[ '-][a-z]+)*$/.test(spelling)) {
+      return c.json({ error: '拼写只支持英文字母、空格、连字符与撇号' }, 400)
+    }
+    const found = await c.env.DB.prepare(
+      'SELECT id, enabled FROM word WHERE LOWER(spelling) = ?',
+    ).bind(spelling).first<{ id: string; enabled: number }>()
+    if (found) {
+      if (!found.enabled) return c.json({ error: '该单词已在库中但已停用，请先在单词库启用' }, 400)
+      wordId = found.id
+    } else {
+      if (!c.env.AI) return c.json({ error: 'AI 自动补充未启用，请先在 wrangler.jsonc 配置 AI 绑定' }, 503)
+      try {
+        const enrichment = await enrichWordWithAI(c.env, spelling)
+        wordId = uuid('w')
+        // 与 POST /admin/words 的建词字段一致；tts_status 列默认 pending，新词发音仍需人工审核。
+        await c.env.DB.prepare(
+          `INSERT INTO word (id, spelling, phonetic, pos, chinese_def, english_def, difficulty,
+            has_image, enabled, examples, collocations)
+           VALUES (?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?)`,
+        ).bind(
+          wordId,
+          spelling,
+          enrichment.phonetic,
+          enrichment.pos,
+          enrichment.chineseDef,
+          enrichment.englishDef,
+          enrichment.difficulty,
+          JSON.stringify(enrichment.examples),
+          JSON.stringify(enrichment.collocations),
+        ).run()
+        created = true
+      } catch (error) {
+        return c.json({ error: error instanceof Error ? error.message : 'AI 补充失败，请稍后重试' }, 502)
+      }
+    }
+  }
   const max = await c.env.DB.prepare(
     'SELECT COALESCE(MAX(sort_order), 0) AS max FROM unit_word WHERE unit_id = ?',
   ).bind(c.req.param('id')).first<{ max: number }>()
   const result = await c.env.DB.prepare(
     `INSERT OR IGNORE INTO unit_word (id, unit_id, word_id, sort_order, enabled)
      VALUES (?, ?, ?, ?, 1)`,
-  ).bind(uuid('uw'), c.req.param('id'), body.wordId, body.sortOrder ?? (max?.max || 0) + 1).run()
+  ).bind(uuid('uw'), c.req.param('id'), wordId, body.sortOrder ?? (max?.max || 0) + 1).run()
   if (!result.meta.changes) return c.json({ error: '该单词已在单元中' }, 409)
-  return c.json({ ok: true }, 201)
+  return c.json({ ok: true, wordId, created, aiFilled: created }, 201)
 })
 
 admin.delete('/units/:id/words/:wordId', async (c) => {

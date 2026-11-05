@@ -10,6 +10,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Sparkles,
   Trash2,
   X,
 } from 'lucide-vue-next'
@@ -72,7 +73,17 @@ const wordSearch = ref('')
 const searchResults = ref<LibraryWord[]>([])
 const searching = ref(false)
 const addingId = ref('')
+const addingSpelling = ref(false)
 const removingId = ref('')
+const normalizedSearch = computed(() => wordSearch.value.trim().toLowerCase())
+// 搜不到且输入像个单词拼写时，允许用 AI 直接加词：
+// 搜索结果里已有完全相同拼写时不显示（点“添加”即可，或已在单元里）。
+const canAiAdd = computed(() => {
+  if (searching.value) return false
+  const spelling = normalizedSearch.value
+  if (!spelling || !/^[a-z]+(?:[ '-][a-z]+)*$/.test(spelling)) return false
+  return !searchResults.value.some((word) => word.spelling.toLowerCase() === spelling)
+})
 let searchTimer: ReturnType<typeof setTimeout> | null = null
 
 const totalWords = computed(() => units.value.reduce((sum, unit) => sum + unit.wordCount, 0))
@@ -222,6 +233,25 @@ async function addWord(word: LibraryWord) {
     toast.error(errorMessage(error, '添加失败'))
   } finally {
     addingId.value = ''
+  }
+}
+
+async function addWordBySpelling() {
+  if (!activeUnit.value || !canAiAdd.value) return
+  addingSpelling.value = true
+  try {
+    const result = await api.post<{ wordId: string; created: boolean }>(`/admin/units/${activeUnit.value.id}/words`, {
+      spelling: normalizedSearch.value,
+    })
+    toast.success(result.created ? `已用 AI 加词 ${normalizedSearch.value} 并添加到单元` : `已添加 ${normalizedSearch.value}`)
+    await loadUnitWords(activeUnit.value)
+    await load()
+    // 刷新搜索结果：新词出现后“AI 加词”入口随之消失，避免重复提交。
+    await searchLibrary()
+  } catch (error) {
+    toast.error(errorMessage(error, 'AI 加词失败'))
+  } finally {
+    addingSpelling.value = false
   }
 }
 
@@ -403,7 +433,7 @@ onBeforeUnmount(() => {
     <Modal
       :open="wordsOpen"
       :title="`管理单词 · ${activeUnit?.unitName || ''}`"
-      description="从单词库搜索并添加到当前单元，或移除不再属于本单元的单词。"
+      description="从单词库搜索并添加到当前单元，库中没有的单词可用 AI 直接加词；也可移除不再属于本单元的单词。"
       wide
       @close="wordsOpen = false"
     >
@@ -465,8 +495,17 @@ onBeforeUnmount(() => {
               </div>
             </template>
             <p v-else class="py-6 text-center text-[11px] text-muted">
-              {{ searchResults.length ? '搜索结果都已在本单元' : '输入关键词搜索单词库' }}
+              {{ searchResults.length ? '搜索结果都已在本单元' : wordSearch.trim() ? '库中没有相关单词' : '输入关键词搜索单词库' }}
             </p>
+            <div v-if="canAiAdd" class="mt-3 rounded-xl border border-dashed border-line bg-paper/70 px-3 py-3">
+              <p class="text-[11px] leading-relaxed text-ink-soft">库中没有「{{ normalizedSearch }}」</p>
+              <button class="btn-primary btn-sm mt-2" :disabled="addingSpelling" @click="addWordBySpelling">
+                <Loader2 v-if="addingSpelling" :size="12" class="animate-spin" />
+                <Sparkles v-else :size="12" />
+                {{ addingSpelling ? 'AI 正在补充内容…' : '用 AI 加词并加入单元' }}
+              </button>
+              <p class="mt-1.5 text-[10px] leading-relaxed text-muted">由 AI 自动补充音标、释义、例句与搭配，新词发音默认待审核。</p>
+            </div>
           </div>
         </section>
       </div>

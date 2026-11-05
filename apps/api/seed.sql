@@ -1,8 +1,6 @@
 -- Demo data for local development & preview.
--- Demo accounts (email login only):
---   家长 parent@example.com / demo1234（名下虚拟子账号：林小满）
---   家长 parent2@example.com / demo1234（名下虚拟子账号：周予安）
---   管理员 admin@example.com / admin1234
+-- 注意：演示账户已全部移除（2026-11-05），种子不再建任何账号；
+-- 本地开发如需登录，请用管理员在后台创建账号，或先注册家长账号。
 -- 学生没有邮箱、不能独立登录，只能由家长切换进入。
 
 DELETE FROM parent_word_focus;
@@ -22,21 +20,7 @@ DELETE FROM family_member;
 DELETE FROM family;
 DELETE FROM user;
 
-INSERT INTO user (id, role, nickname, email, password_hash, enabled) VALUES
-  ('u-admin', 'admin', '系统管理员', 'admin@example.com', 'pbkdf2$100000$admin-demo-salt$e688d0d2f75df9fc0d80d2f29a178fe59f45d7c822939cf9e3ebe4f32de5263a', 1),
-  ('u-parent', 'parent', '林妈妈', 'parent@example.com', 'pbkdf2$100000$parent-demo-salt$03b10c918411e0be9bf74dfe09a82a1278a73cf725b9f874a80742dc4c6d3b90', 1),
-  -- 演示学生是家长账号内的虚拟子账号，没有邮箱、不能独立登录；
-  -- 密码哈希只是占位，登录入口按角色拦 student，且邮箱为空也查不到账号。
-  ('u-student', 'student', '林小满', NULL, 'pbkdf2$100000$student-demo-salt$7177139d2629d9452a8f9cd23af3b149d615b846d01c85ddf6a946c3293da8be', 1),
-  ('u-student-2', 'student', '周予安', NULL, 'pbkdf2$100000$student-demo-salt$7177139d2629d9452a8f9cd23af3b149d615b846d01c85ddf6a946c3293da8be', 1),
-  ('u-parent-2', 'parent', '周爸爸', 'parent2@example.com', 'pbkdf2$100000$parent-demo-salt$03b10c918411e0be9bf74dfe09a82a1278a73cf725b9f874a80742dc4c6d3b90', 1);
-
-INSERT INTO family (id, parent_user_id) VALUES ('f-1', 'u-parent');
-INSERT INTO family (id, parent_user_id) VALUES ('f-2', 'u-parent-2');
-
-INSERT INTO family_member (id, family_id, student_user_id, relation, status, enabled) VALUES
-  ('fm-1', 'f-1', 'u-student', '女儿', 'active', 1),
-  ('fm-2', 'f-2', 'u-student-2', '儿子', 'active', 1);
+-- 演示账户已移除：此处不再插入任何 user / family / family_member 记录。
 
 INSERT INTO textbook (id, name, version, grade, semester, status, cover_color) VALUES
   ('tb-3a', '英语（三年级上册）', '人教版', '三年级', '上册', 'published', 'forest'),

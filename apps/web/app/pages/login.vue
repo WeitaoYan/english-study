@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowRight, BookOpen, Check, Loader2, RefreshCw, ShieldCheck, Users } from 'lucide-vue-next'
+import { ArrowRight, BookOpen, Check, Loader2, RefreshCw, ShieldCheck } from 'lucide-vue-next'
 
 definePageMeta({ layout: false })
 
@@ -11,27 +11,6 @@ const email = ref('')
 const password = ref('')
 const error = ref('')
 const submitting = ref(false)
-const demoLoading = ref('')
-
-// 学生没有独立登录入口，不出现在演示账号里：家长登录后在孩子卡片点「进入孩子视角」。
-const demos = [
-  {
-    role: '家长',
-    name: '林妈妈',
-    email: 'parent@example.com',
-    password: 'demo1234',
-    icon: Users,
-    tone: 'bg-clay-soft text-clay',
-  },
-  {
-    role: '管理员',
-    name: '系统管理员',
-    email: 'admin@example.com',
-    password: 'admin1234',
-    icon: ShieldCheck,
-    tone: 'bg-ocean-soft text-ocean',
-  },
-]
 
 async function submit() {
   error.value = ''
@@ -57,21 +36,7 @@ async function submit() {
   }
 }
 
-async function demoLogin(demo: (typeof demos)[number]) {
-  error.value = ''
-  demoLoading.value = demo.role
-  email.value = demo.email
-  password.value = demo.password
-  try {
-    await auth.login(demo.email, demo.password)
-    toast.success(`已进入${demo.role}演示`)
-    await navigateTo(auth.home.value)
-  } catch (err) {
-    error.value = errorMessage(err, '演示登录失败')
-  } finally {
-    demoLoading.value = ''
-  }
-}
+
 </script>
 
 <template>
@@ -179,32 +144,6 @@ async function demoLogin(demo: (typeof demos)[number]) {
           </button>
         </form>
 
-        <div class="my-7 flex items-center gap-3">
-          <span class="h-px flex-1 bg-line" />
-          <span class="text-[10px] tracking-wider text-muted">演示账号 · 一键进入</span>
-          <span class="h-px flex-1 bg-line" />
-        </div>
-
-        <div class="space-y-2">
-          <button
-            v-for="demo in demos"
-            :key="demo.role"
-            class="group flex w-full items-center gap-3 rounded-2xl border border-line bg-cream/70 px-3.5 py-3 text-left transition hover:border-forest/25 hover:bg-forest-soft/35"
-            :disabled="Boolean(demoLoading)"
-            @click="demoLogin(demo)"
-          >
-            <span class="grid size-9 place-items-center rounded-xl" :class="demo.tone">
-              <component :is="demo.icon" :size="16" />
-            </span>
-            <span class="min-w-0 flex-1">
-              <span class="block text-sm font-medium text-ink">{{ demo.role }} · {{ demo.name }}</span>
-              <span class="mt-0.5 block text-[10px] text-muted">{{ demo.email }} / {{ demo.password }}</span>
-            </span>
-            <Loader2 v-if="demoLoading === demo.role" :size="15" class="animate-spin text-muted" />
-            <ArrowRight v-else :size="15" class="text-muted transition group-hover:translate-x-0.5 group-hover:text-forest" />
-          </button>
-        </div>
-
         <p class="mt-6 text-center text-[11px] leading-relaxed text-muted">
           学生没有独立登录入口：家长登录后，在孩子卡片点「进入孩子视角」即可进入孩子端。
         </p>
@@ -212,10 +151,6 @@ async function demoLogin(demo: (typeof demos)[number]) {
         <p class="mt-4 text-center text-xs text-muted">
           家长还没有账号？
           <NuxtLink to="/register" class="font-medium text-forest underline underline-offset-2">用邮箱注册</NuxtLink>
-        </p>
-
-        <p class="mt-4 text-center text-[10px] leading-relaxed text-muted/80">
-          演示数据仅用于预览功能。正式部署前请创建新的管理员账号并修改初始密码。
         </p>
       </div>
     </section>

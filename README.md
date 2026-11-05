@@ -81,23 +81,21 @@ npm run dev:api
 npm run dev:web
 ```
 
-### 6. 演示账号
+### 6. 账号
 
-| 角色 | 邮箱 | 密码 |
-| --- | --- | --- |
-| 管理员 | `admin@example.com` | `admin1234` |
-| 家长 | `parent@example.com` | `demo1234` |
-| 家长 | `parent2@example.com` | `demo1234` |
+演示账户已全部移除（2026-11-05，线上库与种子里都不再有演示账户，登录页也不再提供一键登录）。
 
-学生没有独立登录账号：演示家长 `parent@example.com` 名下已有虚拟子账号林小满、演示家长 `parent2@example.com` 名下已有周予安，家长登录后点孩子卡片的「进入孩子视角」即可进入孩子端。
+| 角色 | 邮箱 |
+| --- | --- |
+| 管理员 | `admin@ikber.cc` |
 
-正式使用前请创建新的管理员账号并修改演示密码。家长也可以不用演示账号：直接在登录页点“用邮箱注册”创建家长账号。
+管理员密码自行保管，不写入文档。学生没有独立登录账号：家长登录后点孩子卡片的「进入孩子视角」即可进入孩子端。家长可以直接在登录页点“用邮箱注册”创建家长账号。
 
 ## 线上部署（Cloudflare，Yanweitao@hotmail.com 账号）
 
 - 前端：<https://english.ikber.cc>（Worker `weitaoyan-english-study-apps-web`，自定义域名）
 - API：<https://api.english.ikber.cc/api>（Worker `english-study-api`，自定义域名）
-- D1：`english-study`（`c125b631-7ef8-4701-a3f4-c8d62f2fa8d1`），R2：`english-study-images`，线上已跑完迁移 0001–0004 并导入演示数据
+- D1：`english-study`（`c125b631-7ef8-4701-a3f4-c8d62f2fa8d1`），R2：`english-study-images`，线上已跑完迁移 0001–0005 并导入课本与词汇数据（演示账户已移除，`seed.sql` 不再建账号）
 - `JWT_SECRET` 只存在 Cloudflare Secret 里，不进仓库；不要把本地 `.dev.vars` 的值当线上密钥用
 
 部署步骤（Web 的 API 地址靠 Worker 变量，不是构建时写死）：

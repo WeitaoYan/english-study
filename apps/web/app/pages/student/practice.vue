@@ -40,6 +40,26 @@ const pendingConfirms = new Set<Promise<void>>()
 const fillLetters = ref<string[]>([])
 const fillBox = ref<HTMLElement | null>(null)
 
+// 注意：current 必须在 letterSlots 与下方 watch 之前声明——
+// watch 创建时会立即求一次值，computed 回调里也随时可能求值，
+// 放在后面会撞上暂时性死区（Cannot access before initialization），
+// 练习页一打开就 500（2026-11-06 实测）。
+const current = computed<QuestionPayload | null>(() => session.value?.questions[index.value] || null)
+const progress = computed(() => {
+  if (!session.value?.totalCount) return 0
+  return Math.round((index.value / session.value.totalCount) * 100)
+})
+const isLast = computed(() => Boolean(session.value && index.value >= session.value.totalCount - 1))
+const backTo = computed(() => {
+  if (session.value?.unitId) return `/student/units/${session.value.unitId}`
+  return '/student'
+})
+const modeTitle = computed(() => {
+  if (session.value?.mode === 'review') return '今日复习'
+  if (session.value?.mode === 'word') return '单词练习'
+  return '单元练习'
+})
+
 interface LetterSlot { char: string; blank: boolean; blankIndex: number }
 
 // 补全题：把后端 stem（形如 a _ _ l e）解析成“单词内填空”；
@@ -125,22 +145,6 @@ const correctCount = ref(0)
 const summary = ref<PracticeSummary | null>(null)
 const finishing = ref(false)
 const questionStart = ref(Date.now())
-
-const current = computed<QuestionPayload | null>(() => session.value?.questions[index.value] || null)
-const progress = computed(() => {
-  if (!session.value?.totalCount) return 0
-  return Math.round((index.value / session.value.totalCount) * 100)
-})
-const isLast = computed(() => Boolean(session.value && index.value >= session.value.totalCount - 1))
-const backTo = computed(() => {
-  if (session.value?.unitId) return `/student/units/${session.value.unitId}`
-  return '/student'
-})
-const modeTitle = computed(() => {
-  if (session.value?.mode === 'review') return '今日复习'
-  if (session.value?.mode === 'word') return '单词练习'
-  return '单元练习'
-})
 
 function speak(word: string) {
   if (!import.meta.client || !('speechSynthesis' in window)) return

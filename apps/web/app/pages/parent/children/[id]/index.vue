@@ -188,6 +188,7 @@ onMounted(() => {
             <p class="eyebrow">指定课本</p>
             <h2 class="mt-1 section-title">孩子能看到的课本</h2>
             <p class="mt-1 text-xs text-muted">只勾选的课本会出现在孩子端；没指定的课本孩子看不到，也练不了。</p>
+            <p class="mt-1 text-xs text-muted">没有想要的课本？可以联系管理员 <a class="text-forest-deep underline" href="mailto:admin@ikber.cc">admin@ikber.cc</a>，请他帮忙添加；能把课本单词表拍下来发给他就更好。</p>
           </div>
           <button class="btn-primary btn-sm" :disabled="savingTextbooks || !textbooksDirty" @click="saveTextbooks">
             <Loader2 v-if="savingTextbooks" :size="14" class="animate-spin" />

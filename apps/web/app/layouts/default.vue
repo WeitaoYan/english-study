@@ -273,6 +273,14 @@ async function signOut() {
     <main class="lg:pl-[264px]">
       <div class="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
         <slot />
+        <p class="mt-10 border-t border-line/70 pt-4 text-center text-[11px] leading-relaxed text-muted">
+          单词真人发音来自
+          <a class="underline" href="https://www.wiktionary.org" target="_blank" rel="noopener">Wiktionary</a>
+          /
+          <a class="underline" href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons</a>，依
+          <a class="underline" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hans" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+          许可使用。
+        </p>
       </div>
     </main>
 

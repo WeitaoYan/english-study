@@ -63,14 +63,19 @@ admin.get('/stats', async (c) => {
   const today = new Intl.DateTimeFormat('sv-SE', {
     timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
   }).format(now)
+  // 当日统计不用 date(列, '+8 hours')：函数包住列会让索引失效、每次全表扫；
+  // 改成 UTC 区间比较后 idx_record_time / idx_session_user 能直接走范围查找。
+  // 中国日 00:00 = UTC 前一日 16:00，区间左闭右开，与 date() 语义等价。
+  const dayStartUtc = new Date(`${today}T00:00:00+08:00`).toISOString()
+  const dayEndUtc = new Date(new Date(`${today}T00:00:00+08:00`).getTime() + 86400000).toISOString()
   const practice = await c.env.DB.prepare(
     `SELECT
-       (SELECT COUNT(*) FROM practice_session ps WHERE date(ps.start_time, '+8 hours') = ?) AS today_sessions,
-       (SELECT COUNT(*) FROM practice_record pr WHERE date(pr.answered_at, '+8 hours') = ?) AS today_answers,
+       (SELECT COUNT(*) FROM practice_session ps WHERE ps.start_time >= ? AND ps.start_time < ?) AS today_sessions,
+       (SELECT COUNT(*) FROM practice_record pr WHERE pr.answered_at >= ? AND pr.answered_at < ?) AS today_answers,
        (SELECT COUNT(*) FROM practice_record pr WHERE pr.answered_at >= ?) AS week_answers,
        (SELECT COUNT(*) FROM practice_record pr JOIN practice_session ps ON ps.id = pr.session_id
-         WHERE ps.mode = 'review' AND date(pr.answered_at, '+8 hours') = ?) AS review_answers`,
-  ).bind(today, today, weekAgo, today).first<{
+         WHERE ps.mode = 'review' AND pr.answered_at >= ? AND pr.answered_at < ?) AS review_answers`,
+  ).bind(dayStartUtc, dayEndUtc, dayStartUtc, dayEndUtc, weekAgo, dayStartUtc, dayEndUtc).first<{
     today_sessions: number
     today_answers: number
     week_answers: number
@@ -348,9 +353,16 @@ async function resolveWordForUnit(
   if (!spelling || !SPELLING_PATTERN.test(spelling)) {
     return { ok: false, status: 400, message: '拼写只支持英文字母、空格、连字符与撇号' }
   }
-  const found = await env.DB.prepare(
-    'SELECT id, spelling, enabled FROM word WHERE LOWER(spelling) = LOWER(?)',
+  // 先精确匹配（走 idx_word_spelling 索引，1 行）；大小写不一致时再回落到
+  // LOWER() 全表扫——直接 LOWER() 查每次都要扫整个单词表（1667 行）。
+  let found = await env.DB.prepare(
+    'SELECT id, spelling, enabled FROM word WHERE spelling = ?',
   ).bind(spelling).first<{ id: string; spelling: string; enabled: number }>()
+  if (!found) {
+    found = await env.DB.prepare(
+      'SELECT id, spelling, enabled FROM word WHERE LOWER(spelling) = LOWER(?)',
+    ).bind(spelling).first<{ id: string; spelling: string; enabled: number }>()
+  }
   if (found) {
     if (!found.enabled) return { ok: false, status: 400, message: '该单词已在库中但已停用，请先在单词库启用' }
     return { ok: true, wordId: found.id, created: false, spelling: found.spelling }

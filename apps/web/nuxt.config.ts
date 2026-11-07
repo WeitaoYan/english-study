@@ -20,8 +20,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       appName: '单词簿',
-      // 部署时可用环境变量 NUXT_PUBLIC_API_BASE 覆盖。
-      apiBase: '/api',
+      // 默认直接连生产 API：前端 Worker 不代理 /api，相对路径会在
+      // 前端域名下返回 SPA 外壳导致登录拿不到 user。本地开发如需
+      // 走本地 API 代理，建时用 NUXT_PUBLIC_API_BASE=/api 覆盖。
+      apiBase: 'https://api.english.ikber.cc/api',
     },
   },
   nitro: {

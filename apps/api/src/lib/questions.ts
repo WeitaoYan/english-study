@@ -33,9 +33,8 @@ function availableTypes(word: Word): QuestionType[] {
   if (word.spelling.replace(/[^a-zA-Z]/g, '').length >= 3) types.push('letter_fill')
   if (word.examples.length > 0) types.push('sentence_fill')
   if (word.imageUrl && word.imageStatus === 'approved') types.push('image_choice')
-  // 听音题不依赖音频文件，改用浏览器 TTS：只有管理员试听审核通过的单词才可出题，
-  // 与“看图题只有已审核图片才可出题”同款门禁。audioUrl 只是历史字段，前端并不播放它。
-  if (word.ttsStatus === 'approved') types.push('audio_choice')
+  // 听音题只放真人录音：没有录音的词不出听音题（TTS 已移除）。
+  if (word.audioUrl) types.push('audio_choice')
   return types.length ? types : ['definition_choice']
 }
 
@@ -278,7 +277,7 @@ export function applyManualQuestion(
   if (manual.type === 'collocation_choice') return null
   const type = manual.type
   if (type === 'image_choice' && !(word.imageUrl && word.imageStatus === 'approved')) return null
-  if (type === 'audio_choice' && word.ttsStatus !== 'approved') return null
+  if (type === 'audio_choice' && !word.audioUrl) return null
 
   let options: string[] | null = null
   if (manual.options.length) {

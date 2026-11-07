@@ -8,6 +8,7 @@ import parent from './routes/parent'
 import admin from './routes/admin'
 import family from './routes/family'
 import images from './routes/images'
+import audio from './routes/audio'
 
 const app = new Hono<AppEnv>().basePath('/api')
 
@@ -40,6 +41,7 @@ app.route('/parent', parent)
 app.route('/admin', admin)
 app.route('/family', family)
 app.route('/images', images)
+app.route('/audio', audio)
 
 app.notFound((c) => c.json({ error: '接口不存在' }, 404))
 

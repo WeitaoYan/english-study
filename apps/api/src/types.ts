@@ -54,9 +54,6 @@ export interface WordRow {
   image_url?: string | null
   image_status?: string | null
   audio_url?: string | null
-  tts_status?: string | null
-  tts_review_note?: string | null
-  tts_reviewed_at?: string | null
   unit_id?: string | null
 }
 

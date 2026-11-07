@@ -26,10 +26,6 @@ export function mapWord(row: WordRow): Word {
     examples: safeJson<ExampleSentence[]>(row.examples, []),
     collocations: safeJson<Collocation[]>(row.collocations, []),
     audioUrl: row.audio_url || null,
-    // 旧库未跑 0002 迁移时字段不存在，默认待审核，绝不默认放行听音题。
-    ttsStatus: (row.tts_status as Word['ttsStatus']) || 'pending',
-    ttsReviewNote: row.tts_review_note || null,
-    ttsReviewedAt: row.tts_reviewed_at || null,
   }
 }
 

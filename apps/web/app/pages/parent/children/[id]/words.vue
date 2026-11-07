@@ -97,13 +97,14 @@ async function toggleFocus(word: ChildWord) {
   }
 }
 
-function speak(word: string) {
-  if (!import.meta.client || !('speechSynthesis' in window)) return
-  const utterance = new SpeechSynthesisUtterance(word)
-  utterance.lang = 'en-US'
-  utterance.rate = 0.85
-  window.speechSynthesis.cancel()
-  window.speechSynthesis.speak(utterance)
+let audioEl: HTMLAudioElement | null = null
+// 只放真人录音（TTS 已移除）；没有录音的词不显示播放按钮。
+function playAudio(word: { audioUrl: string | null }) {
+  if (!import.meta.client || !word.audioUrl) return
+  audioEl?.pause()
+  const audio = new Audio(word.audioUrl)
+  audioEl = audio
+  audio.play().catch(() => {})
 }
 
 function masteryText(word: ChildWord) {
@@ -221,7 +222,7 @@ onMounted(() => load())
           </div>
 
           <div class="flex shrink-0 items-center gap-1.5">
-            <button class="btn-ghost btn-sm" @click="speak(word.spelling)">
+            <button v-if="word.audioUrl" class="btn-ghost btn-sm" @click="playAudio(word)">
               <Volume2 :size="13" />
             </button>
             <button class="btn-ghost btn-sm" @click="detail = word">
@@ -285,7 +286,7 @@ onMounted(() => load())
             >
             <span v-else class="font-display text-5xl text-muted/50">{{ detail.spelling.charAt(0).toUpperCase() }}</span>
           </div>
-          <button class="btn-secondary mt-3 w-full" @click="speak(detail.spelling)">
+          <button v-if="detail.audioUrl" class="btn-secondary mt-3 w-full" @click="playAudio(detail)">
             <Volume2 :size="14" />
             朗读发音
           </button>

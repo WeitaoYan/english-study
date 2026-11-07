@@ -28,13 +28,14 @@ async function load() {
   }
 }
 
-function speak(word: string) {
-  if (!import.meta.client || !('speechSynthesis' in window)) return
-  const utterance = new SpeechSynthesisUtterance(word)
-  utterance.lang = 'en-US'
-  utterance.rate = 0.85
-  window.speechSynthesis.cancel()
-  window.speechSynthesis.speak(utterance)
+let audioEl: HTMLAudioElement | null = null
+// 只放真人录音（TTS 已移除）；没有录音的词不显示播放按钮。
+function playAudio(word: { audioUrl: string | null }) {
+  if (!import.meta.client || !word.audioUrl) return
+  audioEl?.pause()
+  const audio = new Audio(word.audioUrl)
+  audioEl = audio
+  audio.play().catch(() => {})
 }
 
 onMounted(load)
@@ -129,7 +130,7 @@ onMounted(load)
             <div class="flex items-center gap-2">
               <p class="truncate text-sm font-semibold tracking-tight text-ink">{{ word.spelling }}</p>
               <span v-if="word.pos" class="text-[10px] italic text-muted">{{ word.pos }}</span>
-              <button class="text-muted transition hover:text-forest" title="发音" @click="speak(word.spelling)">
+              <button v-if="word.audioUrl" class="text-muted transition hover:text-forest" title="发音" @click="playAudio(word)">
                 <Volume2 :size="13" />
               </button>
             </div>

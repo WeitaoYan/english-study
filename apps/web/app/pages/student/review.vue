@@ -24,13 +24,14 @@ function reasonLabel(reason: string) {
   return '间隔到期'
 }
 
-function speak(word: string) {
-  if (!import.meta.client || !('speechSynthesis' in window)) return
-  const utterance = new SpeechSynthesisUtterance(word)
-  utterance.lang = 'en-US'
-  utterance.rate = 0.82
-  window.speechSynthesis.cancel()
-  window.speechSynthesis.speak(utterance)
+let audioEl: HTMLAudioElement | null = null
+// 只放真人录音（TTS 已移除）；没有录音的词不显示播放按钮。
+function playAudio(word: { audioUrl: string | null }) {
+  if (!import.meta.client || !word.audioUrl) return
+  audioEl?.pause()
+  const audio = new Audio(word.audioUrl)
+  audioEl = audio
+  audio.play().catch(() => {})
 }
 
 async function load() {
@@ -121,7 +122,7 @@ onMounted(load)
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
                 <p class="truncate text-sm font-semibold text-ink">{{ word.spelling }}</p>
-                <button class="text-muted transition hover:text-forest" @click="speak(word.spelling)">
+                <button v-if="word.audioUrl" class="text-muted transition hover:text-forest" @click="playAudio(word)">
                   <Volume2 :size="13" />
                 </button>
                 <span class="chip-clay ml-auto !py-0.5" :class="word.reason === 'due' ? '!border-ocean/15 !bg-ocean-soft !text-ocean' : ''">

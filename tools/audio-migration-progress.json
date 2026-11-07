@@ -1,0 +1,479 @@
+{
+  "failed": {
+    "ms": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "bored": {
+      "attempts": 0,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "bottom": {
+      "attempts": 0,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "build": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "butter": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "business": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "car": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cartoon": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "chain": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "change": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cauliflower": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "charity": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "chess": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "children": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "chopsticks": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "choose": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "church": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "classmate": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "classroom": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cleaner": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "clothes": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "collar": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "colourful": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "competition": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cool": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cost": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "crab": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "crayon": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cream": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "crazy": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cucumber": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "curtain": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "custom": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cycle": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "cute": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "daddy": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "danger": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "darkness": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "date": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "daytime": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "deep": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "degree": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "delight": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "design": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "downtown": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "drum": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "drop": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "dumpling": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "engineer": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "enough": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "enter": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "enjoy": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "environment": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "even": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "eraser": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "evening": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "event": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "everyday": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "ever": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "everybody": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "every": {
+      "attempts": 0,
+      "transient": 1,
+      "error": "词典查询失败：HTTP 404"
+    },
+    "everyone": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "fairy": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "fan": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "fare": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "fat": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "feather": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "everything": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "film": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "fill": {
+      "attempts": 0,
+      "transient": 1,
+      "error": "词典查询失败：Unexpected end of JSON input"
+    },
+    "flat": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "foggy": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "floor": {
+      "attempts": 0,
+      "transient": 1,
+      "error": "词典查询失败：Unexpected end of JSON input"
+    },
+    "foot": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "forest": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "form": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "friendly": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "full": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "future": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "game": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "gather": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "gentleman": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "granddaughter": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "grandpa": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "greeting": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "grocery": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "hat": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "he": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "heart": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "heel": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "hope": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "instruction": {
+      "attempts": 1,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "nap": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "player": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    },
+    "x-ray": {
+      "attempts": 2,
+      "transient": 0,
+      "error": "API 无音频"
+    }
+  }
+}

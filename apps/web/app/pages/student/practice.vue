@@ -150,38 +150,22 @@ const summary = ref<PracticeSummary | null>(null)
 const finishing = ref(false)
 const questionStart = ref(Date.now())
 
-function speak(word: string) {
-  if (!import.meta.client || !('speechSynthesis' in window)) return
-  const utterance = new SpeechSynthesisUtterance(word)
-  utterance.lang = 'en-US'
-  utterance.rate = 0.82
-  window.speechSynthesis.cancel()
-  window.speechSynthesis.speak(utterance)
-}
-
 const playingAudio = ref(false)
 let audioEl: HTMLAudioElement | null = null
-// 听音题优先放真人录音文件；没有录音的词才回落到浏览器 TTS。
+// 听音题只放真人录音文件（TTS 已移除）；没有录音的词不出听音题。
 async function playAudio() {
   const question = current.value
-  if (!question) return
-  if (question.audioUrl) {
-    try {
-      playingAudio.value = true
-      const audio = new Audio(question.audioUrl)
-      audioEl = audio
-      audio.onended = () => { playingAudio.value = false }
-      audio.onerror = () => {
-        playingAudio.value = false
-        speak(question.wordSpelling)
-      }
-      await audio.play()
-      return
-    } catch {
-      playingAudio.value = false
-    }
+  if (!question?.audioUrl) return
+  try {
+    playingAudio.value = true
+    const audio = new Audio(question.audioUrl)
+    audioEl = audio
+    audio.onended = () => { playingAudio.value = false }
+    audio.onerror = () => { playingAudio.value = false }
+    await audio.play()
+  } catch {
+    playingAudio.value = false
   }
-  speak(question.wordSpelling)
 }
 
 function normalize(value: string) {

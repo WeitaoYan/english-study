@@ -18,7 +18,6 @@ import {
   Settings,
   ShieldCheck,
   Users,
-  Volume2,
   X,
 } from 'lucide-vue-next'
 import type { Component } from 'vue'
@@ -77,7 +76,6 @@ const adminNav: NavItem[] = [
   { label: '课本管理', to: '/admin/textbooks', icon: Library },
   { label: '单词库', to: '/admin/words', icon: BookOpen },
   { label: '图片管理', to: '/admin/images', icon: ImageIcon },
-  { label: '发音审核', to: '/admin/pronunciation', icon: Volume2 },
   { label: '题库管理', to: '/admin/questions', icon: ListChecks },
   { label: '用户与家庭', to: '/admin/users', icon: Users },
 ]

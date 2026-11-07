@@ -1,9 +1,15 @@
 // 把单词真人发音搬到 R2：三路取音——Free Dictionary API → 维基词典挂的英语录音 → Lingua Libre 英音录音；下载验货 → R2 → word_audio 表。
-// 用法：
-//   node tools/migrate-audio.mjs [--limit 500] [--words apple,book,school] [--dry-run]
-// 每小时跑一次，每次取还没音频的已启用词（按拼写顺序），直到搬完。
-// 失败的词记进 tools/audio-migration-progress.json，累计失败 2 次后跳过、最后汇总上报。
+// 用法（以后加了新词之后跑；定时任务已删，手动跑即可）：
+//   node tools/migrate-audio.mjs --dry-run            先看一眼：哪些词待搬、哪些已跳过，不写 R2/D1、不改进度文件
+//   node tools/migrate-audio.mjs                      搬全部待搬词（默认 500 个一批，跑完 remaining 还有就再跑一次）
+//   node tools/migrate-audio.mjs --words apple,book   只搬指定词（新词定向补录音；已有录音的词默认跳过）
+//   node tools/migrate-audio.mjs --words apple --force 指定词已有录音也重搬（录音文件坏了时用）
+//   node tools/migrate-audio.mjs --limit 100          一批只搬 100 个
+// 选词：已启用且无 word_audio 行的词，按拼写顺序；失败的词记进
+// tools/audio-migration-progress.json，确实无音频累计 2 次、临时失败累计 5 次后跳过（跳过词不计入 remaining）。
 // 注意：不走管理员账号登录——R2/D1 全部走本机 wrangler（run_wrangler_cf.py 换取凭证）。
+// 注意：D1 免费版每天 500 万行读额度是整个 Cloudflare 账号下所有库共用，额度用完当天所有读库都会报 7500，
+// UTC 午夜（北京时间次日 08:00）自动恢复；急用可升 Workers Paid（$5/月）。
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { createHash, randomUUID } from 'node:crypto'
@@ -29,7 +35,10 @@ const args = {}
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i]
     if (!token.startsWith('--')) continue
-    const [k, v] = token.replace(/^--/, '').split('=')
+    const [rawK, v] = token.replace(/^--/, '').split('=')
+    // --dry-run 与 --dryRun 都要能用：短横线写法转驼峰，否则 args.dryRun 永远读不到，
+    // --dry-run 会静默失效、直接做真实写入（2026-11-07 实测发现）。
+    const k = rawK.replace(/-([a-z])/g, (_, c) => c.toUpperCase())
     if (v !== undefined) args[k] = v
     else if (tokens[i + 1] && !tokens[i + 1].startsWith('--')) args[k] = tokens[++i]
     else args[k] = true
@@ -37,6 +46,7 @@ const args = {}
 }
 const LIMIT = Number(args.limit || 500)
 const DRY_RUN = Boolean(args.dryRun)
+const FORCE = Boolean(args.force)
 const ONLY_WORDS = args.words ? String(args.words).split(',').map((s) => s.trim().toLowerCase()).filter(Boolean) : null
 
 function runWrangler(wranglerArgs) {
@@ -300,11 +310,26 @@ async function main() {
   const skip = skippedSpellings()
 
   let words
+  let notFound = []
+  let alreadyCovered = []
   if (ONLY_WORDS) {
     const inList = ONLY_WORDS.map((w) => `'${sqlEscape(w)}'`).join(',')
-    words = await d1Query(
+    const found = await d1Query(
       `SELECT id, spelling FROM word WHERE enabled = 1 AND lower(spelling) IN (${inList}) ORDER BY spelling`,
     )
+    const foundKeys = new Set(found.map((w) => w.spelling.toLowerCase()))
+    // 点名的词库里没有：直接告诉用户，别静默跳过（多半是拼写打错了）。
+    notFound = ONLY_WORDS.filter((w) => !foundKeys.has(w))
+    words = found
+    // 点名的词已有录音：默认跳过（省得重复下载上传），加 --force 才重搬。
+    // 跳过名单不拦定向点名：--words 就是用来重试/补录的。
+    if (!FORCE && found.length) {
+      const ids = found.map((w) => `'${sqlEscape(w.id)}'`).join(',')
+      const covered = await d1Query(`SELECT word_id FROM word_audio WHERE word_id IN (${ids})`)
+      const coveredIds = new Set(covered.map((r) => r.word_id))
+      alreadyCovered = found.filter((w) => coveredIds.has(w.id)).map((w) => w.spelling)
+      words = found.filter((w) => !coveredIds.has(w.id))
+    }
   } else {
     words = await d1Query(
       `SELECT id, spelling FROM word WHERE enabled = 1
@@ -318,7 +343,17 @@ async function main() {
         `SELECT COUNT(*) AS c FROM word WHERE enabled = 1 AND id NOT IN (SELECT word_id FROM word_audio) ${skipSqlClause(skip)}`,
       ))[0]?.c
 
-  console.log(JSON.stringify({ pending: words.length, remainingBefore, skipped: skip.length, dryRun: DRY_RUN }))
+  console.log(JSON.stringify({
+    pending: words.length,
+    remainingBefore,
+    skipped: skip.length,
+    dryRun: DRY_RUN,
+    ...(ONLY_WORDS ? { notFound, alreadyCovered } : {}),
+  }))
+  if (ONLY_WORDS) {
+    if (notFound.length) console.log(`库中没有（请核对拼写）：${notFound.join('、')}`)
+    if (alreadyCovered.length) console.log(`已有录音，跳过（加 --force 可重搬）：${alreadyCovered.join('、')}`)
+  }
 
   const successes = []
   const failures = []
@@ -393,7 +428,9 @@ async function main() {
 
   await flushPending()
 
-  saveProgress(progress)
+  // dry-run 是纯预览：不写进度文件，否则一次预览失败就会把词的失败计数 +1，
+  // 下次正式跑可能被提前跳过。
+  if (!DRY_RUN) saveProgress(progress)
   // 本批新跳过的词也要排除，否则 remaining 会把它们算进去。
   const finalSkip = skippedSpellings()
   const remaining = ONLY_WORDS

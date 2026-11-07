@@ -188,6 +188,21 @@ npm run deploy:web     # 构建并部署 Web
 - 听音题与单词表朗读按钮都直接放录音文件；没有录音的词不出听音题、也不显示播放按钮。
 - TTS 发音审核已移除（迁移 `0008_drop_tts_review.sql` 删掉了 `tts_status` 等三列）。
 
+### 新词补充录音
+
+加了新词（批量加词、单个 AI 加词）之后，在仓库根目录跑：
+
+```bash
+node tools/migrate-audio.mjs --dry-run            # 先看一眼：哪些词待搬、哪些已跳过，不写任何东西
+node tools/migrate-audio.mjs                      # 搬全部待搬词（默认 500 个一批，remaining 还有就再跑一次）
+node tools/migrate-audio.mjs --words apple,book   # 只搬指定词（新词定向补录音；已有录音的词默认跳过）
+node tools/migrate-audio.mjs --words apple --force # 指定词已有录音也重搬（录音文件坏了时用）
+```
+
+- 每次只搬「已启用且无录音」的词；失败记进 `tools/audio-migration-progress.json`，确实无音频累计 2 次、临时失败累计 5 次后跳过，跳过词不计入 remaining。
+- 10 个词始终拿不到录音（ms、colourful、downtown、eraser、film、granddaughter、greeting、nap、player、x-ray），会一直留在跳过名单里，不用再管。
+- 注意 D1 免费版每天 500 万行读额度是整个 Cloudflare 账号下所有库共用，额度用完当天所有读库报 7500，UTC 午夜（北京时间次日 08:00）自动恢复；急用可升 Workers Paid（$5/月）。
+
 ## 正式部署
 
 ### 1. 创建 Cloudflare 资源

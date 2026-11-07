@@ -137,6 +137,10 @@ function onFillPaste(event: ClipboardEvent) {
 }
 watch(() => current.value?.key, () => {
   fillLetters.value = []
+  // 切题时停掉上一题还在放的录音。
+  audioEl?.pause()
+  audioEl = null
+  playingAudio.value = false
 })
 const result = ref<AnswerResult | null>(null)
 const submitting = ref(false)
@@ -153,6 +157,31 @@ function speak(word: string) {
   utterance.rate = 0.82
   window.speechSynthesis.cancel()
   window.speechSynthesis.speak(utterance)
+}
+
+const playingAudio = ref(false)
+let audioEl: HTMLAudioElement | null = null
+// 听音题优先放真人录音文件；没有录音的词才回落到浏览器 TTS。
+async function playAudio() {
+  const question = current.value
+  if (!question) return
+  if (question.audioUrl) {
+    try {
+      playingAudio.value = true
+      const audio = new Audio(question.audioUrl)
+      audioEl = audio
+      audio.onended = () => { playingAudio.value = false }
+      audio.onerror = () => {
+        playingAudio.value = false
+        speak(question.wordSpelling)
+      }
+      await audio.play()
+      return
+    } catch {
+      playingAudio.value = false
+    }
+  }
+  speak(question.wordSpelling)
 }
 
 function normalize(value: string) {
@@ -480,9 +509,11 @@ onMounted(start)
           <div v-if="current.type === 'audio_choice'" class="mt-5">
             <button
               class="btn-secondary !rounded-2xl !px-5 !py-3"
-              @click="speak(current.wordSpelling)"
+              :disabled="playingAudio"
+              @click="playAudio"
             >
-              <Volume2 :size="18" />
+              <Loader2 v-if="playingAudio" :size="18" class="animate-spin" />
+              <Volume2 v-else :size="18" />
               播放发音
             </button>
             <p class="mt-2 text-[10px] text-muted">可重复播放，不记录播放次数</p>

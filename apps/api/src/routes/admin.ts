@@ -497,8 +497,11 @@ admin.get('/words', async (c) => {
   const conditions: string[] = ['1 = 1']
   const values: unknown[] = []
   if (search) {
-    conditions.push('(w.spelling LIKE ? OR w.chinese_def LIKE ?)')
-    values.push(`%${search}%`, `%${search}%`)
+    // 完全匹配：拼写不区分大小写、中文释义精确匹配；两个分支都走索引
+    // （spelling_lower 生成列索引、chinese_def 索引，迁移 0010），
+    // 不再用 LIKE '%...%' 全表扫。
+    conditions.push('(w.spelling_lower = ? OR w.chinese_def = ?)')
+    values.push(search.toLowerCase(), search)
   }
   if (hasImage === 'true' || hasImage === 'false') {
     conditions.push('w.has_image = ?')
@@ -512,15 +515,13 @@ admin.get('/words', async (c) => {
   const total = await c.env.DB.prepare(
     `SELECT COUNT(*) AS total FROM word w WHERE ${where}`,
   ).bind(...values).first<{ total: number }>()
-  // 搜索时完全匹配拼写的排第一位：避免匹配太多时精确词被挤出当页。
-  const orderBy = search
-    ? 'CASE WHEN lower(w.spelling) = ? THEN 0 ELSE 1 END, w.updated_at DESC, w.spelling'
-    : 'w.updated_at DESC, w.spelling'
+  // 搜索已是完全匹配，无需再把精确拼写顶到前面。
+  const orderBy = 'w.updated_at DESC, w.spelling'
   const { results } = await c.env.DB.prepare(
     `SELECT ${ADMIN_WORD_COLUMNS} FROM word w WHERE ${where}
      ORDER BY ${orderBy}
      LIMIT ? OFFSET ?`,
-  ).bind(...values, ...(search ? [search.toLowerCase()] : []), limit, (page - 1) * limit).all<AdminWordRow>()
+  ).bind(...values, limit, (page - 1) * limit).all<AdminWordRow>()
   return c.json({
     data: (results || []).map(mapAdminWord),
     total: total?.total || 0,

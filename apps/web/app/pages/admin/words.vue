@@ -377,7 +377,7 @@ onMounted(async () => {
       <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div class="relative flex-1">
           <Search :size="15" class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input v-model="search" class="input !pl-9" placeholder="搜索拼写或中文释义" @input="debouncedApplyFilters" @keyup.enter="applyFilters">
+          <input v-model="search" class="input !pl-9" placeholder="输入完整单词或中文释义（精确匹配）" @input="debouncedApplyFilters" @keyup.enter="applyFilters">
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <select v-model="hasImage" class="input !w-auto !py-2" @change="applyFilters">

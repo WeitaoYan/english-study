@@ -402,11 +402,26 @@ student.post('/practice/sessions', async (c) => {
       return c.json({ error: '该单元的课本未指定给孩子' }, 403)
     }
     const all = await getWordsForUnit(c.env, user.id, body.unitId)
-    const due = all.filter(
-      (row) => row.wm_is_weak === 1 || (row.wm_next_review_time && row.wm_next_review_time <= now),
-    )
+    // 轮换取词：同组内按“最久没练”排，熟练度都一样时每局取下一批，
+    // 避免每次都取排在最前面的同一批词；并列时保持单元内原顺序。
+    const orderIndex = new Map(all.map((row, index) => [row.id, index]))
+    const byUnitOrder = (a: JoinedWordRow, b: JoinedWordRow) =>
+      (orderIndex.get(a.id) ?? 0) - (orderIndex.get(b.id) ?? 0)
+    const due = all
+      .filter((row) => row.wm_is_weak === 1 || (row.wm_next_review_time && row.wm_next_review_time <= now))
+      .sort((a, b) => {
+        const weak = (b.wm_is_weak === 1 ? 1 : 0) - (a.wm_is_weak === 1 ? 1 : 0)
+        if (weak) return weak
+        const next = (a.wm_next_review_time || '').localeCompare(b.wm_next_review_time || '')
+        return next || byUnitOrder(a, b)
+      })
     const fresh = all.filter((row) => !row.wm_id)
-    const rest = all.filter((row) => !due.includes(row) && !fresh.includes(row))
+    const rest = all
+      .filter((row) => !due.includes(row) && !fresh.includes(row))
+      .sort((a, b) => {
+        const last = (a.wm_last_review_time || '').localeCompare(b.wm_last_review_time || '')
+        return last || byUnitOrder(a, b)
+      })
     selected = [...due, ...fresh, ...rest].slice(0, body.limit ?? 10)
     if (!all.length) return c.json({ error: '该单元暂无启用单词' }, 404)
   }

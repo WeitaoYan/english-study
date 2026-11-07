@@ -329,6 +329,58 @@ admin.get('/units/:id/words', async (c) => {
   })
 })
 
+// 单词拼写只支持英文字母、空格、连字符与撇号；匹配时不区分大小写，
+// 但新词按用户输入的大小写原样入库（I、Ms、April 这类词首字母大写是有意义的，
+// 库里本来就是这么存的；全小写会把 Christmas 这类专有名词写错）。
+const SPELLING_PATTERN = /^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/
+
+type ResolveWordResult =
+  | { ok: true; wordId: string; created: boolean; spelling: string }
+  | { ok: false; status: 400 | 502 | 503; message: string }
+
+// 按拼写找词：库中有则直接用（大小写不敏感匹配，保留库里原有拼写）；
+// 库中没有则调 AI 建词（按输入大小写原样入库）后再用。
+async function resolveWordForUnit(
+  env: AppEnv['Bindings'],
+  input: string,
+): Promise<ResolveWordResult> {
+  const spelling = input.trim()
+  if (!spelling || !SPELLING_PATTERN.test(spelling)) {
+    return { ok: false, status: 400, message: '拼写只支持英文字母、空格、连字符与撇号' }
+  }
+  const found = await env.DB.prepare(
+    'SELECT id, spelling, enabled FROM word WHERE LOWER(spelling) = LOWER(?)',
+  ).bind(spelling).first<{ id: string; spelling: string; enabled: number }>()
+  if (found) {
+    if (!found.enabled) return { ok: false, status: 400, message: '该单词已在库中但已停用，请先在单词库启用' }
+    return { ok: true, wordId: found.id, created: false, spelling: found.spelling }
+  }
+  if (!env.AI) return { ok: false, status: 503, message: 'AI 自动补充未启用，请先在 wrangler.jsonc 配置 AI 绑定' }
+  try {
+    const enrichment = await enrichWordWithAI(env, spelling)
+    const wordId = uuid('w')
+    // 与 POST /admin/words 的建词字段一致。
+    await env.DB.prepare(
+      `INSERT INTO word (id, spelling, phonetic, pos, chinese_def, english_def, difficulty,
+        has_image, enabled, examples, collocations)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?)`,
+    ).bind(
+      wordId,
+      spelling,
+      enrichment.phonetic,
+      enrichment.pos,
+      enrichment.chineseDef,
+      enrichment.englishDef,
+      enrichment.difficulty,
+      JSON.stringify(enrichment.examples),
+      JSON.stringify(enrichment.collocations),
+    ).run()
+    return { ok: true, wordId, created: true, spelling }
+  } catch (error) {
+    return { ok: false, status: 502, message: error instanceof Error ? error.message : 'AI 补充失败，请稍后重试' }
+  }
+}
+
 admin.post('/units/:id/words', async (c) => {
   const body = await parseBody(c, z.object({
     wordId: z.string().min(1).optional(),
@@ -340,43 +392,11 @@ admin.post('/units/:id/words', async (c) => {
   let wordId = body.wordId
   let created = false
   if (!wordId) {
-    const spelling = body.spelling?.toLowerCase()
-    if (!spelling) return c.json({ error: '请指定单词' }, 400)
-    if (!/^[a-z]+(?:[ '-][a-z]+)*$/.test(spelling)) {
-      return c.json({ error: '拼写只支持英文字母、空格、连字符与撇号' }, 400)
-    }
-    const found = await c.env.DB.prepare(
-      'SELECT id, enabled FROM word WHERE LOWER(spelling) = ?',
-    ).bind(spelling).first<{ id: string; enabled: number }>()
-    if (found) {
-      if (!found.enabled) return c.json({ error: '该单词已在库中但已停用，请先在单词库启用' }, 400)
-      wordId = found.id
-    } else {
-      if (!c.env.AI) return c.json({ error: 'AI 自动补充未启用，请先在 wrangler.jsonc 配置 AI 绑定' }, 503)
-      try {
-        const enrichment = await enrichWordWithAI(c.env, spelling)
-        wordId = uuid('w')
-        // 与 POST /admin/words 的建词字段一致。
-        await c.env.DB.prepare(
-          `INSERT INTO word (id, spelling, phonetic, pos, chinese_def, english_def, difficulty,
-            has_image, enabled, examples, collocations)
-           VALUES (?, ?, ?, ?, ?, ?, ?, 0, 1, ?, ?)`,
-        ).bind(
-          wordId,
-          spelling,
-          enrichment.phonetic,
-          enrichment.pos,
-          enrichment.chineseDef,
-          enrichment.englishDef,
-          enrichment.difficulty,
-          JSON.stringify(enrichment.examples),
-          JSON.stringify(enrichment.collocations),
-        ).run()
-        created = true
-      } catch (error) {
-        return c.json({ error: error instanceof Error ? error.message : 'AI 补充失败，请稍后重试' }, 502)
-      }
-    }
+    if (!body.spelling?.trim()) return c.json({ error: '请指定单词' }, 400)
+    const resolved = await resolveWordForUnit(c.env, body.spelling)
+    if (!resolved.ok) return c.json({ error: resolved.message }, resolved.status)
+    wordId = resolved.wordId
+    created = resolved.created
   }
   const max = await c.env.DB.prepare(
     'SELECT COALESCE(MAX(sort_order), 0) AS max FROM unit_word WHERE unit_id = ?',
@@ -387,6 +407,66 @@ admin.post('/units/:id/words', async (c) => {
   ).bind(uuid('uw'), c.req.param('id'), wordId, body.sortOrder ?? (max?.max || 0) + 1).run()
   if (!result.meta.changes) return c.json({ error: '该单词已在单元中' }, 409)
   return c.json({ ok: true, wordId, created, aiFilled: created }, 201)
+})
+
+// 批量加词：每行一个单词。逐行处理、逐词返回结果，失败的行不影响其他行；
+// 已在单元的词、批次内重复的词都只报告不报错，重新粘贴剩余部分可断点续加。
+admin.post('/units/:id/words/batch', async (c) => {
+  const body = await parseBody(c, z.object({
+    spellings: z.array(z.string()).min(1).max(100),
+  }))
+  const max = await c.env.DB.prepare(
+    'SELECT COALESCE(MAX(sort_order), 0) AS max FROM unit_word WHERE unit_id = ?',
+  ).bind(c.req.param('id')).first<{ max: number }>()
+  let nextOrder = (max?.max || 0) + 1
+  const seen = new Set<string>()
+  type BatchWordResult = {
+    spelling: string
+    status: 'added' | 'ai_created' | 'exists' | 'duplicate' | 'skipped' | 'failed'
+    message?: string
+  }
+  const results: BatchWordResult[] = []
+  for (const raw of body.spellings) {
+    const spelling = raw.trim()
+    if (!spelling) {
+      results.push({ spelling: raw, status: 'skipped', message: '空行' })
+      continue
+    }
+    const key = spelling.toLowerCase()
+    if (seen.has(key)) {
+      results.push({ spelling, status: 'duplicate', message: '本批次重复' })
+      continue
+    }
+    seen.add(key)
+    const resolved = await resolveWordForUnit(c.env, spelling)
+    if (!resolved.ok) {
+      results.push({ spelling, status: 'failed', message: resolved.message })
+      continue
+    }
+    const result = await c.env.DB.prepare(
+      `INSERT OR IGNORE INTO unit_word (id, unit_id, word_id, sort_order, enabled)
+       VALUES (?, ?, ?, ?, 1)`,
+    ).bind(uuid('uw'), c.req.param('id'), resolved.wordId, nextOrder).run()
+    if (!result.meta.changes) {
+      results.push({ spelling: resolved.spelling, status: 'exists', message: '已在单元中' })
+    } else {
+      nextOrder += 1
+      results.push({ spelling: resolved.spelling, status: resolved.created ? 'ai_created' : 'added' })
+    }
+  }
+  const count = (status: BatchWordResult['status']) => results.filter((r) => r.status === status).length
+  return c.json({
+    ok: true,
+    results,
+    summary: {
+      added: count('added'),
+      aiCreated: count('ai_created'),
+      exists: count('exists'),
+      duplicate: count('duplicate'),
+      skipped: count('skipped'),
+      failed: count('failed'),
+    },
+  }, 201)
 })
 
 admin.delete('/units/:id/words/:wordId', async (c) => {

@@ -76,12 +76,14 @@ const addingId = ref('')
 const addingSpelling = ref(false)
 const removingId = ref('')
 const normalizedSearch = computed(() => wordSearch.value.trim().toLowerCase())
+// 展示与提交用的原始输入（只去首尾空格，保留大小写；I、Ms、April 这类词首字母大写是有意义的）。
+const trimmedSearch = computed(() => wordSearch.value.trim())
 // 搜不到且输入像个单词拼写时，允许用 AI 直接加词：
 // 搜索结果里已有完全相同拼写时不显示（点“添加”即可，或已在单元里）。
 const canAiAdd = computed(() => {
   if (searching.value) return false
   const spelling = normalizedSearch.value
-  if (!spelling || !/^[a-z]+(?:[ '-][a-z]+)*$/.test(spelling)) return false
+  if (!spelling || !/^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/.test(spelling)) return false
   return !searchResults.value.some((word) => word.spelling.toLowerCase() === spelling)
 })
 // 完全匹配的词已在本单元时：它会从可添加列表里被过滤掉，界面上只剩近似词，
@@ -210,6 +212,10 @@ async function openWords(unit: AdminUnit) {
   wordsOpen.value = true
   wordSearch.value = ''
   searchResults.value = []
+  batchOpen.value = false
+  batchText.value = ''
+  batchResults.value = null
+  batchSummary.value = null
   await loadUnitWords(unit)
 }
 
@@ -229,6 +235,67 @@ async function searchLibrary() {
 }
 
 const onSearchInput = useDebouncedFn(searchLibrary, 320).run
+
+type BatchWordStatus = 'added' | 'ai_created' | 'exists' | 'duplicate' | 'skipped' | 'failed'
+interface BatchWordResult {
+  spelling: string
+  status: BatchWordStatus
+  message?: string
+}
+interface BatchAddSummary {
+  added: number
+  aiCreated: number
+  exists: number
+  duplicate: number
+  skipped: number
+  failed: number
+}
+const BATCH_STATUS_LABELS: Record<BatchWordStatus, string> = {
+  added: '已添加',
+  ai_created: 'AI 新建',
+  exists: '已在单元',
+  duplicate: '重复',
+  skipped: '跳过',
+  failed: '失败',
+}
+const batchOpen = ref(false)
+const batchText = ref('')
+const batching = ref(false)
+const batchResults = ref<BatchWordResult[] | null>(null)
+const batchSummary = ref<BatchAddSummary | null>(null)
+const batchLines = computed(() => batchText.value.split('\n').map((line) => line.trim()).filter(Boolean))
+
+async function addWordsBatch() {
+  if (!activeUnit.value || batching.value) return
+  const spellings = batchLines.value
+  if (!spellings.length) {
+    toast.error('请先在输入框里每行写一个单词')
+    return
+  }
+  if (spellings.length > 100) {
+    toast.error('一次最多 100 行，请分批添加')
+    return
+  }
+  batching.value = true
+  try {
+    const result = await api.post<{ results: BatchWordResult[]; summary: BatchAddSummary }>(
+      `/admin/units/${activeUnit.value.id}/words/batch`,
+      { spellings },
+    )
+    batchResults.value = result.results
+    batchSummary.value = result.summary
+    batchText.value = ''
+    await loadUnitWords(activeUnit.value)
+    await load()
+    const done = result.summary.added + result.summary.aiCreated
+    if (result.summary.failed) toast.error(`批量添加完成：${done} 个已加入，${result.summary.failed} 个失败`)
+    else toast.success(`批量添加完成：${done} 个已加入单元`)
+  } catch (error) {
+    toast.error(errorMessage(error, '批量添加失败'))
+  } finally {
+    batching.value = false
+  }
+}
 
 async function addWord(word: LibraryWord) {
   if (!activeUnit.value || addingId.value === word.id) return
@@ -252,9 +319,9 @@ async function addWordBySpelling() {
   addingSpelling.value = true
   try {
     const result = await api.post<{ wordId: string; created: boolean }>(`/admin/units/${activeUnit.value.id}/words`, {
-      spelling: normalizedSearch.value,
+      spelling: trimmedSearch.value,
     })
-    toast.success(result.created ? `已用 AI 加词 ${normalizedSearch.value} 并添加到单元` : `已添加 ${normalizedSearch.value}`)
+    toast.success(result.created ? `已用 AI 加词 ${trimmedSearch.value} 并添加到单元` : `已添加 ${trimmedSearch.value}`)
     await loadUnitWords(activeUnit.value)
     await load()
     // 刷新搜索结果：新词出现后“AI 加词”入口随之消失，避免重复提交。
@@ -489,7 +556,7 @@ onMounted(load)
               「{{ exactInUnit }}」已在本单元，无需重复添加。
             </p>
             <div v-if="canAiAdd" class="rounded-xl border border-dashed border-line bg-paper/70 px-3 py-3">
-              <p class="text-[11px] leading-relaxed text-ink-soft">库中没有「{{ normalizedSearch }}」</p>
+              <p class="text-[11px] leading-relaxed text-ink-soft">库中没有「{{ trimmedSearch }}」</p>
               <button class="btn-primary btn-sm mt-2" :disabled="addingSpelling" @click="addWordBySpelling">
                 <Loader2 v-if="addingSpelling" :size="12" class="animate-spin" />
                 <Sparkles v-else :size="12" />
@@ -520,6 +587,41 @@ onMounted(load)
             <p v-else class="py-6 text-center text-[11px] text-muted">
               {{ searchResults.length ? '搜索结果都已在本单元' : wordSearch.trim() ? '库中没有相关单词' : '输入关键词搜索单词库' }}
             </p>
+          </div>
+
+          <div class="mt-5 border-t border-line/70 pt-4">
+            <button class="flex w-full items-center justify-between text-xs font-medium text-ink" @click="batchOpen = !batchOpen">
+              <span>批量添加</span>
+              <ChevronRight :size="14" :class="batchOpen ? 'rotate-90' : ''" class="text-muted transition" />
+            </button>
+            <div v-if="batchOpen" class="mt-3">
+              <textarea v-model="batchText" rows="6" class="input min-h-[120px] resize-y font-mono text-xs" placeholder="每行一个单词，例如：&#10;apple&#10;banana&#10;Christmas" />
+              <p class="mt-1.5 text-[10px] leading-relaxed text-muted">
+                一次最多 100 行；库中没有的词会自动用 AI 加进单词库；匹配时不区分大小写，重复的词只加一次；新词按输入的大小写入库。
+              </p>
+              <button class="btn-primary btn-sm mt-2" :disabled="batching || !batchText.trim()" @click="addWordsBatch">
+                <Loader2 v-if="batching" :size="12" class="animate-spin" />
+                <Plus v-else :size="12" />
+                {{ batching ? '正在添加…' : `批量添加${batchLines.length ? `（${batchLines.length} 个）` : ''}` }}
+              </button>
+              <div v-if="batchSummary" class="mt-3">
+                <p class="text-[11px] leading-relaxed text-ink-soft">
+                  已添加 {{ batchSummary.added }} · AI 新建 {{ batchSummary.aiCreated }} · 已在单元 {{ batchSummary.exists }} · 重复 {{ batchSummary.duplicate }} · 失败 {{ batchSummary.failed }}
+                </p>
+                <div class="mt-2 max-h-[180px] space-y-1 overflow-y-auto pr-1">
+                  <div v-for="item in batchResults" :key="item.spelling + item.status" class="flex items-center gap-2 rounded-lg border border-line/60 bg-white/60 px-2.5 py-1.5">
+                    <span class="min-w-0 flex-1 truncate text-[11px] font-medium text-ink">{{ item.spelling }}</span>
+                    <span
+                      class="shrink-0 rounded-full px-2 py-0.5 text-[9px]"
+                      :class="item.status === 'failed' ? 'bg-danger-soft text-danger' : item.status === 'exists' || item.status === 'duplicate' ? 'bg-paper text-muted' : 'bg-forest-soft text-forest'"
+                    >
+                      {{ BATCH_STATUS_LABELS[item.status] }}
+                    </span>
+                    <span v-if="item.message" class="max-w-[45%] shrink-0 truncate text-[9px] text-muted" :title="item.message">{{ item.message }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>

@@ -58,6 +58,7 @@ export function isQuestionType(value: string): value is QuestionType {
     'sentence_fill',
     'image_choice',
     'audio_choice',
+    'pronunciation_choice',
     'collocation_choice',
   ].includes(value)
 }

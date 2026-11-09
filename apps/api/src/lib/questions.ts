@@ -15,6 +15,7 @@ const TYPE_ROTATION: QuestionType[] = [
   'sentence_fill',
   'image_choice',
   'audio_choice',
+  'pronunciation_choice',
   'definition_choice',
 ]
 
@@ -35,6 +36,8 @@ function availableTypes(word: Word): QuestionType[] {
   if (word.imageUrl && word.imageStatus === 'approved') types.push('image_choice')
   // 听音题只放真人录音：没有录音的词不出听音题（TTS 已移除）。
   if (word.audioUrl) types.push('audio_choice')
+  // 听词选音同样只认真人录音：目标词与干扰项都必须有录音。
+  if (word.audioUrl) types.push('pronunciation_choice')
   return types.length ? types : ['definition_choice']
 }
 
@@ -91,6 +94,79 @@ function pickOptions(
   const otherPos = shuffle(unique.filter((item) => !correctPos || item.pos !== correctPos))
   const picked = [...samePos, ...otherPos].slice(0, count - 1).map((item) => item.value)
   return shuffle([correctValue, ...picked])
+}
+
+function levenshtein(a: string, b: string): number {
+  if (a === b) return 0
+  const prev = Array.from({ length: b.length + 1 }, (_, j) => j)
+  for (let i = 1; i <= a.length; i++) {
+    let carry = prev[0]!
+    prev[0] = i
+    for (let j = 1; j <= b.length; j++) {
+      const temp = prev[j]!
+      prev[j] = Math.min(
+        prev[j]! + 1,
+        prev[j - 1]! + 1,
+        carry + (a[i - 1] === b[j - 1] ? 0 : 1),
+      )
+      carry = temp
+    }
+  }
+  return prev[b.length]!
+}
+
+/** 音标只留发音字母（去掉 /ˈˌ· 等标记），便于比较读音是否相近。 */
+function phoneticLetters(phonetic: string | null): string {
+  return (phonetic || '').replace(/[^a-zA-Zæəɪʊɔɛʌɒŋθðʃʒ]/g, '')
+}
+
+/**
+ * 听词选音的干扰项相似度：发音越像分越高。首字母相同、词长相近、
+ * 拼写与音标的编辑距离小，都说明两个词听起来容易混淆。
+ * （随机抓三个词当干扰项太好排除，起不到练听力的作用。）
+ */
+function pronunciationScore(target: Word, candidate: Word): number {
+  const t = target.spelling.toLowerCase()
+  const c = candidate.spelling.toLowerCase()
+  let score = 0
+  if (t[0] === c[0]) score += 3
+  const lenDiff = Math.abs(t.length - c.length)
+  if (lenDiff === 0) score += 2
+  else if (lenDiff === 1) score += 1
+  const spellingDistance = levenshtein(t, c)
+  if (spellingDistance <= 2) score += 3
+  else if (spellingDistance <= 3) score += 1
+  if (t[t.length - 1] === c[c.length - 1]) score += 1
+  const targetPhonetic = phoneticLetters(target.phonetic)
+  const candidatePhonetic = phoneticLetters(candidate.phonetic)
+  if (targetPhonetic && candidatePhonetic) {
+    const phoneticDistance = levenshtein(targetPhonetic, candidatePhonetic)
+    if (phoneticDistance <= 2) score += 3
+    else if (phoneticDistance <= 3) score += 1
+  }
+  return score
+}
+
+/**
+ * 听词选音的选项：目标词录音 + 3 个发音最像的同单元词录音，打乱顺序。
+ * 干扰项必须是别的词的真人录音（不是错误发音），且拼写不同——
+ * 同词不同大小写（如 Ms/ms）读音完全相同，不能当干扰项。
+ */
+function pickPronunciationOptions(correct: Word, allWords: Word[]): string[] {
+  if (!correct.audioUrl) return []
+  const seen = new Set([correct.spelling.toLowerCase()])
+  const ranked = allWords
+    .filter((word) => {
+      if (word.id === correct.id || !word.enabled || !word.audioUrl) return false
+      const key = word.spelling.toLowerCase()
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    })
+    .map((word) => ({ url: word.audioUrl!, score: pronunciationScore(correct, word) }))
+    .sort((a, b) => b.score - a.score || a.url.localeCompare(b.url))
+  const picked = ranked.slice(0, 3).map((item) => item.url)
+  return shuffle([correct.audioUrl, ...picked])
 }
 
 function maskSpelling(spelling: string): string {
@@ -203,6 +279,23 @@ export function buildQuestions(
     } else if (type === 'audio_choice') {
       prompt = '听发音，选择对应的英文单词'
       options = pickOptions(word.spelling, word.pos, optionPool(word, allWords, 'audio_choice'))
+    } else if (type === 'pronunciation_choice') {
+      // 题面给单词，4 个选项全是录音：干扰项是别的词的真人录音，
+      // 选出目标词的正确读音。options 里放录音地址，audioUrl 字段不放
+      // （那是听音选词的单段录音，放了会泄题）。
+      const audioOptions = pickPronunciationOptions(word, allWords)
+      if (audioOptions.length < 2 || !word.audioUrl) {
+        type = 'definition_choice'
+        prompt = '根据中文释义，选择对应的英文单词'
+        stem = word.chineseDef
+        hint = null
+        options = pickOptions(word.spelling, word.pos, optionPool(word, allWords, 'definition_choice'))
+      } else {
+        prompt = `听下面四个发音，选出 “${word.spelling}” 的正确读音`
+        stem = word.spelling
+        hint = word.chineseDef
+        options = audioOptions
+      }
     } else if (type === 'collocation_choice') {
       const correctPhrase = word.collocations[0]!.phrase
       prompt = `为 “${word.spelling}” 选择正确的词组搭配`
@@ -264,6 +357,7 @@ const TYPE_PROMPTS: Record<QuestionType, string> = {
   sentence_fill: '读句子，填写缺少的单词',
   image_choice: '看图，选择对应的英文单词',
   audio_choice: '听发音，选择对应的英文单词',
+  pronunciation_choice: '听四个发音，选出正确读音',
   collocation_choice: '选择正确的词组搭配',
 }
 
@@ -275,6 +369,8 @@ export function applyManualQuestion(
 ): QuestionPayload | null {
   // 搭配题已暂停：人工题也不再出该题型，返回 null 回落到自动生成题。
   if (manual.type === 'collocation_choice') return null
+  // 听词选音不开放人工题：人工题的选项是文字，没法写 4 段录音。
+  if (manual.type === 'pronunciation_choice') return null
   const type = manual.type
   if (type === 'image_choice' && !(word.imageUrl && word.imageStatus === 'approved')) return null
   if (type === 'audio_choice' && !word.audioUrl) return null
@@ -305,6 +401,8 @@ export function applyManualQuestion(
 export function expectedAnswer(row: WordRow, type: QuestionType): string {
   const word = mapWord(row)
   if (type === 'collocation_choice') return word.collocations[0]?.phrase || word.spelling
+  // 听词选音的答案是目标词的录音地址：提交的也是选中的录音地址。
+  if (type === 'pronunciation_choice') return word.audioUrl || ''
   return word.spelling
 }
 

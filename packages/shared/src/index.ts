@@ -6,6 +6,7 @@ export type QuestionType =
   | 'sentence_fill'
   | 'image_choice'
   | 'audio_choice'
+  | 'pronunciation_choice'
   | 'collocation_choice'
 
 export type IncentiveTrigger =
@@ -396,6 +397,7 @@ export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   sentence_fill: '句子填空',
   image_choice: '看图选词',
   audio_choice: '听音选词',
+  pronunciation_choice: '听词选音',
   collocation_choice: '搭配选择',
 }
 

@@ -141,6 +141,7 @@ watch(() => current.value?.key, () => {
   audioEl?.pause()
   audioEl = null
   playingAudio.value = false
+  playingOptionUrl.value = null
 })
 const result = ref<AnswerResult | null>(null)
 const submitting = ref(false)
@@ -151,6 +152,7 @@ const finishing = ref(false)
 const questionStart = ref(Date.now())
 
 const playingAudio = ref(false)
+const playingOptionUrl = ref<string | null>(null)
 let audioEl: HTMLAudioElement | null = null
 // 听音题只放真人录音文件（TTS 已移除）；没有录音的词不出听音题。
 async function playAudio() {
@@ -166,6 +168,39 @@ async function playAudio() {
   } catch {
     playingAudio.value = false
   }
+}
+
+// 听词选音：播放某一个选项的录音（与单段录音共用同一个 audioEl，切题时一起停掉）。
+async function playOptionAudio(url: string) {
+  if (!url) return
+  try {
+    audioEl?.pause()
+    playingOptionUrl.value = url
+    playingAudio.value = true
+    const audio = new Audio(url)
+    audioEl = audio
+    audio.onended = () => { playingOptionUrl.value = null; playingAudio.value = false }
+    audio.onerror = () => { playingOptionUrl.value = null; playingAudio.value = false }
+    await audio.play()
+  } catch {
+    playingOptionUrl.value = null
+    playingAudio.value = false
+  }
+}
+
+// 听词选音：点选项先听、同时选中，不直接提交，等孩子听完四个再点提交。
+function selectPronunciation(option: string) {
+  if (result.value || submitting.value) return
+  selected.value = option
+  void playOptionAudio(option)
+}
+
+function pronunciationOptionClass(option: string) {
+  if (result.value) return optionClass(option)
+  if (selected.value && normalize(option) === normalize(selected.value)) {
+    return 'border-forest/40 bg-forest-soft/60 text-forest-deep'
+  }
+  return 'border-line-strong bg-white hover:border-forest/35 hover:bg-forest-soft/40'
 }
 
 function normalize(value: string) {
@@ -514,10 +549,47 @@ onMounted(start)
 
           <div v-if="current.hint" class="mt-4 flex items-center justify-center gap-2 text-[11px] text-muted">
             <span class="rounded-full bg-paper-deep px-2.5 py-1">提示：{{ current.hint }}</span>
-            <span v-if="current.phonetic" class="rounded-full bg-paper-deep px-2.5 py-1">{{ current.phonetic }}</span>
+            <!-- 听词选音不显示音标：音标就是正确读音的文字版，显示了等于直接给答案。 -->
+            <span v-if="current.phonetic && current.type !== 'pronunciation_choice'" class="rounded-full bg-paper-deep px-2.5 py-1">{{ current.phonetic }}</span>
           </div>
 
-          <div v-if="current.options?.length" class="mt-6 grid gap-2.5 sm:grid-cols-2">
+          <!-- 听词选音：选项是 4 段录音，不能当文字显示、也不能点一下就提交；
+               点选项先听、同时选中，听完再点下面的提交。 -->
+          <div v-if="current.type === 'pronunciation_choice' && current.options?.length" class="mt-6">
+            <div class="grid gap-2.5 sm:grid-cols-2">
+              <div
+                v-for="(option, optionIndex) in current.options"
+                :key="option"
+                class="flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3.5 text-left text-sm transition"
+                :class="pronunciationOptionClass(option)"
+                @click="selectPronunciation(option)"
+              >
+                <span class="grid size-6 shrink-0 place-items-center rounded-lg border border-current/15 text-[10px] font-semibold">
+                  {{ optionLetter(optionIndex) }}
+                </span>
+                <span class="flex flex-1 items-center gap-2">
+                  <Volume2 :size="16" />
+                  发音 {{ optionLetter(optionIndex) }}
+                  <Loader2 v-if="playingOptionUrl === option" :size="14" class="animate-spin" />
+                </span>
+                <Check v-if="result && normalize(option) === normalize(result.correctAnswer)" :size="15" />
+                <X v-else-if="result && normalize(option) === normalize(selected) && !result.isCorrect" :size="15" />
+              </div>
+            </div>
+            <div v-if="!result" class="mt-4 flex justify-center">
+              <button
+                class="btn-primary !px-6"
+                :disabled="submitting || !selected"
+                @click="submitAnswer(selected)"
+              >
+                <Loader2 v-if="submitting" :size="16" class="animate-spin" />
+                <template v-else>提交答案</template>
+              </button>
+            </div>
+            <p v-if="!result && !selected" class="mt-2 text-center text-[11px] text-muted">点一个发音听一听，选出正确读音后再提交</p>
+          </div>
+
+          <div v-else-if="current.options?.length" class="mt-6 grid gap-2.5 sm:grid-cols-2">
             <button
               v-for="(option, optionIndex) in current.options"
               :key="option"
@@ -622,7 +694,17 @@ onMounted(start)
                   {{ result.isCorrect ? '答对了' : '这次没有答对' }}
                 </p>
                 <p v-if="!result.isCorrect" class="mt-1 text-xs text-ink-soft">
-                  正确答案：<span class="font-mono font-semibold">{{ result.correctAnswer }}</span>
+                  <template v-if="current.type === 'pronunciation_choice'">
+                    <!-- 正确答案是录音地址，不能直接显示：显示单词并给重听按钮。 -->
+                    正确答案是 “{{ current.wordSpelling }}” 的发音：
+                    <button class="inline-flex items-center gap-1 font-medium text-forest-deep underline underline-offset-2" @click="playOptionAudio(result.correctAnswer)">
+                      <Volume2 :size="13" />
+                      再听一遍
+                    </button>
+                  </template>
+                  <template v-else>
+                    正确答案：<span class="font-mono font-semibold">{{ result.correctAnswer }}</span>
+                  </template>
                 </p>
                 <p v-if="result.explanation" class="mt-2 text-xs leading-relaxed text-ink-soft">{{ result.explanation }}</p>
                 <p v-if="confirmingKey === current.key" class="mt-2 text-[10px] text-muted">成绩正在同步…</p>

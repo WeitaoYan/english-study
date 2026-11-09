@@ -69,9 +69,10 @@ const form = reactive({
   status: 'draft' as QuestionRow['status'],
 })
 
-// 搭配题已暂停：表单与筛选都不再提供该题型（旧数据的类型标签仍用 QUESTION_TYPE_LABELS 展示）。
+// 搭配题已暂停、听词选音不开放人工题（选项是录音、没法用文字出题）：
+// 表单与筛选都不再提供这两个题型（旧数据的类型标签仍用 QUESTION_TYPE_LABELS 展示）。
 const typeOptions = (Object.entries(QUESTION_TYPE_LABELS) as Array<[QuestionType, string]>)
-  .filter(([value]) => value !== 'collocation_choice')
+  .filter(([value]) => value !== 'collocation_choice' && value !== 'pronunciation_choice')
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
 const startIndex = computed(() => (total.value ? (page.value - 1) * limit + 1 : 0))
 const endIndex = computed(() => Math.min(page.value * limit, total.value))

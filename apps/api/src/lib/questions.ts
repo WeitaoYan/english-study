@@ -50,6 +50,43 @@ function chooseType(word: Word, index: number): QuestionType {
   return 'definition_choice'
 }
 
+/** 释义拆成多个意思：按中文分隔符切（如“他们；她们；它们”→三段）。 */
+function defTokens(chineseDef: string): string[] {
+  return chineseDef
+    .split(/[；;、，,／/]+/)
+    .map((part) => part.trim().replace(/[。！!？?~～…]+$/g, '').trim())
+    .filter(Boolean)
+}
+
+/**
+ * 两个词的释义是否重叠：任一意思相同，或一方的释义包含另一方。
+ * 同义词/近义词（如 hi/hello、big/large、tour/travel/trip）不能同时出现在
+ * 释义选词、看图选词的选项里，否则两个选项都算对、题目本身就有歧义。
+ * 注意：释义写法不同但意思相近的（如“旅行”vs“旅游”）这层拦不住，
+ * 真要根治得靠人工同义词表或语义比对。
+ */
+function sameMeaning(a: Word, b: Word): boolean {
+  const aDef = a.chineseDef.trim()
+  const bDef = b.chineseDef.trim()
+  if (!aDef || !bDef) return false
+  if (aDef === bDef) return true
+  if (aDef.includes(bDef) || bDef.includes(aDef)) return true
+  const aTokens = defTokens(aDef)
+  const bTokens = defTokens(bDef)
+  return aTokens.some((token) => bTokens.includes(token))
+}
+
+/**
+ * 两个词发音是否相同（同音词，如 right/write）：音标只留发音字母后比较。
+ * 同音词不能同时出现在听音选词、听词选音的选项里，否则两个选项听起来一样。
+ * 任一方没音标时不判（判不了，不拦）。
+ */
+function sameSound(a: Word, b: Word): boolean {
+  const aPhonetic = phoneticLetters(a.phonetic)
+  const bPhonetic = phoneticLetters(b.phonetic)
+  return aPhonetic !== '' && aPhonetic === bPhonetic
+}
+
 function optionPool(
   correct: Word,
   allWords: Word[],
@@ -57,7 +94,8 @@ function optionPool(
 ): Array<{ value: string; pos: string | null }> {
   if (type === 'image_choice') {
     return allWords
-      .filter((word) => word.id !== correct.id && word.enabled && word.imageUrl && word.imageStatus === 'approved')
+      .filter((word) => word.id !== correct.id && word.enabled && word.imageUrl && word.imageStatus === 'approved'
+        && !sameMeaning(word, correct))
       .map((word) => ({ value: word.spelling, pos: word.pos }))
   }
   if (type === 'collocation_choice') {
@@ -73,7 +111,13 @@ function optionPool(
       }))
   }
   return allWords
-    .filter((word) => word.id !== correct.id && word.enabled)
+    .filter((word) => {
+      if (word.id === correct.id || !word.enabled) return false
+      // 释义选词：同义词不能当干扰项；听音选词：同音词不能当干扰项。
+      if (type === 'definition_choice' && sameMeaning(word, correct)) return false
+      if (type === 'audio_choice' && sameSound(word, correct)) return false
+      return true
+    })
     .map((word) => ({ value: word.spelling, pos: word.pos }))
 }
 
@@ -158,6 +202,7 @@ function pickPronunciationOptions(correct: Word, allWords: Word[]): string[] {
   const ranked = allWords
     .filter((word) => {
       if (word.id === correct.id || !word.enabled || !word.audioUrl) return false
+      if (sameSound(word, correct)) return false
       const key = word.spelling.toLowerCase()
       if (seen.has(key)) return false
       seen.add(key)

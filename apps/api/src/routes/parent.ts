@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 import {
   INCENTIVE_STATUS_LABELS,
+  QUESTION_TYPE_ABILITY,
   QUESTION_TYPE_LABELS,
   type IncentiveTrigger,
   type QuestionType,
@@ -411,6 +412,63 @@ parent.get('/children/:id/report', async (c) => {
      WHERE family_id = ? AND student_user_id = ? AND status = 'pending_confirm'`,
   ).bind(child.family_id, child.student_user_id).first<{ total: number }>()
 
+  // 按题型统计错题（与趋势图同窗口：近 days 天）：每种题型答了多少、错了多少，
+  // 以及该题型错得最多的 3 个词。家长据此看孩子是听不懂、不会写还是不懂意思。
+  const since = new Date(Date.now() - days * 86400000).toISOString()
+  const { results: typeRows } = await c.env.DB.prepare(
+    `SELECT pr.question_type, COUNT(*) AS answered, COALESCE(SUM(pr.is_correct), 0) AS correct
+     FROM practice_record pr
+     JOIN practice_session ps ON ps.id = pr.session_id
+     WHERE ps.user_id = ? AND pr.answered_at >= ?
+     GROUP BY pr.question_type`,
+  ).bind(child.student_user_id, since).all<{
+    question_type: QuestionType
+    answered: number
+    correct: number
+  }>()
+  const { results: typeErrorRows } = await c.env.DB.prepare(
+    `SELECT pr.question_type, w.spelling, w.chinese_def, COUNT(*) AS wrong
+     FROM practice_record pr
+     JOIN practice_session ps ON ps.id = pr.session_id
+     JOIN word w ON w.id = pr.word_id
+     WHERE ps.user_id = ? AND pr.is_correct = 0 AND pr.answered_at >= ?
+     GROUP BY pr.question_type, pr.word_id
+     ORDER BY wrong DESC, w.spelling ASC
+     LIMIT 60`,
+  ).bind(child.student_user_id, since).all<{
+    question_type: QuestionType
+    spelling: string
+    chinese_def: string
+    wrong: number
+  }>()
+  const topErrorsByType = new Map<string, Array<{ spelling: string; chineseDef: string; wrong: number }>>()
+  for (const row of typeErrorRows || []) {
+    const list = topErrorsByType.get(row.question_type) || []
+    if (list.length < 3) {
+      list.push({ spelling: row.spelling, chineseDef: row.chinese_def, wrong: row.wrong })
+    }
+    topErrorsByType.set(row.question_type, list)
+  }
+  const typeStats = (typeRows || [])
+    .map((row) => {
+      const ability = QUESTION_TYPE_ABILITY[row.question_type]
+      if (!ability) return null
+      const answered = row.answered
+      const correct = row.correct
+      return {
+        type: row.question_type,
+        label: QUESTION_TYPE_LABELS[row.question_type] || row.question_type,
+        ability,
+        answered,
+        correct,
+        wrong: answered - correct,
+        accuracy: answered ? Math.round((correct / answered) * 100) : 0,
+        topErrors: topErrorsByType.get(row.question_type) || [],
+      }
+    })
+    .filter((row): row is NonNullable<typeof row> => row !== null)
+    .sort((a, b) => a.accuracy - b.accuracy || b.wrong - a.wrong)
+
   return c.json({
     child: { id: child.student_user_id, nickname: child.nickname },
     today: {
@@ -472,6 +530,7 @@ parent.get('/children/:id/report', async (c) => {
       minutes: day.minutes,
     })),
     pendingRewards: pending?.total || 0,
+    typeStats,
   })
 })
 

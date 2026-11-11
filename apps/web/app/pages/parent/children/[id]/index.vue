@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-vue-next'
-import type { ChildTextbookOption, ParentReport } from '@english-study/shared'
+import { QUESTION_ABILITY_HINTS, QUESTION_ABILITY_LABELS } from '@english-study/shared'
+import type { ChildTextbookOption, ParentReport, QuestionAbility } from '@english-study/shared'
 import { formatDateTimeCN } from '@english-study/shared'
 
 const route = useRoute()
@@ -79,6 +80,36 @@ async function load() {
 async function setDays(value: number) {
   days.value = value
   await load()
+}
+
+/** 按能力维度汇总错题：听力（听不懂）、拼写（不会写）、词义（不懂意思）。 */
+const abilityGroups = computed(() => {
+  const order: QuestionAbility[] = ['listening', 'spelling', 'meaning']
+  return order
+    .map((ability) => {
+      const types = (data.value?.typeStats || []).filter((stat) => stat.ability === ability)
+      const answered = types.reduce((sum, stat) => sum + stat.answered, 0)
+      const correct = types.reduce((sum, stat) => sum + stat.correct, 0)
+      return {
+        ability,
+        label: QUESTION_ABILITY_LABELS[ability],
+        hint: QUESTION_ABILITY_HINTS[ability],
+        types,
+        answered,
+        correct,
+        wrong: answered - correct,
+        accuracy: answered ? Math.round((correct / answered) * 100) : 0,
+      }
+    })
+    .filter((group) => group.types.length > 0)
+})
+
+function accuracyTone(accuracy: number): 'forest' | 'gold' | 'clay' {
+  return accuracy >= 80 ? 'forest' : accuracy >= 60 ? 'gold' : 'clay'
+}
+
+function accuracyTextClass(accuracy: number): string {
+  return accuracy >= 80 ? 'text-forest' : accuracy >= 60 ? 'text-gold' : 'text-clay'
 }
 
 const reviewDailyLimit = ref(10)
@@ -301,6 +332,53 @@ onMounted(() => {
           </section>
         </aside>
       </div>
+
+      <section class="card mt-6 p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="eyebrow">错题分析</p>
+            <h2 class="mt-1 section-title">错在哪里</h2>
+            <p class="mt-1 text-xs text-muted">按题型统计近 {{ days }} 天的答题：听力是听不懂，拼写是不会写，词义是不懂意思；正确率越低越需要加强。</p>
+          </div>
+          <span class="text-[11px] text-muted">近 {{ days }} 天</span>
+        </div>
+        <div v-if="abilityGroups.length" class="mt-5 grid gap-4 md:grid-cols-3">
+          <div
+            v-for="group in abilityGroups"
+            :key="group.ability"
+            class="rounded-2xl border border-line/70 bg-white/50 p-4"
+          >
+            <div class="flex items-baseline justify-between gap-2">
+              <p class="text-sm font-medium text-ink">
+                {{ group.label }}
+                <span class="text-[11px] font-normal text-muted">· {{ group.hint }}</span>
+              </p>
+              <span class="text-lg font-semibold" :class="accuracyTextClass(group.accuracy)">{{ group.accuracy }}%</span>
+            </div>
+            <p class="mt-0.5 text-[11px] text-muted">答 {{ group.answered }} 题 · 错 {{ group.wrong }} 题</p>
+            <ProgressBar :value="group.accuracy" :tone="accuracyTone(group.accuracy)" size="sm" class="mt-2.5" />
+            <div class="mt-4 space-y-2.5">
+              <div v-for="stat in group.types" :key="stat.type" class="rounded-xl bg-paper/70 px-3 py-2.5">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="text-xs font-medium text-ink">{{ stat.label }}</p>
+                  <span class="text-[11px] font-medium text-ink">{{ stat.accuracy }}%</span>
+                </div>
+                <p class="mt-0.5 text-[10px] text-muted">答 {{ stat.answered }} 题 · 错 {{ stat.wrong }} 题</p>
+                <div v-if="stat.topErrors.length" class="mt-2 flex flex-wrap items-center gap-1.5">
+                  <span class="text-[9px] text-muted">错得最多：</span>
+                  <span
+                    v-for="word in stat.topErrors"
+                    :key="word.spelling"
+                    :title="word.chineseDef"
+                    class="rounded-full bg-danger-soft px-2 py-0.5 text-[9px] text-danger"
+                  >{{ word.spelling }} ×{{ word.wrong }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p v-else class="py-8 text-center text-xs text-muted">这段时间还没有答题，练几局就能量出短板。</p>
+      </section>
 
       <div class="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <section class="card p-5 sm:p-6">

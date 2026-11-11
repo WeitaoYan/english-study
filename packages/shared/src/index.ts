@@ -290,6 +290,17 @@ export interface ReviewExplanation {
   nextReviewTime: string | null
 }
 
+export interface TypeErrorStat {
+  type: QuestionType
+  label: string
+  ability: QuestionAbility
+  answered: number
+  correct: number
+  wrong: number
+  accuracy: number
+  topErrors: Array<{ spelling: string; chineseDef: string; wrong: number }>
+}
+
 export interface ParentReport {
   child: {
     id: string
@@ -317,6 +328,8 @@ export interface ParentReport {
   reviewExplanations: ReviewExplanation[]
   trend: TrendPoint[]
   pendingRewards: number
+  /** 按题型统计的错题情况（与趋势图同窗口：近 7 天或近 30 天），正确率从低到高排。 */
+  typeStats: TypeErrorStat[]
 }
 
 export interface IncentiveRule {
@@ -399,6 +412,34 @@ export const QUESTION_TYPE_LABELS: Record<QuestionType, string> = {
   audio_choice: '听音选词',
   pronunciation_choice: '听词选音',
   collocation_choice: '搭配选择',
+}
+
+export type QuestionAbility = 'listening' | 'spelling' | 'meaning'
+
+/**
+ * 题型 → 能力维度：听力（听不懂）、拼写（不会写）、词义（不懂意思）。
+ * 搭配题已停用，不归入任何维度。
+ */
+export const QUESTION_TYPE_ABILITY: Record<QuestionType, QuestionAbility | null> = {
+  audio_choice: 'listening',
+  pronunciation_choice: 'listening',
+  letter_fill: 'spelling',
+  sentence_fill: 'spelling',
+  definition_choice: 'meaning',
+  image_choice: 'meaning',
+  collocation_choice: null,
+}
+
+export const QUESTION_ABILITY_LABELS: Record<QuestionAbility, string> = {
+  listening: '听力',
+  spelling: '拼写',
+  meaning: '词义',
+}
+
+export const QUESTION_ABILITY_HINTS: Record<QuestionAbility, string> = {
+  listening: '听不懂',
+  spelling: '不会写',
+  meaning: '不懂意思',
 }
 
 export const MVPS_QUESTION_TYPES: QuestionType[] = [

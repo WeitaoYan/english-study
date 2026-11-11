@@ -13,12 +13,10 @@ import {
   ListChecks,
   Loader2,
   LogOut,
-  Menu,
   RefreshCw,
   Settings,
   ShieldCheck,
   Users,
-  X,
 } from 'lucide-vue-next'
 import type { Component } from 'vue'
 
@@ -99,18 +97,10 @@ const roleMeta = computed(() => {
   return { label: '学生端', note: '按课本，稳步记单词', icon: GraduationCap }
 })
 
-const mobileOpen = ref(false)
-
 function active(to: string, exact?: boolean) {
   if (exact) return route.path === to
   return route.path === to || route.path.startsWith(`${to}/`)
 }
-
-function closeMobile() {
-  mobileOpen.value = false
-}
-
-watch(() => route.fullPath, closeMobile)
 
 async function signOut() {
   await auth.logout()
@@ -209,64 +199,20 @@ async function signOut() {
         </span>
         <span class="font-display text-lg text-ink">单词簿</span>
       </NuxtLink>
-      <button class="btn-ghost size-9 !p-0" @click="mobileOpen = true">
-        <Menu :size="19" />
-      </button>
-    </header>
-
-    <div
-      v-if="mobileOpen"
-      class="fixed inset-0 z-50 lg:hidden"
-    >
-      <div class="absolute inset-0 bg-ink/25 backdrop-blur-sm" @click="closeMobile" />
-      <aside class="absolute inset-y-0 left-0 flex w-[290px] flex-col bg-paper px-5 py-5 shadow-2xl">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <span class="grid size-9 place-items-center rounded-xl bg-forest text-white">
-              <BookOpen :size="17" />
-            </span>
-            <span class="font-display text-xl text-ink">单词簿</span>
-          </div>
-          <button class="btn-ghost size-9 !p-0" @click="closeMobile">
-            <X :size="18" />
-          </button>
-        </div>
-
-        <div class="mt-6 rounded-2xl border border-line bg-cream px-4 py-3">
-          <p class="text-[11px] text-muted">{{ roleMeta.label }}</p>
-          <p class="mt-1 text-sm font-medium text-ink">{{ auth.user.value.nickname }}</p>
-        </div>
-
+      <div class="flex items-center gap-1">
         <button
           v-if="auth.isChildView.value"
-          class="btn-secondary mt-3 w-full"
+          class="btn-ghost size-9 !p-0"
+          title="切回家长身份"
           @click="switchBackOpen = true"
         >
-          <ArrowLeftRight :size="16" />
-          切回家长身份
+          <ArrowLeftRight :size="18" />
         </button>
-
-        <nav class="mt-5 flex-1 space-y-1 overflow-y-auto">
-          <NuxtLink
-            v-for="item in navItems"
-            :key="item.to"
-            :to="item.to"
-            class="flex items-center gap-3 rounded-xl px-3 py-3 text-sm"
-            :class="active(item.to, item.exact)
-              ? 'bg-forest text-white'
-              : 'text-ink-soft hover:bg-forest-soft'"
-          >
-            <component :is="item.icon" :size="17" />
-            {{ item.label }}
-          </NuxtLink>
-        </nav>
-
-        <button class="btn-secondary w-full" @click="signOut">
-          <LogOut :size="16" />
-          退出登录
+        <button class="btn-ghost size-9 !p-0" title="退出登录" @click="signOut">
+          <LogOut :size="18" />
         </button>
-      </aside>
-    </div>
+      </div>
+    </header>
 
     <main class="lg:pl-[264px]">
       <div class="mx-auto min-h-screen max-w-6xl px-4 pb-24 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-10">

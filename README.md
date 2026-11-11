@@ -91,11 +91,11 @@ npm run dev:web
 
 管理员密码自行保管，不写入文档。学生没有独立登录账号：家长登录后点孩子卡片的「进入孩子视角」即可进入孩子端。家长可以直接在登录页点“用邮箱注册”创建家长账号。
 
-## 线上部署（Cloudflare，Yanweitao@hotmail.com 账号）
+## 线上部署（Cloudflare）
 
-- 前端：<https://english.ikber.cc>（Worker `weitaoyan-english-study-apps-web`，自定义域名）
-- API：<https://api.english.ikber.cc/api>（Worker `english-study-api`，自定义域名）
-- D1：`english-study`（`c125b631-7ef8-4701-a3f4-c8d62f2fa8d1`），R2：`english-study-images`，线上已跑完迁移 0001–0005 并导入课本与词汇数据（演示账户已移除，`seed.sql` 不再建账号）
+- 前端：<https://english.ikber.cc>（自定义域名）
+- API：<https://api.english.ikber.cc/api>（自定义域名）
+- 数据库（D1）与文件存储（R2）均在同一 Cloudflare 账号下；线上迁移已全部应用，课本与词汇数据已导入（演示账户已移除，`seed.sql` 不再建账号）
 - `JWT_SECRET` 只存在 Cloudflare Secret 里，不进仓库；不要把本地 `.dev.vars` 的值当线上密钥用
 
 部署步骤（Web 的 API 地址靠 Worker 变量，不是构建时写死）：
@@ -105,8 +105,8 @@ npm run dev:web
 npm run deploy:api
 npm run db:migrate:remote -w @english-study/api
 npm run db:seed:remote -w @english-study/api
-# Web：构建后，在 .output/server/wrangler.json 里补上 routes（english.ikber.cc 自定义域名）
-# 与 vars（NUXT_PUBLIC_API_BASE=https://api.english.ikber.cc/api），再部署
+# Web：构建后由 apps/web/scripts/prepare-deploy.mjs 注入部署配置
+#（Worker 名、自定义域名路由、API 地址），再部署
 npm run deploy:web
 ```
 

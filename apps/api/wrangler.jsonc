@@ -10,7 +10,7 @@
   "vars": {
     "APP_ENV": "production",
     "COOKIE_DOMAIN": "",
-    "CORS_ORIGINS": "https://english.ikber.cc,https://weitaoyan-english-study-apps-web.yanweitao.workers.dev,http://localhost:3000,http://127.0.0.1:3000"
+    "CORS_ORIGINS": "https://english.ikber.cc,https://english-study-web.yanweitao.workers.dev,http://localhost:3000,http://127.0.0.1:3000"
   },
   "d1_databases": [
     {

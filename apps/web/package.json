@@ -9,7 +9,7 @@
     "generate": "nuxt generate",
     "preview": "wrangler dev --config .output/server/wrangler.json",
     "typecheck": "nuxt typecheck",
-    "deploy": "npm run build && wrangler deploy --config .output/server/wrangler.json"
+    "deploy": "npm run build && node scripts/prepare-deploy.mjs && wrangler deploy --config .output/server/wrangler.json"
   },
   "dependencies": {
     "lucide-vue-next": "^1.0.0",

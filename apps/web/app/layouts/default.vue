@@ -269,7 +269,7 @@ async function signOut() {
     </div>
 
     <main class="lg:pl-[264px]">
-      <div class="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
+      <div class="mx-auto min-h-screen max-w-6xl px-4 pb-24 pt-6 sm:px-6 lg:px-10 lg:pb-10 lg:pt-10">
         <slot />
         <p class="mt-10 border-t border-line/70 pt-4 text-center text-[11px] leading-relaxed text-muted">
           单词真人发音来自
@@ -281,6 +281,26 @@ async function signOut() {
         </p>
       </div>
     </main>
+
+    <!-- 移动端底部 TabBar：只在小屏出现，PC 端仍用左侧边栏切换。 -->
+    <nav
+      class="fixed inset-x-0 bottom-0 z-40 border-t border-line/80 bg-paper/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
+      aria-label="底部导航"
+    >
+      <div class="flex">
+        <NuxtLink
+          v-for="item in navItems"
+          :key="item.to"
+          :to="item.to"
+          class="flex min-w-0 flex-1 flex-col items-center gap-0.5 px-1 pb-2 pt-1.5"
+          :class="active(item.to, item.exact) ? 'text-forest' : 'text-muted'"
+        >
+          <span class="h-1 w-6 rounded-full" :class="active(item.to, item.exact) ? 'bg-forest' : 'bg-transparent'" />
+          <component :is="item.icon" :size="20" :stroke-width="1.8" />
+          <span class="w-full truncate text-center text-[10px] font-medium leading-tight">{{ item.label }}</span>
+        </NuxtLink>
+      </div>
+    </nav>
 
     <Modal
       :open="switchBackOpen"

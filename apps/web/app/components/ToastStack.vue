@@ -12,7 +12,7 @@ const toneMap = {
 
 <template>
   <Teleport to="body">
-    <div class="pointer-events-none fixed inset-x-0 bottom-5 z-[80] flex flex-col items-center gap-2 px-4">
+    <div class="pointer-events-none fixed inset-x-0 bottom-24 z-[80] flex flex-col items-center gap-2 px-4 lg:bottom-5">
       <TransitionGroup
         enter-active-class="transition duration-200 ease-out"
         enter-from-class="translate-y-2 opacity-0"

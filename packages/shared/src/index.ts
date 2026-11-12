@@ -128,10 +128,25 @@ export interface TextbookDetail {
   units: Unit[]
 }
 
+/** 单元内单个词的最新掌握度（每次打开单元都重新算，不进本地缓存）。 */
+export interface UnitWordMastery {
+  wordId: string
+  strength: number
+  accuracy: number
+  isWeak: boolean
+}
+
 export interface UnitDetail {
   unit: Unit
   textbook: Pick<Textbook, 'id' | 'name' | 'version' | 'grade' | 'semester'>
-  words: WordWithMastery[]
+  /** 单元单词（静态内容）：wordsVersion 没变时为 null，用本地缓存。 */
+  words: Word[] | null
+  /** 单元单词内容版本号：单词内容、成员、排序、录音、图片任一变化即变。 */
+  wordsVersion: string
+  /** 本次返回的 words 是否为最新全量（false 时 words 为 null）。 */
+  wordsChanged: boolean
+  /** 各词最新掌握度（每次都重新算，不进缓存）。 */
+  mastery: UnitWordMastery[]
 }
 
 export interface QuestionPayload {

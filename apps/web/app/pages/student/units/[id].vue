@@ -13,16 +13,71 @@ import type { UnitDetail } from '@english-study/shared'
 const route = useRoute()
 const api = useApi()
 const toast = useToast()
+const wordsCache = useUnitWordsCache()
 
 const data = ref<UnitDetail | null>(null)
 const loading = ref(true)
 
+/** 合并：缓存/新下的单词（静态）+ 每次都新鲜的掌握度。 */
+const words = computed(() => {
+  if (!data.value?.words) return []
+  const masteryById = new Map(data.value.mastery.map((m) => [m.wordId, m]))
+  return data.value.words.map((word) => ({
+    ...word,
+    mastery: masteryById.get(word.id) ?? null,
+  }))
+})
+
 async function load() {
-  loading.value = true
+  const unitId = route.params.id as string
+  const cached = wordsCache.read(unitId)
+  // 有缓存先直接显示（头部用缓存的单元名/课本快照），版本号校验在后台做；
+  // 没缓存才显示加载骨架。
+  if (cached) {
+    data.value = {
+      unit: {
+        id: unitId,
+        textbookId: cached.textbook.id,
+        unitNo: cached.unit.unitNo,
+        unitName: cached.unit.unitName,
+        sortOrder: 0,
+        wordCount: cached.words.length,
+        learnedWords: 0,
+        masteredWords: 0,
+        dueCount: 0,
+        progress: 0,
+      },
+      textbook: cached.textbook,
+      words: cached.words,
+      wordsVersion: cached.version,
+      wordsChanged: false,
+      mastery: [],
+    }
+    loading.value = false
+  } else {
+    loading.value = true
+  }
   try {
-    data.value = await api.get<UnitDetail>(`/student/units/${route.params.id}`)
+    const result = await api.get<UnitDetail>(`/student/units/${unitId}`, {
+      query: cached ? { wordsVersion: cached.version } : {},
+    })
+    if (result.wordsChanged && result.words) {
+      wordsCache.write(unitId, {
+        version: result.wordsVersion,
+        words: result.words,
+        unit: { unitNo: result.unit.unitNo, unitName: result.unit.unitName },
+        textbook: result.textbook,
+      })
+    }
+    data.value = {
+      ...result,
+      words: result.wordsChanged && result.words ? result.words : cached?.words ?? null,
+    }
   } catch (error) {
-    toast.error(errorMessage(error, '单元加载失败'))
+    if (!cached) toast.error(errorMessage(error, '单元加载失败'))
+    else toast.error(errorMessage(error, '单元刷新失败，显示的是上次缓存的内容'))
+    // 单元已删/无权访问时清掉旧缓存，避免下次还显示已不存在的内容。
+    if (errorMessage(error, '').includes('不存在')) wordsCache.clear(unitId)
   } finally {
     loading.value = false
   }
@@ -109,9 +164,9 @@ onMounted(load)
         <span class="text-[11px] text-muted">按单元顺序</span>
       </div>
 
-      <div v-if="data.words.length" class="mt-4 grid gap-3 sm:grid-cols-2">
+      <div v-if="words.length" class="mt-4 grid gap-3 sm:grid-cols-2">
         <div
-          v-for="(word, index) in data.words"
+          v-for="(word, index) in words"
           :key="word.id"
           class="card flex items-center gap-3.5 p-3.5 transition hover:border-forest/20 sm:p-4"
         >

@@ -1,4 +1,4 @@
-import type { Unit } from '@english-study/shared'
+import type { Unit, UnitWordMastery, Word } from '@english-study/shared'
 import type { Env, MasteryRow, WordRow } from '../types'
 import { mapWord, mapMastery } from './mappers'
 import { bool, safeJson } from './utils'
@@ -90,6 +90,87 @@ export async function getWordsForUnit(
      ORDER BY uw.sort_order, w.spelling`,
   ).bind(userId, unitId).all<JoinedWordRow>()
   return results || []
+}
+
+/** 单元单词（静态内容，不含掌握度）：只在版本号变化时才下发。 */
+export async function getUnitWords(
+  env: Env,
+  unitId: string,
+): Promise<Word[]> {
+  const { results } = await env.DB.prepare(
+    `SELECT ${WORD_COLUMNS}
+     FROM unit_word uw
+     JOIN word w ON w.id = uw.word_id AND w.enabled = 1
+     WHERE uw.unit_id = ? AND uw.enabled = 1
+     ORDER BY uw.sort_order, w.spelling`,
+  ).bind(unitId).all<JoinedWordRow>()
+  return (results || []).map((row) => mapWord(row))
+}
+
+/** 单元内各词最新掌握度（轻量，每次打开都重新算，不进缓存）。 */
+export async function getUnitMastery(
+  env: Env,
+  userId: string,
+  unitId: string,
+): Promise<UnitWordMastery[]> {
+  const { results } = await env.DB.prepare(
+    `SELECT wm.word_id, wm.strength, wm.accuracy, wm.is_weak
+     FROM word_mastery wm
+     JOIN unit_word uw ON uw.word_id = wm.word_id
+     JOIN word w ON w.id = wm.word_id AND w.enabled = 1
+     WHERE uw.unit_id = ? AND uw.enabled = 1 AND wm.user_id = ?`,
+  ).bind(unitId, userId).all<{
+    word_id: string
+    strength: number
+    accuracy: number
+    is_weak: number
+  }>()
+  return (results || []).map((row) => ({
+    wordId: row.word_id,
+    strength: row.strength ?? 0,
+    accuracy: row.accuracy ?? 0,
+    isWeak: Boolean(row.is_weak),
+  }))
+}
+
+/** FNV-1a 32 位哈希：给指纹串算一个短版本号。 */
+function fnv1a(input: string): string {
+  let hash = 0x811c9dc5
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i)
+    hash = Math.imul(hash, 0x01000193)
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0')
+}
+
+/**
+ * 单元单词内容版本号：单词内容、成员、排序、录音、图片任一变化即变。
+ * 只查轻量列（id、updated_at、各最新录音/图片时间），不拉单词全量，
+ * 所以版本校验本身很便宜；掌握度不参与版本（每次都重新算）。
+ * 注意：单词内容改动须更新 word.updated_at（管理端 PATCH 已做），
+ * 否则版本号不会变。
+ */
+export async function getUnitWordsVersion(
+  env: Env,
+  unitId: string,
+): Promise<{ version: string; wordCount: number }> {
+  const { results } = await env.DB.prepare(
+    `SELECT w.id, w.updated_at,
+       (SELECT MAX(wa.created_at) FROM word_audio wa WHERE wa.word_id = w.id) AS audio_at,
+       (SELECT MAX(wi.created_at) FROM word_image wi WHERE wi.word_id = w.id AND wi.status = 'approved') AS image_at,
+       (SELECT MAX(wi.reviewed_at) FROM word_image wi WHERE wi.word_id = w.id AND wi.status = 'approved') AS image_reviewed_at
+     FROM unit_word uw JOIN word w ON w.id = uw.word_id
+     WHERE uw.unit_id = ? AND uw.enabled = 1 AND w.enabled = 1
+     ORDER BY uw.sort_order, w.spelling`,
+  ).bind(unitId).all<{
+    id: string
+    updated_at: string
+    audio_at: string | null
+    image_at: string | null
+    image_reviewed_at: string | null
+  }>()
+  const rows = results || []
+  return { version: fnv1a(JSON.stringify(rows)), wordCount: rows.length }
 }
 
 export async function getWordsForUnits(

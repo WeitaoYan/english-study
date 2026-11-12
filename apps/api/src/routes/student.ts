@@ -16,6 +16,9 @@ import {
   getWordById,
   getWordsForUnit,
   getWordsForUnits,
+  getUnitWords,
+  getUnitMastery,
+  getUnitWordsVersion,
   mapJoinedWord,
   toUnit,
   WORD_COLUMNS,
@@ -267,7 +270,12 @@ student.get('/units/:id', async (c) => {
   if (!(await isTextbookAssigned(c.env, user.id, unit.textbook_id))) return c.json({ error: '单元不存在' }, 404)
   const progressRows = await getUnitProgress(c.env, user.id, unit.textbook_id)
   const progress = progressRows.find((row) => row.id === unitId)
-  const words = (await getWordsForUnit(c.env, user.id, unitId)).map(mapJoinedWord)
+  // 单词分两部分：静态内容按版本号缓存（没变就不下发），掌握度每次都重新算。
+  const { version: wordsVersion, wordCount } = await getUnitWordsVersion(c.env, unitId)
+  const clientVersion = c.req.query('wordsVersion') || ''
+  const wordsChanged = clientVersion !== wordsVersion
+  const words = wordsChanged ? await getUnitWords(c.env, unitId) : null
+  const mastery = await getUnitMastery(c.env, user.id, unitId)
   return c.json({
     unit: progress ? toUnit(progress) : {
       id: unit.id,
@@ -275,7 +283,7 @@ student.get('/units/:id', async (c) => {
       unitNo: unit.unit_no,
       unitName: unit.unit_name,
       sortOrder: unit.sort_order,
-      wordCount: words.length,
+      wordCount,
       learnedWords: 0,
       masteredWords: 0,
       dueCount: 0,
@@ -289,6 +297,9 @@ student.get('/units/:id', async (c) => {
       semester: unit.semester,
     },
     words,
+    wordsVersion,
+    wordsChanged,
+    mastery,
   })
 })
 

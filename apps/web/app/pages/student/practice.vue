@@ -523,6 +523,9 @@ onMounted(start)
               :alt="current.wordSpelling"
               class="mx-auto max-h-64 w-full object-contain p-4"
             >
+            <p v-if="current.imageAttribution" class="border-t border-line px-4 py-2 text-center text-[10px] leading-relaxed text-muted">
+              {{ current.imageAttribution }}
+            </p>
           </div>
 
           <div v-if="current.type === 'audio_choice'" class="mt-5">

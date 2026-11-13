@@ -21,6 +21,7 @@ export function mapWord(row: WordRow): Word {
     hasImage: bool(row.has_image),
     imageId: row.image_id,
     imageUrl: row.image_url || null,
+    imageAttribution: row.image_attribution || null,
     imageStatus: (row.image_status as Word['imageStatus']) || null,
     enabled: bool(row.enabled),
     examples: safeJson<ExampleSentence[]>(row.examples, []),

@@ -1,0 +1,83 @@
+{
+  "done": {
+    "fish": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 3.0",
+      "imageId": "img-39d19c86-0bf3-46eb-971b-f31856c4082d"
+    },
+    "happy": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-23c151cf-72a0-4168-b002-96b0771369ea"
+    },
+    "moon": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 3.0",
+      "imageId": "img-e32f5e1b-6eb4-4919-ab77-dd2e95dc9c7b"
+    },
+    "run": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-b4592cd0-80cd-4b25-bc78-f85a36dc08fd"
+    },
+    "sun": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 4.0",
+      "imageId": "img-60869232-f6ae-4a17-86dd-917b1021db7d"
+    },
+    "december": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 4.0",
+      "imageId": "img-7b56bea6-5726-4cf8-ab53-daa4a947bcd7"
+    },
+    "friday": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 4.0",
+      "imageId": "img-459f6112-5ad8-4581-9aad-5cdc5951ce87"
+    },
+    "monday": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-10a1c100-f2c9-432d-a97d-a5956f73c7bd"
+    },
+    "february": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-21b58c9f-a4b8-4b5e-b0fa-69b7d03e38f4"
+    },
+    "saturday": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-dde3f1a2-c690-42ec-8db2-f64ad3e9da21"
+    },
+    "september": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-ff93e3d6-46c4-48e9-8938-15daae1a2c41"
+    },
+    "mr": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-ae5df2f4-6aab-4833-888b-f72937212a4e"
+    },
+    "sunday": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-05ef4d2c-726c-4271-b592-1514fa438eab"
+    },
+    "t-shirt": {
+      "source": "wikipedia",
+      "license": "CC BY 2.0",
+      "imageId": "img-f0db3926-3e69-46e4-a9ae-fa68d982ab1a"
+    }
+  },
+  "failed": {
+    "chinese": "维基无首图、Openverse 无可用结果",
+    "english": "维基无首图、Openverse 无可用结果",
+    "april": "维基无首图、Openverse 无可用结果",
+    "i": "非 JPG/PNG 或大小不在 5KB–2MB 内（4094 字节）",
+    "ms": "维基无首图、Openverse 无可用结果"
+  },
+  "openverseDay": "2026-11-13",
+  "openverseCount": 8
+}

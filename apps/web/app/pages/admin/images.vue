@@ -19,6 +19,10 @@ interface ImageRow {
   r2Key: string | null
   uploadMethod: string
   status: 'pending' | 'approved' | 'rejected' | 'replaced'
+  source: string | null
+  license: string | null
+  creator: string | null
+  attribution: string | null
   reviewNote: string | null
   createdAt: string
   reviewedAt: string | null
@@ -298,6 +302,11 @@ onMounted(load)
                 </span>
               </div>
               <p class="mt-0.5 truncate text-[10px] text-muted">{{ image.chineseDef }}</p>
+              <p v-if="image.source" class="mt-1.5 text-[10px] leading-relaxed text-muted">
+                来源：{{ image.source === 'wikipedia' ? '维基百科' : image.source === 'openverse' ? 'Openverse' : image.source }}
+                <template v-if="image.license"> · {{ image.license }}</template>
+                <template v-if="image.creator"> · {{ image.creator }}</template>
+              </p>
               <p class="mt-2 text-[9px] text-muted">上传于 {{ formatDateTimeCN(image.createdAt) }}</p>
               <p v-if="image.reviewNote" class="mt-1.5 rounded-lg bg-paper px-2.5 py-1.5 text-[10px] text-muted">
                 {{ image.reviewNote }}
@@ -351,6 +360,7 @@ onMounted(load)
           <div>
             <p class="text-sm font-medium text-ink">{{ reviewTarget.spelling }}</p>
             <p class="text-[10px] text-muted">{{ reviewTarget.chineseDef }}</p>
+            <p v-if="reviewTarget.attribution" class="mt-1 text-[10px] leading-relaxed text-muted">{{ reviewTarget.attribution }}</p>
           </div>
         </div>
         <div>

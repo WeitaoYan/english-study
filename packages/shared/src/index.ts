@@ -59,6 +59,8 @@ export interface Word {
   imageId: string | null
   imageUrl: string | null
   imageStatus: 'pending' | 'approved' | 'rejected' | null
+  /** 最新已通过图片的署名行（开源图片按 CC 协议须署名；人工上传的为 null）。 */
+  imageAttribution: string | null
   enabled: boolean
   examples: ExampleSentence[]
   collocations: Collocation[]
@@ -180,6 +182,8 @@ export interface QuestionPayload {
   stem: string | null
   options: string[] | null
   imageUrl: string | null
+  /** 配图署名行（仅看图选词且图片有署名时有值）。 */
+  imageAttribution: string | null
   audioUrl: string | null
   hint: string | null
   /** 人工题库题目 ID；动态生成的题目为 null，用于答题记录追溯。 */

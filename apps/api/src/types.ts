@@ -52,6 +52,7 @@ export interface WordRow {
   examples: string
   collocations: string
   image_url?: string | null
+  image_attribution?: string | null
   image_status?: string | null
   audio_url?: string | null
   unit_id?: string | null

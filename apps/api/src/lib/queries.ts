@@ -27,6 +27,9 @@ export const WORD_COLUMNS = `
   (SELECT wi.image_url FROM word_image wi
     WHERE wi.word_id = w.id AND wi.status = 'approved'
     ORDER BY wi.created_at DESC LIMIT 1) AS image_url,
+  (SELECT wi.attribution FROM word_image wi
+    WHERE wi.word_id = w.id AND wi.status = 'approved'
+    ORDER BY wi.created_at DESC LIMIT 1) AS image_attribution,
   CASE WHEN EXISTS (
     SELECT 1 FROM word_image wi2 WHERE wi2.word_id = w.id AND wi2.status = 'approved'
   ) THEN 'approved' ELSE NULL END AS image_status,

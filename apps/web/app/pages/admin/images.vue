@@ -289,7 +289,7 @@ onMounted(load)
         <div v-if="images.length" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <article v-for="image in images" :key="image.id" class="card overflow-hidden">
             <div class="aspect-[4/3] overflow-hidden bg-paper-deep">
-              <img :src="image.imageUrl" :alt="image.spelling" class="size-full object-cover" loading="lazy">
+              <img :src="image.imageUrl" :alt="image.spelling" class="size-full object-contain p-4" loading="lazy">
             </div>
             <div class="p-4">
               <div class="flex items-center justify-between gap-2">
@@ -356,7 +356,7 @@ onMounted(load)
     >
       <div v-if="reviewTarget" class="space-y-4">
         <div class="flex items-center gap-3 rounded-xl border border-line bg-paper/70 px-3.5 py-3">
-          <img :src="reviewTarget.imageUrl" :alt="reviewTarget.spelling" class="size-16 rounded-lg object-cover">
+          <img :src="reviewTarget.imageUrl" :alt="reviewTarget.spelling" class="size-16 rounded-lg bg-white object-contain">
           <div>
             <p class="text-sm font-medium text-ink">{{ reviewTarget.spelling }}</p>
             <p class="text-[10px] text-muted">{{ reviewTarget.chineseDef }}</p>

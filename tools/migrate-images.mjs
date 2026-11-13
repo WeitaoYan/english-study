@@ -25,6 +25,9 @@ const execFileAsync = promisify(execFile)
 const API_DIR = '/home/hatch/workspace/english-study/apps/api'
 const WRANGLER = '/home/hatch/workspace/tools/run_wrangler_cf.py'
 const BUCKET = 'english-study-images'
+// 图片地址存绝对地址：前端 Worker 不代理 /api，相对路径会在前端域名下返回
+// SPA 外壳导致 <img> 加载失败（音频地址一直是绝对地址，做法与之统一）。
+const API_IMAGE_BASE = 'https://api.english.ikber.cc/api/images'
 const PROGRESS_FILE = '/home/hatch/workspace/english-study/tools/image-migration-progress.json'
 const EMOJI_MAP_FILE = '/home/hatch/workspace/english-study/tools/emoji-word-map.json'
 let EMOJI_MAP = {}
@@ -306,7 +309,7 @@ async function storeImage(word, candidate) {
       await runWrangler(['r2', 'object', 'put', `${BUCKET}/${key}`, '--file', tmpFile, '--remote', '--content-type', contentType])
       await d1Query(
         `INSERT INTO word_image (id, word_id, image_url, r2_key, upload_method, status, source, license, creator, attribution, created_at)
-         VALUES ('${imageId}', '${word.id}', '/api/images/${imageId}', '${key}', 'import', 'pending',
+         VALUES ('${imageId}', '${word.id}', '${API_IMAGE_BASE}/${imageId}', '${key}', 'import', 'pending',
            '${sqlEscape(candidate.source)}', '${sqlEscape(candidate.license)}', '${sqlEscape(candidate.creator)}',
            '${sqlEscape(candidate.attribution)}', '${new Date().toISOString()}')`,
       )

@@ -922,10 +922,13 @@ admin.post('/words/:id/images', async (c) => {
     })
   }))
 
+  // 图片地址存绝对地址：前端 Worker 不代理 /api，相对路径会在前端域名下
+  // 返回 SPA 外壳导致图片加载失败（音频地址一直是绝对地址，做法与之统一）。
+  const origin = new URL(c.req.url).origin
   const statements = prepared.map((item) => c.env.DB.prepare(
     `INSERT INTO word_image (id, word_id, image_url, r2_key, upload_method, status)
      VALUES (?, ?, ?, ?, 'upload', 'pending')`,
-  ).bind(item.imageId, wordId, `/api/images/${item.imageId}`, item.key))
+  ).bind(item.imageId, wordId, `${origin}/api/images/${item.imageId}`, item.key))
   statements.push(
     c.env.DB.prepare('UPDATE word SET has_image = 1, updated_at = ? WHERE id = ?')
       .bind(nowIso(), wordId),
@@ -934,7 +937,7 @@ admin.post('/words/:id/images', async (c) => {
 
   const items = prepared.map((item) => ({
     id: item.imageId,
-    imageUrl: `/api/images/${item.imageId}`,
+    imageUrl: `${origin}/api/images/${item.imageId}`,
     status: 'pending',
   }))
   return c.json({

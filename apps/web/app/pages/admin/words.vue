@@ -12,8 +12,10 @@ import {
   Search,
   Trash2,
   Upload,
+  Volume2,
+  VolumeX,
 } from 'lucide-vue-next'
-import type { Collocation, ExampleSentence, Word } from '@english-study/shared'
+import type { AudioCandidate, Collocation, ExampleSentence, Word, WordAudioInfo } from '@english-study/shared'
 import { csvCell, xlsxToCsv } from '../../utils/xlsx'
 
 interface AdminWord extends Word {
@@ -74,6 +76,149 @@ const importFileName = ref('')
 const deleteOpen = ref(false)
 const deleteTarget = ref<AdminWord | null>(null)
 const deleting = ref(false)
+
+// 音频换源：当前录音 + 备选录音（试听后更换），或把当前录音标记无效。
+const audioOpen = ref(false)
+const audioWord = ref<AdminWord | null>(null)
+const audioInfo = ref<WordAudioInfo | null>(null)
+const audioLoading = ref(false)
+const audioError = ref('')
+const candidates = ref<AudioCandidate[]>([])
+const candidatesLoading = ref(false)
+const candidatesError = ref('')
+const switchingUrl = ref('')
+const invalidating = ref(false)
+const confirmInvalidate = ref(false)
+
+let audioEl: HTMLAudioElement | null = null
+const playingUrl = ref('')
+
+function playUrl(url: string) {
+  if (!import.meta.client || !url) return
+  if (playingUrl.value === url) {
+    audioEl?.pause()
+    playingUrl.value = ''
+    return
+  }
+  audioEl?.pause()
+  const audio = new Audio(url)
+  audioEl = audio
+  playingUrl.value = url
+  audio.play().catch(() => { playingUrl.value = '' })
+  audio.onended = () => { playingUrl.value = '' }
+}
+
+function stopAudio() {
+  audioEl?.pause()
+  playingUrl.value = ''
+}
+
+function audioTypeLabel(type: string | null): string {
+  switch (type) {
+    case 'us': return '美音'
+    case 'uk': return '英音'
+    case 'au': return '澳音'
+    case 'ca': return '加音'
+    default: return type || '未知口音'
+  }
+}
+
+function audioSourceLabel(source: string | null): string {
+  switch (source) {
+    case 'dictionaryapi': return 'Free Dictionary API'
+    case 'wiktionary': return 'Wiktionary'
+    case 'lingua-libre': return 'Lingua Libre'
+    default: return source || '未知来源'
+  }
+}
+
+async function openAudio(word: AdminWord) {
+  audioWord.value = word
+  audioInfo.value = null
+  audioError.value = ''
+  candidates.value = []
+  candidatesError.value = ''
+  confirmInvalidate.value = false
+  audioOpen.value = true
+  audioLoading.value = true
+  candidatesLoading.value = true
+  try {
+    const info = await api.get<{ data: WordAudioInfo | null }>(`/admin/words/${word.id}/audio`)
+    audioInfo.value = info.data
+  } catch (error) {
+    audioError.value = errorMessage(error, '当前音频加载失败')
+  } finally {
+    audioLoading.value = false
+  }
+  try {
+    const result = await api.get<{ data: AudioCandidate[] }>(`/admin/words/${word.id}/audio/candidates`)
+    candidates.value = result.data
+  } catch (error) {
+    candidatesError.value = errorMessage(error, '备选录音加载失败')
+  } finally {
+    candidatesLoading.value = false
+  }
+}
+
+function closeAudio() {
+  stopAudio()
+  audioOpen.value = false
+}
+
+async function reloadCandidates() {
+  if (!audioWord.value) return
+  candidatesLoading.value = true
+  candidatesError.value = ''
+  try {
+    const result = await api.get<{ data: AudioCandidate[] }>(`/admin/words/${audioWord.value.id}/audio/candidates`)
+    candidates.value = result.data
+  } catch (error) {
+    candidatesError.value = errorMessage(error, '备选录音加载失败')
+  } finally {
+    candidatesLoading.value = false
+  }
+}
+
+async function switchAudio(candidate: AudioCandidate) {
+  if (!audioWord.value || switchingUrl.value) return
+  switchingUrl.value = candidate.url
+  try {
+    const result = await api.post<{ data: WordAudioInfo }>(`/admin/words/${audioWord.value.id}/audio/switch`, {
+      url: candidate.url,
+      pronunciationType: candidate.pronunciationType,
+      source: candidate.source,
+    })
+    audioInfo.value = result.data
+    const row = words.value.find((w) => w.id === audioWord.value!.id)
+    if (row) row.audioUrl = result.data.audioUrl
+    toast.success(`已换成${candidate.label}录音`)
+  } catch (error) {
+    toast.error(errorMessage(error, '更换失败'))
+  } finally {
+    switchingUrl.value = ''
+  }
+}
+
+async function invalidateAudio() {
+  if (!audioWord.value) return
+  if (!confirmInvalidate.value) {
+    confirmInvalidate.value = true
+    return
+  }
+  invalidating.value = true
+  try {
+    await api.delete(`/admin/words/${audioWord.value.id}/audio`)
+    audioInfo.value = null
+    const row = words.value.find((w) => w.id === audioWord.value!.id)
+    if (row) row.audioUrl = null
+    confirmInvalidate.value = false
+    toast.success('该词录音已下架，听音题不再出它')
+  } catch (error) {
+    toast.error(errorMessage(error, '下架失败'))
+  } finally {
+    invalidating.value = false
+  }
+}
 
 const form = reactive({
   spelling: '',
@@ -405,6 +550,7 @@ onMounted(async () => {
               <th>单词</th>
               <th>单元</th>
               <th>图片</th>
+              <th>音频</th>
               <th>难度</th>
               <th>状态</th>
               <th class="text-right">操作</th>
@@ -439,6 +585,22 @@ onMounted(async () => {
                 <span v-else-if="word.imageStatus === 'pending'" class="chip-clay !py-0.5">待审核</span>
                 <span v-else-if="word.hasImage" class="chip !py-0.5">已有图</span>
                 <span v-else class="text-[10px] text-muted">缺少</span>
+              </td>
+              <td>
+                <div class="flex items-center gap-1">
+                  <button
+                    v-if="word.audioUrl"
+                    class="btn-ghost btn-sm !px-2"
+                    title="试听当前录音"
+                    @click="playUrl(word.audioUrl)"
+                  >
+                    <Volume2 :size="13" :class="playingUrl === word.audioUrl ? 'text-forest' : ''" />
+                  </button>
+                  <span v-else class="text-[10px] text-muted">无音频</span>
+                  <button class="btn-ghost btn-sm" @click="openAudio(word)">
+                    {{ word.audioUrl ? '换源' : '添加' }}
+                  </button>
+                </div>
               </td>
               <td>
                 <span class="text-xs">{{ word.difficulty }} 级</span>
@@ -619,6 +781,84 @@ onMounted(async () => {
           <Upload v-else :size="15" />
           开始导入
         </button>
+      </template>
+    </Modal>
+
+    <Modal
+      :open="audioOpen"
+      :title="audioWord ? `音频 · ${audioWord.spelling}` : '音频'"
+      description="试听备选录音，选一个换上去；也可以把当前录音下架。"
+      wide
+      @close="closeAudio"
+    >
+      <div class="space-y-6">
+        <section>
+          <p class="eyebrow">当前录音</p>
+          <div v-if="audioLoading" class="mt-2 flex items-center gap-2 text-xs text-muted">
+            <Loader2 :size="14" class="animate-spin" />
+            加载中…
+          </div>
+          <p v-else-if="audioError" class="mt-2 rounded-xl border border-danger/15 bg-danger-soft px-3.5 py-2.5 text-xs text-danger">
+            {{ audioError }}
+          </p>
+          <div v-else-if="audioInfo" class="mt-2 flex flex-wrap items-center gap-3 rounded-xl border border-line bg-paper/70 px-4 py-3.5">
+            <button class="btn-ghost btn-sm !px-2" title="试听当前录音" @click="playUrl(audioInfo.audioUrl || '')">
+              <Volume2 :size="14" :class="audioInfo.audioUrl && playingUrl === audioInfo.audioUrl ? 'text-forest' : ''" />
+            </button>
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-ink">{{ audioTypeLabel(audioInfo.pronunciationType) }} · {{ audioSourceLabel(audioInfo.source) }}</p>
+              <p class="mt-0.5 text-[10px] text-muted">{{ audioInfo.createdAt }}</p>
+            </div>
+            <button class="btn-danger btn-sm" :disabled="invalidating" @click="invalidateAudio">
+              <Loader2 v-if="invalidating" :size="13" class="animate-spin" />
+              <VolumeX v-else :size="13" />
+              {{ confirmInvalidate ? '确认下架？' : '标记无效' }}
+            </button>
+          </div>
+          <p v-else class="mt-2 text-xs text-muted">暂无录音，可从下面选一个加上。</p>
+          <p v-if="confirmInvalidate" class="mt-2 text-[10px] leading-relaxed text-danger">
+            下架后听音题不再出这个词、播放按钮消失；R2 里的文件保留，随时可以重新换源恢复。
+          </p>
+        </section>
+
+        <section>
+          <p class="eyebrow">备选录音</p>
+          <div v-if="candidatesLoading" class="mt-2 flex items-center gap-2 text-xs text-muted">
+            <Loader2 :size="14" class="animate-spin" />
+            正在从词典 / Wiktionary / Lingua Libre 找录音…
+          </div>
+          <div v-else-if="candidatesError" class="mt-2 flex flex-wrap items-center gap-3 rounded-xl border border-danger/15 bg-danger-soft px-3.5 py-2.5">
+            <p class="flex-1 text-xs text-danger">{{ candidatesError }}</p>
+            <button class="btn-secondary btn-sm" @click="reloadCandidates">重试</button>
+          </div>
+          <p v-else-if="!candidates.length" class="mt-2 text-xs text-muted">没找到备选录音，换个拼写或稍后再试。</p>
+          <div v-else class="mt-2 space-y-2">
+            <div
+              v-for="candidate in candidates"
+              :key="candidate.url"
+              class="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-paper/70 px-4 py-3"
+            >
+              <button class="btn-ghost btn-sm !px-2" title="试听" @click="playUrl(candidate.url)">
+                <Volume2 :size="14" :class="playingUrl === candidate.url ? 'text-forest' : ''" />
+              </button>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-ink">{{ candidate.label }}</p>
+                <p class="mt-0.5 text-[10px] text-muted">{{ audioSourceLabel(candidate.source) }}</p>
+              </div>
+              <button
+                class="btn-primary btn-sm"
+                :disabled="!!switchingUrl"
+                @click="switchAudio(candidate)"
+              >
+                <Loader2 v-if="switchingUrl === candidate.url" :size="13" class="animate-spin" />
+                用这个
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <template #footer>
+        <button class="btn-secondary" @click="closeAudio">关闭</button>
       </template>
     </Modal>
 

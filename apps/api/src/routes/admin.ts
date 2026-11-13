@@ -8,6 +8,7 @@ import { mapWord } from '../lib/mappers'
 import { parseCsv, parseListCell } from '../lib/csv'
 import { safeJson, uuid, nowIso } from '../lib/utils'
 import { enrichWordWithAI } from '../lib/ai'
+import { downloadVerifiedMp3, listAudioCandidates } from '../lib/audio-sources'
 import type { WordRow } from '../types'
 
 const admin = new Hono<AppEnv>()
@@ -775,6 +776,103 @@ admin.get('/words/:id/images', async (c) => {
     'SELECT * FROM word_image WHERE word_id = ? ORDER BY created_at DESC',
   ).bind(c.req.param('id')).all<Record<string, unknown>>()
   return c.json({ data: results || [] })
+})
+
+// ---- 单词音频：当前音频 / 备选录音 / 更换 / 标记无效 ----
+
+// 单词当前音频（最新一条 word_audio 记录，没有则为 null）。
+admin.get('/words/:id/audio', async (c) => {
+  const row = await c.env.DB.prepare(
+    `SELECT audio_url, pronunciation_type, source, created_at FROM word_audio
+     WHERE word_id = ? ORDER BY created_at DESC LIMIT 1`,
+  ).bind(c.req.param('id')).first<{
+    audio_url: string
+    pronunciation_type: string
+    source: string
+    created_at: string
+  }>()
+  if (!row) return c.json({ data: null })
+  return c.json({
+    data: {
+      audioUrl: row.audio_url,
+      pronunciationType: row.pronunciation_type,
+      source: row.source,
+      createdAt: row.created_at,
+    },
+  })
+})
+
+// 备选录音：三路（词典 / Wiktionary / Lingua Libre）并行找 MP3 候选，供管理端试听后换源。
+admin.get('/words/:id/audio/candidates', async (c) => {
+  const word = await c.env.DB.prepare(
+    'SELECT id, spelling FROM word WHERE id = ?',
+  ).bind(c.req.param('id')).first<{ id: string; spelling: string }>()
+  if (!word) return c.json({ error: '单词不存在' }, 404)
+  const candidates = await listAudioCandidates(word.spelling)
+  return c.json({ data: candidates })
+})
+
+// 更换音频：下载候选 MP3 并校验，覆盖 R2 文件，更新 word_audio 记录。
+// 音频地址带版本号（?v=N）：音频响应是一年 immutable 缓存，不换地址的话
+// 之前听过的设备还会放旧录音；版本号 +1 同时让单元单词内容指纹变化，
+// 客户端缓存的单词列表也会自动刷新。
+admin.post('/words/:id/audio/switch', async (c) => {
+  const wordId = c.req.param('id')
+  const word = await c.env.DB.prepare(
+    'SELECT id, spelling FROM word WHERE id = ?',
+  ).bind(wordId).first<{ id: string; spelling: string }>()
+  if (!word) return c.json({ error: '单词不存在' }, 404)
+  const body = await parseBody(c, z.object({
+    url: z.string().url().max(500),
+    pronunciationType: z.string().max(10),
+    source: z.string().max(40),
+  }))
+  // 只接受可信的音频来源域名，避免被人利用本接口当任意文件下载跳板。
+  let host = ''
+  try {
+    host = new URL(body.url).hostname
+  } catch {
+    return c.json({ error: '音频地址无效' }, 400)
+  }
+  if (!['upload.wikimedia.org', 'api.dictionaryapi.dev'].includes(host)) {
+    return c.json({ error: '不支持的音频来源' }, 400)
+  }
+  if (!c.env.IMAGES) return c.json({ error: '音频存储未配置' }, 503)
+  let buf: ArrayBuffer
+  try {
+    buf = await downloadVerifiedMp3(body.url)
+  } catch (error) {
+    return c.json({ error: error instanceof Error ? error.message : '音频下载失败' }, 502)
+  }
+  await c.env.IMAGES.put(`audio/${wordId}.mp3`, buf, { httpMetadata: { contentType: 'audio/mpeg' } })
+  const current = await c.env.DB.prepare(
+    'SELECT id, audio_url FROM word_audio WHERE word_id = ? ORDER BY created_at DESC LIMIT 1',
+  ).bind(wordId).first<{ id: string; audio_url: string }>()
+  const versionMatch = current?.audio_url?.match(/[?&]v=(\d+)/)
+  const version = (versionMatch ? parseInt(versionMatch[1], 10) : 1) + 1
+  const origin = new URL(c.req.url).origin
+  const audioUrl = `${origin}/api/audio/${wordId}?v=${version}`
+  const now = nowIso()
+  if (current) {
+    await c.env.DB.prepare(
+      'UPDATE word_audio SET audio_url = ?, pronunciation_type = ?, source = ?, created_at = ? WHERE id = ?',
+    ).bind(audioUrl, body.pronunciationType, body.source, now, current.id).run()
+  } else {
+    await c.env.DB.prepare(
+      'INSERT INTO word_audio (id, word_id, audio_url, pronunciation_type, source, created_at) VALUES (?, ?, ?, ?, ?, ?)',
+    ).bind(uuid('wa'), wordId, audioUrl, body.pronunciationType, body.source, now).run()
+  }
+  return c.json({ data: { audioUrl, pronunciationType: body.pronunciationType, source: body.source, createdAt: now } })
+})
+
+// 标记音频无效：删掉该词的全部录音记录，听音题不再出它、播放按钮消失。
+// R2 里的文件保留，需要时重新换源即可恢复，不用重新上传。
+admin.delete('/words/:id/audio', async (c) => {
+  const wordId = c.req.param('id')
+  const word = await c.env.DB.prepare('SELECT id FROM word WHERE id = ?').bind(wordId).first<{ id: string }>()
+  if (!word) return c.json({ error: '单词不存在' }, 404)
+  await c.env.DB.prepare('DELETE FROM word_audio WHERE word_id = ?').bind(wordId).run()
+  return c.json({ ok: true })
 })
 
 admin.post('/words/:id/images', async (c) => {

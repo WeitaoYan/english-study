@@ -128,6 +128,25 @@ export interface TextbookDetail {
   units: Unit[]
 }
 
+/** 管理端更换单词音频时的备选录音（MP3 直链，可直接试听）。 */
+export interface AudioCandidate {
+  url: string
+  /** 显示标签，如“美音”“英音”“Lingua Libre（说话人）”。 */
+  label: string
+  /** 口音：us | uk | au | ca | other。 */
+  pronunciationType: string
+  /** 来源：dictionaryapi | wiktionary | lingua-libre。 */
+  source: string
+}
+
+/** 单词当前音频（管理端）。 */
+export interface WordAudioInfo {
+  audioUrl: string | null
+  pronunciationType: string | null
+  source: string | null
+  createdAt: string | null
+}
+
 /** 单元内单个词的最新掌握度（每次打开单元都重新算，不进本地缓存）。 */
 export interface UnitWordMastery {
   wordId: string

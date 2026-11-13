@@ -69,6 +69,466 @@
       "source": "wikipedia",
       "license": "CC BY 2.0",
       "imageId": "img-f0db3926-3e69-46e4-a9ae-fa68d982ab1a"
+    },
+    "tuesday": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-bfe225e3-8a2a-41e7-b271-f38b66bcb0c9"
+    },
+    "wednesday": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-33fb2872-7002-43c4-8e41-2e4e9c6840a0"
+    },
+    "thursday": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-dc24784d-f6c6-4a61-8a46-86b79c6735b1"
+    },
+    "tv": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-d78fa027-a1a9-448d-9b47-9d9881a33468"
+    },
+    "a": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-ee7d8807-d631-4d63-b30f-ec48083f28b2"
+    },
+    "ability": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-4ddb7ede-712c-47d0-a32a-ee131cf3c0aa"
+    },
+    "about": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-32209448-5f10-45b9-bc93-2da706f9e998"
+    },
+    "above": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-a76fa768-f630-4d41-92a7-0aabe7fe282c"
+    },
+    "able": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-b3504d2a-070b-4e1e-b080-85452782a6dd"
+    },
+    "abroad": {
+      "source": "openverse",
+      "license": "Public Domain",
+      "imageId": "img-539ac82e-8f50-4686-a543-a84ec0e20d33"
+    },
+    "accident": {
+      "source": "wikipedia",
+      "license": "CC BY 3.0",
+      "imageId": "img-ccb887fc-1c8a-4618-bfbf-cd9306f2ac3b"
+    },
+    "absent": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-efc4ea8b-f601-412c-9e93-910eda7e2332"
+    },
+    "accept": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-4bd413b3-ca22-43d0-a667-28d4e40e6f46"
+    },
+    "across": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-e1650eac-f01d-4c87-b805-5474d3642375"
+    },
+    "achieve": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-62c83c9d-00de-486e-b700-580a1cc37993"
+    },
+    "action": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-57af5a1f-9228-4afc-a4b7-179b21234b8b"
+    },
+    "act": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-81fe7837-b624-488d-ac19-8cdc79a23be7"
+    },
+    "active": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-ade7af59-e1f7-4987-8dbe-a34fd7c64fdf"
+    },
+    "activity": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-33634ffd-1afc-4bf5-ba82-5f7a9415f0c2"
+    },
+    "actor": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-5299a500-0d27-4517-8918-61ba48a962a5"
+    },
+    "actress": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-264fe55d-5823-4ea4-bf65-f54199d44247"
+    },
+    "add": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-4b158736-8728-41d7-b560-af163bb2c136"
+    },
+    "advantage": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-b0ee46f5-5b48-450e-bcf6-0cba5b6a0f19"
+    },
+    "advice": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-90143ef2-f07b-4c1e-b18f-0cbd7af27a1c"
+    },
+    "adventure": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-68adffc4-a382-42e5-9098-cb87e6f1a938"
+    },
+    "afternoon": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 2.0",
+      "imageId": "img-77a1b060-75df-4c51-9479-cac7e86136b6"
+    },
+    "advise": {
+      "source": "openverse",
+      "license": "CC0",
+      "imageId": "img-520532b6-c21a-41a2-a948-951b93fb3749"
+    },
+    "afraid": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-ff864364-e666-49e3-89f1-e3a64b6034c7"
+    },
+    "after": {
+      "source": "openverse",
+      "license": "CC0",
+      "imageId": "img-d6b3309a-3ee7-4540-b7e1-0a66863894e0"
+    },
+    "afterschool": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-1c09a2b1-3edd-48d3-a7d7-5bc3615cb047"
+    },
+    "again": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-faff4e85-97a7-48ab-be05-7a93818807a6"
+    },
+    "age": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-a4e8d6ec-09eb-4b9b-96c9-1e1a23593b3c"
+    },
+    "against": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-60e5be56-89d8-489c-8bab-00cdbb2b01d6"
+    },
+    "aid": {
+      "source": "wikipedia",
+      "license": "CC BY 4.0",
+      "imageId": "img-93c798b1-82af-4e88-992e-6667eeacf1ae"
+    },
+    "agree": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-6a807b30-9740-48d6-9a7f-7f4200b4b236"
+    },
+    "ago": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-95bd4ee2-2053-44d7-80e5-28d1682bd181"
+    },
+    "ahead": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-b82d623d-00d8-49e6-831c-5052810caa22"
+    },
+    "airport": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 3.0",
+      "imageId": "img-fc35ee54-9c43-4e2c-b20a-ba691f950b10"
+    },
+    "alarm": {
+      "source": "wikipedia",
+      "license": "CC BY 2.0",
+      "imageId": "img-6b998563-86d0-41e3-b2de-292c65681528"
+    },
+    "album": {
+      "source": "wikipedia",
+      "license": "CC0",
+      "imageId": "img-f298e758-0b2b-473a-9df4-e725d93f4bd7"
+    },
+    "air": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-41ef97fe-a99f-46e1-a09d-a7bc3f91858a"
+    },
+    "alike": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-fb0d7e0e-7145-41a8-9c9b-7d9787b31d1e"
+    },
+    "alive": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-3a774a22-a0fd-4968-8ad3-fcf9e4d66d4a"
+    },
+    "allow": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-c939b006-252c-40e9-b3d9-c29df4c9eb5c"
+    },
+    "all": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-b3e57849-e6ad-4864-b9f0-91bf68502d8d"
+    },
+    "aloud": {
+      "source": "wikipedia",
+      "license": "CC BY 2.0",
+      "imageId": "img-388281ab-30d5-4a3f-a10a-acf376c9fdee"
+    },
+    "almost": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-7b5a17d9-194f-4afa-b8fd-915dfe9fffdd"
+    },
+    "alone": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-e88d1956-3efd-444c-830a-3ba2b3e47050"
+    },
+    "along": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-38401da4-752a-4146-92af-bbc36231f8d2"
+    },
+    "alphabet": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-1d786cfd-fc2a-415b-b367-36f66dadaffe"
+    },
+    "always": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-1e68a715-4880-42f2-8a2d-08a13e3e9db9"
+    },
+    "already": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-c0cba3ea-9147-4087-a325-bf6059e2be7a"
+    },
+    "also": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-c5f06744-7bd5-4a0c-9c72-ed703bad54e0"
+    },
+    "amazing": {
+      "source": "openverse",
+      "license": "Public Domain",
+      "imageId": "img-3c51213c-689f-416e-ae5c-9883affbd105"
+    },
+    "ambulance": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 4.0",
+      "imageId": "img-15f4627c-af81-4295-83a9-7cb751c6cddd"
+    },
+    "animal": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 4.0",
+      "imageId": "img-f6103a8b-522a-4b17-af90-ad493a91df76"
+    },
+    "ankle": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 3.0",
+      "imageId": "img-255a4d3c-363f-4cb4-b90f-179f00909ba6"
+    },
+    "ant": {
+      "source": "wikipedia",
+      "license": "CC BY 2.0",
+      "imageId": "img-d2aca78d-2228-4eaa-87bb-9105a3068892"
+    },
+    "angry": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-cb818cc0-35a1-45bf-a4ed-adb77e90f123"
+    },
+    "another": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-145e43f3-3df9-44e0-8840-da3323dfeefb"
+    },
+    "answer": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-3950dce8-5f57-417a-8484-ed37b4a8c6cf"
+    },
+    "any": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-37443b2b-8c68-482b-9a60-5baf9bd7cfb2"
+    },
+    "anymore": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-930b06fb-6564-477f-890b-db97232df95b"
+    },
+    "anyone": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-86aef8a6-b98e-41e2-9bfa-8b626fe4f345"
+    },
+    "anything": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-5fc4a0d0-292f-4144-aee7-e027bee4efa7"
+    },
+    "appear": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-abaad473-5ee0-44c1-8537-d0c552539325"
+    },
+    "appointment": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-03903c30-39c8-4cf1-be20-53e11d774b5b"
+    },
+    "appreciate": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-bf3c1892-effa-49cb-9908-2cfec2b068fb"
+    },
+    "approach": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-48b70c88-f852-42ab-836e-176dca5e9a1b"
+    },
+    "area": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-3fa1ba0a-9234-4100-a5df-409fba12ce47"
+    },
+    "arm": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 4.0",
+      "imageId": "img-10e608e9-d231-4bde-85c1-48cbf35e8251"
+    },
+    "argue": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-b2030b39-02a0-4d33-b314-73f7fc6dd0de"
+    },
+    "army": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-d569a6cd-798a-4ab9-a71b-6ed5b03a3da8"
+    },
+    "arrange": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-fc067b0e-0fe5-4dd3-8827-0a706d0097a2"
+    },
+    "around": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-6ef2a83b-b89b-4e76-afe0-ec4584c5d98e"
+    },
+    "art": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 3.0",
+      "imageId": "img-353102b1-5a59-4285-a7e7-d95740ccd16c"
+    },
+    "arrive": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-1d50aa63-02bf-44f0-a7d3-e3c422620f74"
+    },
+    "artist": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 4.0",
+      "imageId": "img-c7961d8d-7030-44c4-b6f7-34f7f982477f"
+    },
+    "ashamed": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-09af7cf3-298f-4e78-9a66-52a9751db316"
+    },
+    "article": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-d0c5ffe1-be60-41be-a6f1-bd856b16114e"
+    },
+    "aside": {
+      "source": "openverse",
+      "license": "CC0",
+      "imageId": "img-7a83d48c-f22a-436f-861e-b874cb7cde44"
+    },
+    "ask": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-026e8ba7-3b61-449a-b8ad-5cfd20fc4d95"
+    },
+    "athlete": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-eca58491-61ac-4fbe-9167-29fa6338be88"
+    },
+    "asleep": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-2a09b10a-7408-4b3c-bb6c-17309bce9d28"
+    },
+    "atmosphere": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-048b121d-5256-47e2-9613-749cdb53fe43"
+    },
+    "assist": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-bcf330a7-0157-4fb6-b3c9-8ea05954738a"
+    },
+    "attack": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-25379524-90d9-42c8-b6fe-c50f6d77a9c4"
+    },
+    "attempt": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-f4c8e74b-9c61-4844-b3c4-b269d7f39d9b"
+    },
+    "attention": {
+      "source": "wikipedia",
+      "license": "CC BY 2.0",
+      "imageId": "img-8d07bfe9-1a2d-430f-8234-9d46b2af6160"
+    },
+    "attend": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-58f6fd17-646e-4680-a264-47ebd07c1912"
+    },
+    "aunt": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 2.0",
+      "imageId": "img-2cb77969-6f9b-439b-8f25-a56267999a9e"
+    },
+    "attitude": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-a2724dda-958b-4050-8136-1b426e0510f0"
     }
   },
   "failed": {
@@ -76,8 +536,14 @@
     "english": "维基无首图、Openverse 无可用结果",
     "april": "维基无首图、Openverse 无可用结果",
     "i": "非 JPG/PNG 或大小不在 5KB–2MB 内（4094 字节）",
-    "ms": "维基无首图、Openverse 无可用结果"
+    "ms": "维基无首图、Openverse 无可用结果",
+    "address": "非 JPG/PNG 或大小不在 5KB–2MB 内（69878 字节）",
+    "an": "维基无首图、Openverse 无可用结果",
+    "among": "维基无首图、Openverse 无可用结果",
+    "amount": "维基无首图、Openverse 无可用结果",
+    "ancient": "维基无首图、Openverse 无可用结果",
+    "and": "维基无首图、Openverse 无可用结果"
   },
   "openverseDay": "2026-11-13",
-  "openverseCount": 8
+  "openverseCount": 83
 }

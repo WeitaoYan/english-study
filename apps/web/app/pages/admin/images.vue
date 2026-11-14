@@ -114,8 +114,27 @@ async function loadUnits() {
   }
 }
 
+// 勾选多张：只在待审核页出现，切换页签、单元或重新加载时清空。
+const selectedIds = ref<string[]>([])
+const allSelected = computed(() => images.value.length > 0 && images.value.every((image) => selectedIds.value.includes(image.id)))
+
+function toggleSelect(id: string) {
+  const index = selectedIds.value.indexOf(id)
+  if (index >= 0) selectedIds.value.splice(index, 1)
+  else selectedIds.value.push(id)
+}
+
+function toggleSelectAll() {
+  selectedIds.value = allSelected.value ? [] : images.value.map((image) => image.id)
+}
+
+function clearSelection() {
+  selectedIds.value = []
+}
+
 async function load() {
   loading.value = true
+  selectedIds.value = []
   try {
     if (activeTab.value === 'missing') {
       const result = await api.get<{ data: MissingRow[] }>('/admin/images/missing')
@@ -168,25 +187,28 @@ const batchOpen = ref(false)
 const batchStatus = ref<'approved' | 'rejected'>('approved')
 const batchNote = ref('')
 const batching = ref(false)
+const batchIds = ref<string[]>([])
 
-function askBatch(status: 'approved' | 'rejected') {
+function askBatch(status: 'approved' | 'rejected', ids?: string[]) {
   batchStatus.value = status
+  batchIds.value = ids && ids.length ? [...ids] : images.value.map((image) => image.id)
   batchNote.value = ''
   batchOpen.value = true
 }
 
 async function submitBatch() {
-  if (batching.value || !images.value.length) return
+  if (batching.value || !batchIds.value.length) return
   batching.value = true
   try {
     const result = await api.post<{ updated?: number; words?: number }>('/admin/images/batch-review', {
-      ids: images.value.map((image) => image.id),
+      ids: batchIds.value,
       status: batchStatus.value,
       note: batchNote.value.trim() || undefined,
     })
-    const count = result.updated ?? images.value.length
+    const count = result.updated ?? batchIds.value.length
     toast.success(batchStatus.value === 'approved' ? `已通过 ${count} 张图片` : `已驳回 ${count} 张图片`)
     batchOpen.value = false
+    selectedIds.value = []
     await load()
   } catch (error) {
     toast.error(errorMessage(error, '批量审核失败'))
@@ -367,6 +389,10 @@ onMounted(() => {
             </select>
           </div>
           <template v-if="activeTab === 'pending' && images.length">
+            <label class="inline-flex cursor-pointer items-center gap-1.5 text-xs text-ink-soft">
+              <input type="checkbox" :checked="allSelected" class="size-4 accent-forest" @change="toggleSelectAll">
+              全选
+            </label>
             <button class="btn-primary btn-sm" @click="askBatch('approved')">
               <Check :size="13" />
               全部通过（{{ images.length }} 张）
@@ -380,7 +406,10 @@ onMounted(() => {
 
         <div v-if="images.length" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <article v-for="image in images" :key="image.id" class="card overflow-hidden">
-            <div class="aspect-[4/3] overflow-hidden bg-paper-deep">
+            <div class="relative aspect-[4/3] overflow-hidden bg-paper-deep">
+              <label v-if="activeTab === 'pending'" class="absolute left-2 top-2 z-10 flex cursor-pointer items-center rounded-lg bg-white/90 p-1.5 shadow-sm">
+                <input type="checkbox" :checked="selectedIds.includes(image.id)" class="size-4 accent-forest" @change="toggleSelect(image.id)">
+              </label>
               <img :src="image.imageUrl" :alt="image.spelling" class="size-full object-contain p-4" loading="lazy">
             </div>
             <div class="p-4">
@@ -440,6 +469,19 @@ onMounted(() => {
       </template>
     </template>
 
+    <div v-if="activeTab === 'pending' && selectedIds.length" class="fixed bottom-24 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full border border-line bg-white px-3 py-2 shadow-lg lg:bottom-5">
+      <span class="whitespace-nowrap pl-1 text-xs font-medium text-ink">已选 {{ selectedIds.length }} 张</span>
+      <button class="btn-primary btn-sm" @click="askBatch('approved', selectedIds)">
+        通过选中
+      </button>
+      <button class="btn-danger btn-sm" @click="askBatch('rejected', selectedIds)">
+        驳回选中
+      </button>
+      <button class="btn-ghost btn-sm" @click="clearSelection">
+        取消
+      </button>
+    </div>
+
     <Modal
       :open="reviewOpen"
       :title="reviewStatus === 'approved' ? '通过图片审核' : '驳回图片'"
@@ -478,7 +520,7 @@ onMounted(() => {
       <div class="space-y-4">
         <p class="text-sm leading-relaxed text-ink">
           将{{ batchStatus === 'approved' ? '通过' : '驳回' }}「{{ selectedUnitName }}」的
-          <span class="font-medium">{{ images.length }}</span> 张待审核图片。
+          <span class="font-medium">{{ batchIds.length }}</span> 张待审核图片。
         </p>
         <div>
           <label class="label" for="batch-note">审核备注（可选）</label>

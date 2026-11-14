@@ -326,20 +326,33 @@ async function main() {
   if (!progress.failed) progress.failed = {}
 
   let words
-  // pendingImageId/pendingSource：该词已有的待审照片（有则走升级替换；无则走全新导入）。
-  const pendingCols = `, (SELECT wi.id FROM word_image wi WHERE wi.word_id = w.id AND wi.status = 'pending' ORDER BY wi.created_at DESC LIMIT 1) AS pendingImageId,
-         (SELECT wi.source FROM word_image wi WHERE wi.word_id = w.id AND wi.status = 'pending' ORDER BY wi.created_at DESC LIMIT 1) AS pendingSource`
   if (ONLY_WORDS) {
     const list = ONLY_WORDS.map((s) => `'${sqlEscape(s)}'`).join(',')
-    words = await d1Query(`SELECT w.id, w.spelling ${pendingCols} FROM word w WHERE LOWER(w.spelling) IN (${list}) ORDER BY w.spelling`)
+    words = await d1Query(`SELECT w.id, w.spelling FROM word w WHERE LOWER(w.spelling) IN (${list}) ORDER BY w.spelling`)
     const found = new Set(words.map((w) => w.spelling.toLowerCase()))
     for (const s of ONLY_WORDS) if (!found.has(s)) console.log(`词库里没有 ${s}，跳过`)
   } else {
     words = await d1Query(
-      `SELECT w.id, w.spelling ${pendingCols} FROM word w WHERE w.enabled = 1
+      `SELECT w.id, w.spelling FROM word w WHERE w.enabled = 1
        AND NOT EXISTS (SELECT 1 FROM word_image wi WHERE wi.word_id = w.id AND wi.status = 'approved')
        ORDER BY w.spelling`,
     )
+  }
+  // pendingImageId/pendingSource：该词已有的待审照片（有则走升级替换；无则走全新导入）。
+  // 注意：不要把取待审图写成按词的子查询——子查询里的 ORDER BY created_at 会让优化器
+  // 弃用 (word_id, status) 索引、改走 (status, created_at)，每词扫全部待审图（2026-11-14
+  // 实测一次选词查询烧 205 万行）。这里一次取全量待审图（不到 1000 行），在 JS 里按词取最新一张。
+  const pendingRows = await d1Query(
+    `SELECT wi.word_id, wi.id, wi.source FROM word_image wi WHERE wi.status = 'pending' ORDER BY wi.created_at DESC`,
+  )
+  const pendingByWord = new Map()
+  for (const row of pendingRows) {
+    if (!pendingByWord.has(row.word_id)) pendingByWord.set(row.word_id, row)
+  }
+  for (const word of words) {
+    const pending = pendingByWord.get(word.id)
+    word.pendingImageId = pending ? pending.id : null
+    word.pendingSource = pending ? pending.source : null
   }
 
   const stats = { imported: 0, upgraded: 0, keptPhoto: 0, deferred: 0, bySource: {}, failed: 0, skipped: 0 }

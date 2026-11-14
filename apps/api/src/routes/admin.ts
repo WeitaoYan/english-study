@@ -725,11 +725,16 @@ admin.post('/words/import', async (c) => {
 
 admin.get('/images', async (c) => {
   const status = c.req.query('status') || 'pending'
+  const unitId = c.req.query('unitId') || ''
+  const joinUnit = unitId
+    ? 'JOIN unit_word uw ON uw.word_id = wi.word_id AND uw.unit_id = ? AND uw.enabled = 1'
+    : ''
+  const binds: unknown[] = unitId ? [unitId, status] : [status]
   const { results } = await c.env.DB.prepare(
     `SELECT wi.*, w.spelling, w.chinese_def
-     FROM word_image wi JOIN word w ON w.id = wi.word_id
+     FROM word_image wi JOIN word w ON w.id = wi.word_id ${joinUnit}
      WHERE wi.status = ? ORDER BY wi.created_at DESC LIMIT 200`,
-  ).bind(status).all<Record<string, unknown>>()
+  ).bind(...binds).all<Record<string, unknown>>()
   return c.json({
     data: (results || []).map((row) => ({
       id: row.id,
@@ -991,6 +996,81 @@ admin.patch('/images/:id', async (c) => {
     }
   }
   return c.json({ ok: true })
+})
+
+// 单元级批量审核：一次通过/驳回一批待审核图片，语义与单张 PATCH /images/:id 完全一致。
+// - 通过：按 word_id、created_at 顺序逐张处理，每张先把同词其他已通过图置为 replaced，
+//   再把本张置为 approved，并把 word.image_id 指向本张（同一词多张时最新的一张获胜）；
+// - 驳回：把本批置为 rejected 后，按词修正 word.has_image / image_id（与单张驳回一致）。
+// 只处理当前仍为 pending 的行，重复提交不会重复生效；分批执行（每批最多 25 张）。
+admin.post('/images/batch-review', async (c) => {
+  const body = await parseBody(c, z.object({
+    ids: z.array(z.string().min(1)).min(1).max(200),
+    status: z.enum(['approved', 'rejected']),
+    note: z.string().max(300).optional(),
+  }))
+  const placeholders = body.ids.map(() => '?').join(',')
+  const { results } = await c.env.DB.prepare(
+    `SELECT id, word_id, created_at FROM word_image
+     WHERE id IN (${placeholders}) AND status = 'pending'
+     ORDER BY word_id, created_at`,
+  ).bind(...body.ids).all<{ id: string; word_id: string; created_at: string }>()
+  const rows = results || []
+  if (!rows.length) return c.json({ ok: true, updated: 0, words: 0 })
+
+  const now = nowIso()
+  const CHUNK = 25
+  if (body.status === 'approved') {
+    for (let i = 0; i < rows.length; i += CHUNK) {
+      const chunk = rows.slice(i, i + CHUNK)
+      const statements = []
+      for (const row of chunk) {
+        statements.push(
+          c.env.DB.prepare(
+            `UPDATE word_image SET status = 'replaced'
+             WHERE word_id = ? AND id <> ? AND status = 'approved'`,
+          ).bind(row.word_id, row.id),
+          c.env.DB.prepare(
+            `UPDATE word_image SET status = 'approved', review_note = ?, reviewed_at = ?
+             WHERE id = ?`,
+          ).bind(body.note || null, now, row.id),
+          c.env.DB.prepare(
+            'UPDATE word SET has_image = 1, image_id = ?, updated_at = ? WHERE id = ?',
+          ).bind(row.id, now, row.word_id),
+        )
+      }
+      await c.env.DB.batch(statements)
+    }
+  } else {
+    for (let i = 0; i < rows.length; i += CHUNK) {
+      const chunk = rows.slice(i, i + CHUNK)
+      const statements = chunk.map((row) => c.env.DB.prepare(
+        `UPDATE word_image SET status = 'rejected', review_note = ?, reviewed_at = ?
+         WHERE id = ?`,
+      ).bind(body.note || null, now, row.id))
+      await c.env.DB.batch(statements)
+    }
+    // 按词修正 word.has_image / image_id（与单张驳回一致：无已通过图时清 image_id，
+    // has_image 按是否还有待审核图取 1/0；有已通过图时不动）。
+    const wordIds = [...new Set(rows.map((row) => row.word_id))]
+    for (let i = 0; i < wordIds.length; i += CHUNK) {
+      const chunk = wordIds.slice(i, i + CHUNK)
+      const statements = chunk.map((wordId) => c.env.DB.prepare(
+        `UPDATE word SET
+           has_image = CASE
+             WHEN EXISTS (SELECT 1 FROM word_image WHERE word_id = word.id AND status = 'approved') THEN 1
+             WHEN EXISTS (SELECT 1 FROM word_image WHERE word_id = word.id AND status = 'pending') THEN 1
+             ELSE 0 END,
+           image_id = CASE
+             WHEN EXISTS (SELECT 1 FROM word_image WHERE word_id = word.id AND status = 'approved') THEN image_id
+             ELSE NULL END,
+           updated_at = ?
+         WHERE id = ?`,
+      ).bind(now, wordId))
+      await c.env.DB.batch(statements)
+    }
+  }
+  return c.json({ ok: true, updated: rows.length, words: new Set(rows.map((row) => row.word_id)).size })
 })
 
 const questionSchema = z.object({

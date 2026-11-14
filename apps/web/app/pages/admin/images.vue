@@ -79,6 +79,41 @@ const tabs: Array<{ key: TabKey; label: string }> = [
   { key: 'missing', label: '缺少图片' },
 ]
 
+interface UnitOption {
+  id: string
+  textbookId: string
+  unitNo: number
+  unitName: string
+  textbookName: string
+  grade: string
+  semester: string
+}
+
+const units = ref<UnitOption[]>([])
+const selectedUnitId = ref('')
+const unitsByTextbook = computed(() => {
+  const groups = new Map<string, UnitOption[]>()
+  for (const unit of units.value) {
+    const list = groups.get(unit.textbookName) || []
+    list.push(unit)
+    groups.set(unit.textbookName, list)
+  }
+  return [...groups.entries()]
+})
+const selectedUnitName = computed(() => {
+  const unit = units.value.find((u) => u.id === selectedUnitId.value)
+  return unit ? `${unit.textbookName} · Unit ${unit.unitNo} ${unit.unitName}` : '全部单元'
+})
+
+async function loadUnits() {
+  try {
+    const result = await api.get<{ data: UnitOption[] }>('/admin/units')
+    units.value = result.data
+  } catch {
+    // 单元筛选加载失败不阻塞列表
+  }
+}
+
 async function load() {
   loading.value = true
   try {
@@ -86,9 +121,9 @@ async function load() {
       const result = await api.get<{ data: MissingRow[] }>('/admin/images/missing')
       missing.value = result.data
     } else {
-      const result = await api.get<{ data: ImageRow[] }>('/admin/images', {
-        query: { status: activeTab.value },
-      })
+      const query: Record<string, string> = { status: activeTab.value }
+      if (selectedUnitId.value) query.unitId = selectedUnitId.value
+      const result = await api.get<{ data: ImageRow[] }>('/admin/images', { query })
       images.value = result.data
     }
   } catch (error) {
@@ -126,6 +161,37 @@ async function submitReview() {
     toast.error(errorMessage(error, '审核失败'))
   } finally {
     reviewing.value = false
+  }
+}
+
+const batchOpen = ref(false)
+const batchStatus = ref<'approved' | 'rejected'>('approved')
+const batchNote = ref('')
+const batching = ref(false)
+
+function askBatch(status: 'approved' | 'rejected') {
+  batchStatus.value = status
+  batchNote.value = ''
+  batchOpen.value = true
+}
+
+async function submitBatch() {
+  if (batching.value || !images.value.length) return
+  batching.value = true
+  try {
+    const result = await api.post<{ updated?: number; words?: number }>('/admin/images/batch-review', {
+      ids: images.value.map((image) => image.id),
+      status: batchStatus.value,
+      note: batchNote.value.trim() || undefined,
+    })
+    const count = result.updated ?? images.value.length
+    toast.success(batchStatus.value === 'approved' ? `已通过 ${count} 张图片` : `已驳回 ${count} 张图片`)
+    batchOpen.value = false
+    await load()
+  } catch (error) {
+    toast.error(errorMessage(error, '批量审核失败'))
+  } finally {
+    batching.value = false
   }
 }
 
@@ -208,7 +274,10 @@ async function submitUpload() {
   }
 }
 
-onMounted(load)
+onMounted(() => {
+  loadUnits()
+  load()
+})
 </script>
 
 <template>
@@ -284,6 +353,29 @@ onMounted(load)
             </h2>
           </div>
           <span class="text-[11px] text-muted">{{ images.length }} 张</span>
+        </div>
+
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <div class="w-full sm:w-72">
+            <select v-model="selectedUnitId" class="input" @change="load()">
+              <option value="">全部单元</option>
+              <optgroup v-for="[textbookName, textbookUnits] in unitsByTextbook" :key="textbookName" :label="textbookName">
+                <option v-for="unit in textbookUnits" :key="unit.id" :value="unit.id">
+                  Unit {{ unit.unitNo }} {{ unit.unitName }}
+                </option>
+              </optgroup>
+            </select>
+          </div>
+          <template v-if="activeTab === 'pending' && images.length">
+            <button class="btn-primary btn-sm" @click="askBatch('approved')">
+              <Check :size="13" />
+              全部通过（{{ images.length }} 张）
+            </button>
+            <button class="btn-danger btn-sm" @click="askBatch('rejected')">
+              <X :size="13" />
+              全部驳回（{{ images.length }} 张）
+            </button>
+          </template>
         </div>
 
         <div v-if="images.length" class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -373,6 +465,31 @@ onMounted(load)
         <button :class="reviewStatus === 'approved' ? 'btn-primary' : 'btn-danger'" :disabled="reviewing" @click="submitReview">
           <Loader2 v-if="reviewing" :size="15" class="animate-spin" />
           {{ reviewStatus === 'approved' ? '确认通过' : '确认驳回' }}
+        </button>
+      </template>
+    </Modal>
+
+    <Modal
+      :open="batchOpen"
+      :title="batchStatus === 'approved' ? '批量通过图片' : '批量驳回图片'"
+      :description="batchStatus === 'approved' ? '通过后这些图片会用于看图选词，同一单词有多张时以最新一张为准。' : '驳回后这些图片不会用于出题。'"
+      @close="batchOpen = false"
+    >
+      <div class="space-y-4">
+        <p class="text-sm leading-relaxed text-ink">
+          将{{ batchStatus === 'approved' ? '通过' : '驳回' }}「{{ selectedUnitName }}」的
+          <span class="font-medium">{{ images.length }}</span> 张待审核图片。
+        </p>
+        <div>
+          <label class="label" for="batch-note">审核备注（可选）</label>
+          <textarea id="batch-note" v-model="batchNote" class="input min-h-[88px] resize-y" maxlength="300" placeholder="例如：本单元图片已核对" />
+        </div>
+      </div>
+      <template #footer>
+        <button class="btn-secondary" @click="batchOpen = false">取消</button>
+        <button :class="batchStatus === 'approved' ? 'btn-primary' : 'btn-danger'" :disabled="batching" @click="submitBatch">
+          <Loader2 v-if="batching" :size="15" class="animate-spin" />
+          确认{{ batchStatus === 'approved' ? '通过' : '驳回' }}
         </button>
       </template>
     </Modal>

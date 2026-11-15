@@ -16,7 +16,7 @@ import {
   Users,
 } from 'lucide-vue-next'
 import { QUESTION_ABILITY_HINTS, QUESTION_ABILITY_LABELS } from '@english-study/shared'
-import type { ChildTextbookOption, ParentReport, QuestionAbility } from '@english-study/shared'
+import type { ChildTextbookOption, ParentReport, QuestionAbility, TextbookPreview } from '@english-study/shared'
 import { formatDateTimeCN } from '@english-study/shared'
 
 const route = useRoute()
@@ -62,6 +62,35 @@ async function saveTextbooks() {
   } finally {
     savingTextbooks.value = false
   }
+}
+
+// 预览单词表：点开先看这本课本按单元分的单词，确认是想要的再勾选。
+const previewOpen = ref(false)
+const previewLoading = ref(false)
+const previewTextbook = ref<ChildTextbookOption | null>(null)
+const preview = ref<TextbookPreview | null>(null)
+
+async function openPreview(textbook: ChildTextbookOption) {
+  previewTextbook.value = textbook
+  preview.value = null
+  previewOpen.value = true
+  previewLoading.value = true
+  try {
+    preview.value = await api.get<TextbookPreview>(`/parent/children/${route.params.id}/textbooks/${textbook.id}/preview`)
+  } catch (error) {
+    toast.error(errorMessage(error, '单词表加载失败'))
+    previewOpen.value = false
+  } finally {
+    previewLoading.value = false
+  }
+}
+
+function selectPreviewTextbook() {
+  if (!previewTextbook.value) return
+  if (!selectedTextbookIds.value.includes(previewTextbook.value.id)) {
+    selectedTextbookIds.value = [...selectedTextbookIds.value, previewTextbook.value.id]
+  }
+  previewOpen.value = false
 }
 
 async function load() {
@@ -230,21 +259,67 @@ onMounted(() => {
           <div v-for="index in 3" :key="index" class="skeleton h-12" />
         </div>
         <div v-else-if="textbooks.length" class="mt-4 space-y-2">
-          <label
+          <div
             v-for="textbook in textbooks"
             :key="textbook.id"
-            class="flex cursor-pointer items-center gap-3 rounded-xl border border-line/70 bg-white/60 px-3.5 py-3 transition hover:border-forest/25"
+            class="flex items-center gap-3 rounded-xl border border-line/70 bg-white/60 px-3.5 py-3 transition hover:border-forest/25"
           >
-            <input v-model="selectedTextbookIds" type="checkbox" :value="textbook.id" class="size-4 accent-[#2f5f4c]">
-            <span class="min-w-0 flex-1">
-              <span class="block text-sm font-medium text-ink">{{ textbook.name }}</span>
-              <span class="mt-0.5 block text-[11px] text-muted">{{ textbook.version }} · {{ textbook.grade }}{{ textbook.semester }} · {{ textbook.unitCount }} 个单元</span>
-            </span>
-            <span v-if="textbook.assigned" class="chip">已指定</span>
-          </label>
+            <label class="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
+              <input v-model="selectedTextbookIds" type="checkbox" :value="textbook.id" class="size-4 shrink-0 accent-[#2f5f4c]">
+              <span class="min-w-0 flex-1">
+                <span class="block text-sm font-medium text-ink">{{ textbook.name }}</span>
+                <span class="mt-0.5 block text-[11px] text-muted">{{ textbook.version }} · {{ textbook.grade }}{{ textbook.semester }} · {{ textbook.unitCount }} 个单元</span>
+              </span>
+            </label>
+            <span v-if="textbook.assigned" class="chip shrink-0">已指定</span>
+            <button type="button" class="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-forest-deep hover:bg-forest/10" @click="openPreview(textbook)">
+              预览单词
+            </button>
+          </div>
         </div>
         <p v-else class="mt-4 text-xs text-muted">暂无已发布的课本，请等待管理员发布。</p>
       </section>
+
+      <Modal
+        :open="previewOpen"
+        :title="previewTextbook ? previewTextbook.name : '预览单词表'"
+        :description="preview ? `${preview.textbook.version} · ${preview.textbook.grade}${preview.textbook.semester} · 共 ${preview.textbook.unitCount} 个单元 · ${preview.textbook.wordCount} 个单词` : (previewTextbook ? `${previewTextbook.version} · ${previewTextbook.grade}${previewTextbook.semester}` : '')"
+        wide
+        @close="previewOpen = false"
+      >
+        <div v-if="previewLoading" class="space-y-2">
+          <div v-for="index in 5" :key="index" class="skeleton h-8" />
+        </div>
+        <div v-else-if="preview && preview.units.length" class="space-y-5">
+          <div v-for="unit in preview.units" :key="unit.id">
+            <div class="flex items-baseline justify-between gap-2 border-b border-line pb-1.5">
+              <p class="text-sm font-medium text-ink">Unit {{ unit.unitNo }} · {{ unit.unitName }}</p>
+              <p class="shrink-0 text-xs text-muted">{{ unit.wordCount }} 词</p>
+            </div>
+            <div v-if="unit.words.length" class="mt-1">
+              <div v-for="word in unit.words" :key="word.id" class="flex flex-wrap items-baseline gap-x-2 border-b border-line/50 py-1.5 text-sm last:border-0">
+                <span class="font-medium text-ink">{{ word.spelling }}</span>
+                <span v-if="word.phonetic" class="text-xs text-muted">{{ word.phonetic }}</span>
+                <span v-if="word.pos" class="text-xs text-muted">{{ word.pos }}</span>
+                <span class="text-muted">{{ word.chineseDef }}</span>
+              </div>
+            </div>
+            <p v-else class="mt-1 text-xs text-muted">本单元暂无单词</p>
+          </div>
+        </div>
+        <p v-else-if="preview" class="text-sm text-muted">这本课本还没有单元或单词。</p>
+        <template #footer>
+          <button class="btn-ghost btn-sm" @click="previewOpen = false">关闭</button>
+          <button
+            v-if="previewTextbook"
+            class="btn-primary btn-sm"
+            :disabled="selectedTextbookIds.includes(previewTextbook.id)"
+            @click="selectPreviewTextbook"
+          >
+            {{ selectedTextbookIds.includes(previewTextbook.id) ? '已勾选' : '勾选这本课本' }}
+          </button>
+        </template>
+      </Modal>
 
       <section class="card mt-6 p-5 sm:p-6">
         <div class="flex flex-wrap items-center justify-between gap-3">

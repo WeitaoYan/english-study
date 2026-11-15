@@ -255,6 +255,65 @@ parent.get('/children/:id/textbooks', async (c) => {
   })
 })
 
+// 家长给孩子指定课本前预览单词表：只读已发布课本，按单元分组返回轻量单词
+// （拼写/音标/词性/释义），不下发图片、录音、例句，也不算掌握度。
+// 只要 3 次查询（课本、单元、全部单词），不按单元逐个查。
+parent.get('/children/:id/textbooks/:textbookId/preview', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const textbook = await c.env.DB.prepare(
+    `SELECT id, name, version, grade, semester FROM textbook WHERE id = ? AND status = 'published'`,
+  ).bind(c.req.param('textbookId')).first<{
+    id: string
+    name: string
+    version: string
+    grade: string
+    semester: string
+  }>()
+  if (!textbook) return c.json({ error: '课本不存在' }, 404)
+  const { results: unitRows } = await c.env.DB.prepare(
+    `SELECT id, unit_no, unit_name FROM unit WHERE textbook_id = ? ORDER BY sort_order, unit_no`,
+  ).bind(textbook.id).all<{ id: string; unit_no: number; unit_name: string }>()
+  const { results: wordRows } = await c.env.DB.prepare(
+    `SELECT uw.unit_id, w.id, w.spelling, w.phonetic, w.pos, w.chinese_def
+     FROM unit_word uw
+     JOIN word w ON w.id = uw.word_id AND w.enabled = 1
+     JOIN unit u ON u.id = uw.unit_id
+     WHERE u.textbook_id = ? AND uw.enabled = 1
+     ORDER BY u.sort_order, u.unit_no, uw.sort_order, w.spelling`,
+  ).bind(textbook.id).all<{
+    unit_id: string
+    id: string
+    spelling: string
+    phonetic: string | null
+    pos: string | null
+    chinese_def: string
+  }>()
+  const byUnit = new Map<string, { id: string; spelling: string; phonetic: string | null; pos: string | null; chineseDef: string }[]>()
+  for (const row of wordRows || []) {
+    const list = byUnit.get(row.unit_id) || []
+    list.push({ id: row.id, spelling: row.spelling, phonetic: row.phonetic, pos: row.pos, chineseDef: row.chinese_def })
+    byUnit.set(row.unit_id, list)
+  }
+  const units = (unitRows || []).map((unit) => {
+    const words = byUnit.get(unit.id) || []
+    return { id: unit.id, unitNo: unit.unit_no, unitName: unit.unit_name, wordCount: words.length, words }
+  })
+  return c.json({
+    textbook: {
+      id: textbook.id,
+      name: textbook.name,
+      version: textbook.version,
+      grade: textbook.grade,
+      semester: textbook.semester,
+      unitCount: units.length,
+      wordCount: units.reduce((sum, unit) => sum + unit.wordCount, 0),
+    },
+    units,
+  })
+})
+
 parent.put('/children/:id/textbooks', async (c) => {
   const user = c.get('user')
   const child = await getChild(c.env, user.id, c.req.param('id'))

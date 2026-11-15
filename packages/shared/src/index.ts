@@ -112,6 +112,37 @@ export interface ChildTextbookOption {
   assigned: boolean
 }
 
+// 家长指定课本前预览单词表用的轻量结构：只要拼写/音标/词性/释义，
+// 不下发图片、录音、例句，也不算掌握度。
+export interface TextbookPreviewWord {
+  id: string
+  spelling: string
+  phonetic: string | null
+  pos: string | null
+  chineseDef: string
+}
+
+export interface TextbookPreviewUnit {
+  id: string
+  unitNo: number
+  unitName: string
+  wordCount: number
+  words: TextbookPreviewWord[]
+}
+
+export interface TextbookPreview {
+  textbook: {
+    id: string
+    name: string
+    version: string
+    grade: string
+    semester: string
+    unitCount: number
+    wordCount: number
+  }
+  units: TextbookPreviewUnit[]
+}
+
 export interface Unit {
   id: string
   textbookId: string

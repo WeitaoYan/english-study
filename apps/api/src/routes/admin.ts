@@ -1009,13 +1009,22 @@ admin.post('/images/batch-review', async (c) => {
     status: z.enum(['approved', 'rejected']),
     note: z.string().max(300).optional(),
   }))
-  const placeholders = body.ids.map(() => '?').join(',')
-  const { results } = await c.env.DB.prepare(
-    `SELECT id, word_id, created_at FROM word_image
-     WHERE id IN (${placeholders}) AND status = 'pending'
-     ORDER BY word_id, created_at`,
-  ).bind(...body.ids).all<{ id: string; word_id: string; created_at: string }>()
-  const rows = results || []
+  // D1 单条查询最多绑定 100 个参数：ids 最多 200 个，分批查再按词/时间排好序
+  // （同词多张时按 created_at 先旧后新处理，最新一张获胜；超 100 个 id 不分批会报
+  // D1_ERROR: too many SQL variables，接口直接 500）。
+  const rows: { id: string; word_id: string; created_at: string }[] = []
+  const ID_CHUNK = 100
+  for (let i = 0; i < body.ids.length; i += ID_CHUNK) {
+    const chunk = body.ids.slice(i, i + ID_CHUNK)
+    const placeholders = chunk.map(() => '?').join(',')
+    const { results } = await c.env.DB.prepare(
+      `SELECT id, word_id, created_at FROM word_image
+       WHERE id IN (${placeholders}) AND status = 'pending'
+       ORDER BY word_id, created_at`,
+    ).bind(...chunk).all<{ id: string; word_id: string; created_at: string }>()
+    rows.push(...(results || []))
+  }
+  rows.sort((a, b) => (a.word_id < b.word_id ? -1 : a.word_id > b.word_id ? 1 : a.created_at < b.created_at ? -1 : a.created_at > b.created_at ? 1 : 0))
   if (!rows.length) return c.json({ ok: true, updated: 0, words: 0 })
 
   const now = nowIso()

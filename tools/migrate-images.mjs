@@ -357,7 +357,14 @@ async function main() {
 
   const stats = { imported: 0, upgraded: 0, keptPhoto: 0, deferred: 0, bySource: {}, failed: 0, skipped: 0 }
   let ovCapped = false
-  const batch = words.slice(0, LIMIT)
+  // 小批量：先滤掉已完成（worker 内会跳过）的词再切 LIMIT，让 --limit 指“实际要处理的词数”，
+  // 否则前面已完成的词会把名额占掉、小批量跑不到新词。--words 指定词时不过滤（由 worker 按原逻辑处理）。
+  const batch = ONLY_WORDS
+    ? words.slice(0, LIMIT)
+    : (FORCE ? words : words.filter((word) => {
+      const doneEntry = progress.done[word.spelling.toLowerCase()]
+      return !(doneEntry && (doneEntry.source === 'twemoji' || doneEntry.source === 'openverse-illustration' || doneEntry.keptPhoto))
+    })).slice(0, LIMIT)
   // 4 并发：单词全程约 10 秒（代理延迟），串行 1700+ 个词要 5 小时，并发后约 1 小时。
   // 进度对象是共享内存，saveProgress 是同步写文件，各 worker 写出的都是最新全量。
   const CONCURRENCY = 4

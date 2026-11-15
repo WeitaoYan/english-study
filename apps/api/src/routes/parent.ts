@@ -10,7 +10,10 @@ import {
 import type { AppEnv } from '../types'
 import { hashPassword, requireAuth, requireRole } from '../lib/auth'
 import { parseBody, queryInt } from '../lib/http'
-import { getCalendar, WORD_COLUMNS, MASTERY_COLUMNS, mapJoinedWord, type JoinedWordRow } from '../lib/queries'
+import { getCalendar, getWordsForUnits, WORD_COLUMNS, MASTERY_COLUMNS, mapJoinedWord, type JoinedWordRow } from '../lib/queries'
+import { mapWord } from '../lib/mappers'
+import { availableTypes } from '../lib/questions'
+import { enrichSpecialPractices } from '../lib/special'
 import { dateKeyInCN, nowIso, safeJson, startOfCNWeek, uuid } from '../lib/utils'
 
 const parent = new Hono<AppEnv>()
@@ -312,6 +315,109 @@ parent.get('/children/:id/textbooks/:textbookId/preview', async (c) => {
     },
     units,
   })
+})
+
+// 建套题表单用：取一本已发布课本的单元（轻量，带每单元词数）。
+parent.get('/children/:id/textbooks/:textbookId/units', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const textbook = await c.env.DB.prepare(
+    `SELECT id, name FROM textbook WHERE id = ? AND status = 'published'`,
+  ).bind(c.req.param('textbookId')).first<{ id: string; name: string }>()
+  if (!textbook) return c.json({ error: '课本不存在' }, 404)
+  const { results } = await c.env.DB.prepare(
+    `SELECT u.id, u.unit_no, u.unit_name, COUNT(uw.word_id) AS word_count
+     FROM unit u LEFT JOIN unit_word uw ON uw.unit_id = u.id AND uw.enabled = 1
+     WHERE u.textbook_id = ?
+     GROUP BY u.id, u.unit_no, u.unit_name
+     ORDER BY u.sort_order, u.unit_no`,
+  ).bind(textbook.id).all<{ id: string; unit_no: number; unit_name: string; word_count: number }>()
+  return c.json({
+    data: (results || []).map((row) => ({
+      id: row.id,
+      unitNo: row.unit_no,
+      unitName: row.unit_name,
+      wordCount: row.word_count,
+    })),
+  })
+})
+
+// 家长建专项练习套题：固定一种题型、指定单元范围、每套默认 10 题。
+// 单元须属于已指定给该孩子的课本；所选单元里没有能出该题型的词时拒绝，
+// 避免建出永远开不了局的套题。
+const specialPracticeTypes = ['definition_choice', 'letter_fill', 'sentence_fill', 'image_choice', 'audio_choice', 'pronunciation_choice'] as const
+
+parent.post('/children/:id/special-practices', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const body = await parseBody(c, z.object({
+    title: z.string().trim().max(50).optional(),
+    questionType: z.enum(specialPracticeTypes),
+    unitIds: z.array(z.string().min(1)).min(1).max(50),
+    questionCount: z.number().int().min(1).max(50).default(10),
+  }))
+  const uniqueUnitIds = [...new Set(body.unitIds)]
+  const placeholders = uniqueUnitIds.map(() => '?').join(',')
+  const { results: unitRows } = await c.env.DB.prepare(
+    `SELECT u.id FROM unit u
+     JOIN textbook t ON t.id = u.textbook_id AND t.status = 'published'
+     JOIN child_textbook ct ON ct.textbook_id = t.id AND ct.parent_user_id = ? AND ct.student_user_id = ?
+     WHERE u.id IN (${placeholders})`,
+  ).bind(user.id, child.student_user_id, ...uniqueUnitIds).all<{ id: string }>()
+  if ((unitRows || []).length !== uniqueUnitIds.length) {
+    return c.json({ error: '包含不存在或未指定给孩子的单元' }, 400)
+  }
+  const wordsByUnit = await getWordsForUnits(c.env, child.student_user_id, uniqueUnitIds)
+  const allRows = [...wordsByUnit.values()].flat()
+  const eligible = allRows.filter((row) => availableTypes(mapWord(row)).includes(body.questionType))
+  if (!eligible.length) {
+    return c.json({ error: `所选单元里没有能出「${QUESTION_TYPE_LABELS[body.questionType]}」的单词` }, 400)
+  }
+  const title = body.title?.trim() || `${QUESTION_TYPE_LABELS[body.questionType]}专项`
+  const id = uuid('sp')
+  const now = nowIso()
+  await c.env.DB.prepare(
+    `INSERT INTO special_practice (id, parent_user_id, student_user_id, title, question_type, unit_ids, question_count, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  ).bind(id, user.id, child.student_user_id, title, body.questionType, JSON.stringify(uniqueUnitIds), body.questionCount, now, now).run()
+  const [enriched] = await enrichSpecialPractices(c.env, [{
+    id, title, question_type: body.questionType, unit_ids: JSON.stringify(uniqueUnitIds), question_count: body.questionCount, created_at: now,
+  }])
+  return c.json({ data: { ...enriched, eligibleWordCount: eligible.length } }, 201)
+})
+
+// 家长看该孩子的专项练习套题列表。
+parent.get('/children/:id/special-practices', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const { results } = await c.env.DB.prepare(
+    `SELECT id, title, question_type, unit_ids, question_count, created_at
+     FROM special_practice WHERE parent_user_id = ? AND student_user_id = ? ORDER BY created_at DESC`,
+  ).bind(user.id, child.student_user_id).all<{
+    id: string
+    title: string
+    question_type: string
+    unit_ids: string
+    question_count: number
+    created_at: string
+  }>()
+  return c.json({ data: await enrichSpecialPractices(c.env, results || []) })
+})
+
+// 家长删除一套专项练习（孩子端随即看不到；已开局的会话与答题记录保留）。
+parent.delete('/children/:id/special-practices/:setId', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '孩子不存在' }, 404)
+  const row = await c.env.DB.prepare(
+    `SELECT id FROM special_practice WHERE id = ? AND parent_user_id = ? AND student_user_id = ?`,
+  ).bind(c.req.param('setId'), user.id, child.student_user_id).first<{ id: string }>()
+  if (!row) return c.json({ error: '套题不存在' }, 404)
+  await c.env.DB.prepare('DELETE FROM special_practice WHERE id = ?').bind(row.id).run()
+  return c.json({ ok: true })
 })
 
 parent.put('/children/:id/textbooks', async (c) => {

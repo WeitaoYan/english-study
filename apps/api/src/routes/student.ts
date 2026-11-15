@@ -5,7 +5,8 @@ import type { AppEnv, MasteryRow, WordRow } from '../types'
 import { requireAuth, requireRole } from '../lib/auth'
 import { parseBody } from '../lib/http'
 import { computeMastery, masteryToApi } from '../lib/srs'
-import { applyManualQuestion, buildQuestions, expectedAnswer, explanationForRow, maskWordInPhrase, type ManualQuestion } from '../lib/questions'
+import { applyManualQuestion, availableTypes, buildQuestions, expectedAnswer, explanationForRow, maskWordInPhrase, type ManualQuestion } from '../lib/questions'
+import { enrichSpecialPractices, getSpecialPracticeForStudent } from '../lib/special'
 import { isQuestionType, mapWord } from '../lib/mappers'
 import {
   currentStreak,
@@ -36,9 +37,11 @@ function normalizeAnswer(value: string): string {
 }
 
 const sessionSchema = z.object({
-  mode: z.enum(['unit', 'review', 'word']).default('unit'),
+  mode: z.enum(['unit', 'review', 'word', 'special']).default('unit'),
   unitId: z.string().optional(),
   wordId: z.string().optional(),
+  // 专项练习：套题 id（mode=special 时必填）。
+  specialPracticeId: z.string().optional(),
   // 复习模式的题数不由这里定：后端按家长设的每日限额与当日已答题数算；
   // 单元模式不传时默认 10。
   limit: z.number().int().min(1).max(50).optional(),
@@ -207,6 +210,23 @@ student.get('/textbooks', async (c) => {
   return c.json({ data: await getTextbookProgress(c.env, c.get('user').id) })
 })
 
+// 孩子看家长给自己建的专项练习套题。
+student.get('/special-practices', async (c) => {
+  const user = c.get('user')
+  const { results } = await c.env.DB.prepare(
+    `SELECT id, title, question_type, unit_ids, question_count, created_at
+     FROM special_practice WHERE student_user_id = ? ORDER BY created_at DESC`,
+  ).bind(user.id).all<{
+    id: string
+    title: string
+    question_type: string
+    unit_ids: string
+    question_count: number
+    created_at: string
+  }>()
+  return c.json({ data: await enrichSpecialPractices(c.env, results || []) })
+})
+
 student.get('/textbooks/:id', async (c) => {
   const user = c.get('user')
   const textbook = await c.env.DB.prepare(
@@ -351,8 +371,12 @@ student.post('/practice/sessions', async (c) => {
   const now = nowIso()
   let selected: JoinedWordRow[] = []
   let unitId: string | null = body.unitId || null
-  let mode: 'unit' | 'review' | 'word' = body.mode
+  let mode: 'unit' | 'review' | 'word' | 'special' = body.mode
   let textbookId: string | null = null
+  // 专项练习：套题 id 与固定题型；specialPoolRows 是全部指定单元的词（干扰项池）。
+  let specialPracticeId: string | null = null
+  let specialFixedType: QuestionType | null = null
+  let specialPoolRows: JoinedWordRow[] | null = null
 
   if (body.mode === 'word') {
     if (!body.wordId) return c.json({ error: '缺少单词参数' }, 400)
@@ -402,6 +426,50 @@ student.post('/practice/sessions', async (c) => {
        LIMIT ?`,
     ).bind(user.id, now, user.id, limit).all<JoinedWordRow>()
     selected = results || []
+  } else if (body.mode === 'special') {
+    if (!body.specialPracticeId) return c.json({ error: '缺少套题参数' }, 400)
+    const practice = await getSpecialPracticeForStudent(c.env, user.id, body.specialPracticeId)
+    if (!practice) return c.json({ error: '套题不存在' }, 404)
+    const fixedType = practice.question_type as QuestionType
+    const unitIds = safeJson<string[]>(practice.unit_ids, [])
+    if (!unitIds.length) return c.json({ error: '套题没有指定单元' }, 400)
+    // 套题的单元须仍属于被指定的课本（家长可能后来取消指定）。
+    const placeholders = unitIds.map(() => '?').join(',')
+    const { results: assignedUnits } = await c.env.DB.prepare(
+      `SELECT u.id FROM unit u
+       JOIN child_textbook ct ON ct.textbook_id = u.textbook_id AND ct.student_user_id = ?
+       WHERE u.id IN (${placeholders})`,
+    ).bind(user.id, ...unitIds).all<{ id: string }>()
+    const assigned = new Set((assignedUnits || []).map((row) => row.id))
+    const activeUnitIds = unitIds.filter((id) => assigned.has(id))
+    if (!activeUnitIds.length) {
+      return c.json({ error: '套题的单元已不在指定课本里' }, 403)
+    }
+    // 只留能出固定题型的词，再打乱抽取；题数取套题设定（不超可出题的词数）。
+    const wordsByUnit = await getWordsForUnits(c.env, user.id, activeUnitIds)
+    const allRows = [...wordsByUnit.values()].flat()
+    const eligible = allRows.filter((row) => availableTypes(mapWord(row)).includes(fixedType))
+    if (!eligible.length) {
+      return c.json({
+        sessionId: '',
+        mode,
+        unitId,
+        totalCount: 0,
+        questions: [],
+        empty: true,
+        message: `这些单元里没有能出「${QUESTION_TYPE_LABELS[fixedType]}」的单词`,
+      })
+    }
+    const shuffled = [...eligible]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!]
+    }
+    const limit = Math.min(body.limit ?? practice.question_count, practice.question_count)
+    selected = shuffled.slice(0, limit)
+    specialPracticeId = practice.id
+    specialFixedType = fixedType
+    specialPoolRows = allRows
   } else {
     if (!body.unitId) return c.json({ error: '请选择单元' }, 400)
     const unitRow = await c.env.DB.prepare(
@@ -450,13 +518,17 @@ student.post('/practice/sessions', async (c) => {
   }
 
   const unitIds = [...new Set(selected.map((row) => row.unit_id).filter(Boolean))] as string[]
-  const context = await getWordsForUnits(c.env, user.id, unitIds)
+  // 专项练习：干扰项从全部指定单元的词里取（池子更大，看图/听音题才有足够选项），
+  // 不再按单单元取；其余模式仍按单单元取。
+  const context = specialPoolRows ? new Map<string, JoinedWordRow[]>() : await getWordsForUnits(c.env, user.id, unitIds)
   const questions: QuestionPayload[] = []
   for (const row of selected) {
-    const pool = row.unit_id ? (context.get(row.unit_id) || [row]) : [row]
-    const generated = buildQuestions([row], pool, questions.length)
+    const pool = specialPoolRows || (row.unit_id ? (context.get(row.unit_id) || [row]) : [row])
+    const generated = buildQuestions([row], pool, questions.length, specialFixedType || undefined)
     let question = generated[0]
     if (!question) continue
+    // 专项练习题型固定：生成函数回落到别的题型时直接跳过该词，不混进别的题型。
+    if (specialFixedType && question.type !== specialFixedType) continue
     const manual = await findManualQuestion(c.env, row.id, question.type)
     if (manual) {
       const merged = applyManualQuestion(question, mapWord(row), manual)
@@ -465,24 +537,28 @@ student.post('/practice/sessions', async (c) => {
     questions.push(question)
   }
 
-  const firstUnit = selected.find((row) => row.unit_id)?.unit_id
-  if (firstUnit) {
-    const unitRow = await c.env.DB.prepare(
-      'SELECT textbook_id FROM unit WHERE id = ?',
-    ).bind(firstUnit).first<{ textbook_id: string }>()
-    textbookId = unitRow?.textbook_id || null
+  // 专项练习跨多个单元/课本，不记单本课本；其余模式按首个单元的课本记。
+  if (mode !== 'special') {
+    const firstUnit = selected.find((row) => row.unit_id)?.unit_id
+    if (firstUnit) {
+      const unitRow = await c.env.DB.prepare(
+        'SELECT textbook_id FROM unit WHERE id = ?',
+      ).bind(firstUnit).first<{ textbook_id: string }>()
+      textbookId = unitRow?.textbook_id || null
+    }
   }
 
   const sessionId = uuid('s')
   await c.env.DB.prepare(
     `INSERT INTO practice_session
-      (id, user_id, textbook_id, unit_id, mode, questions_json, start_time, total_count, correct_count)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+      (id, user_id, textbook_id, unit_id, special_practice_id, mode, questions_json, start_time, total_count, correct_count)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
   ).bind(
     sessionId,
     user.id,
     textbookId,
     unitId,
+    specialPracticeId,
     mode,
     JSON.stringify(questions),
     now,
@@ -493,6 +569,7 @@ student.post('/practice/sessions', async (c) => {
     sessionId,
     mode,
     unitId,
+    specialPracticeId,
     totalCount: questions.length,
     questions,
     empty: false,

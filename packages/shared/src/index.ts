@@ -143,6 +143,34 @@ export interface TextbookPreview {
   units: TextbookPreviewUnit[]
 }
 
+// 专项练习套题：家长给孩子建的固定题型练习，指定单元范围，每套默认 10 题。
+// 每次开局从这些单元里随机抽词，只出这一种题型。
+export interface SpecialPracticeUnit {
+  id: string
+  unitNo: number
+  unitName: string
+  textbookName: string
+}
+
+export interface SpecialPractice {
+  id: string
+  title: string
+  questionType: QuestionType
+  questionCount: number
+  createdAt: string
+  units: SpecialPracticeUnit[]
+  wordCount: number
+  // 建套题时回显：所选单元里能出该题型的词数；列表不算它。
+  eligibleWordCount?: number
+}
+
+export interface SpecialPracticeCreate {
+  title?: string
+  questionType: QuestionType
+  unitIds: string[]
+  questionCount?: number
+}
+
 export interface Unit {
   id: string
   textbookId: string
@@ -223,8 +251,9 @@ export interface QuestionPayload {
 
 export interface PracticeSessionPayload {
   sessionId: string
-  mode: 'unit' | 'review' | 'word'
+  mode: 'unit' | 'review' | 'word' | 'special'
   unitId: string | null
+  specialPracticeId?: string | null
   totalCount: number
   questions: QuestionPayload[]
   resumed?: boolean

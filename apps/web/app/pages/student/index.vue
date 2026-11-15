@@ -12,8 +12,8 @@ import {
   Sparkles,
   Target,
 } from 'lucide-vue-next'
-import type { StudentDashboard, Textbook } from '@english-study/shared'
-import { formatDateTimeCN } from '@english-study/shared'
+import type { SpecialPractice, StudentDashboard, Textbook } from '@english-study/shared'
+import { formatDateTimeCN, QUESTION_TYPE_LABELS } from '@english-study/shared'
 
 const auth = useAuth()
 const api = useApi()
@@ -21,6 +21,10 @@ const toast = useToast()
 
 const data = ref<StudentDashboard | null>(null)
 const loading = ref(true)
+
+// 家长给孩子建的专项练习套题（固定一种题型 + 单元范围，每次随机出题）。
+const specialPractices = ref<SpecialPractice[]>([])
+const specialLoading = ref(false)
 
 const greeting = computed(() => {
   const hour = new Date().getHours()
@@ -56,7 +60,23 @@ async function load() {
   }
 }
 
-onMounted(load)
+async function loadSpecialPractices() {
+  specialLoading.value = true
+  try {
+    const result = await api.get<{ data: SpecialPractice[] }>('/student/special-practices')
+    specialPractices.value = result.data || []
+  } catch {
+    // 专项练习加载失败不挡首页：静默留空。
+    specialPractices.value = []
+  } finally {
+    specialLoading.value = false
+  }
+}
+
+onMounted(() => {
+  load()
+  loadSpecialPractices()
+})
 </script>
 
 <template>
@@ -163,6 +183,37 @@ onMounted(load)
           >
             <template #icon><BookOpen :size="18" /></template>
           </EmptyState>
+
+          <div v-if="specialPractices.length || specialLoading" class="mt-8">
+            <div class="mb-3">
+              <p class="eyebrow">专项练习</p>
+              <h2 class="mt-1 section-title">家长给你布置的专项练习</h2>
+              <p class="mt-1 text-xs text-muted">每套只练一种题型，每次打开都从指定单元里随机出题。</p>
+            </div>
+            <div v-if="specialLoading" class="space-y-3">
+              <div v-for="index in 2" :key="index" class="skeleton h-16" />
+            </div>
+            <div v-else class="space-y-3">
+              <div
+                v-for="item in specialPractices"
+                :key="item.id"
+                class="card flex items-center gap-3 p-4"
+              >
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-medium text-ink">{{ item.title }}</p>
+                  <p class="mt-0.5 text-xs text-muted">
+                    {{ QUESTION_TYPE_LABELS[item.questionType] }} · 每套 {{ item.questionCount }} 题 · 共 {{ item.wordCount }} 个词
+                  </p>
+                  <p class="mt-0.5 truncate text-[11px] text-muted">
+                    {{ item.units.map((unit) => `${unit.textbookName} Unit ${unit.unitNo}`).join('、') }}
+                  </p>
+                </div>
+                <NuxtLink :to="`/student/practice?mode=special&specialPracticeId=${item.id}`" class="btn-primary btn-sm shrink-0">
+                  开始练习
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
         </section>
 
         <aside class="space-y-6">

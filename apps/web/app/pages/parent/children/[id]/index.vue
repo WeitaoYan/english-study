@@ -15,8 +15,8 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-vue-next'
-import { QUESTION_ABILITY_HINTS, QUESTION_ABILITY_LABELS } from '@english-study/shared'
-import type { ChildTextbookOption, ParentReport, QuestionAbility, TextbookPreview } from '@english-study/shared'
+import { QUESTION_ABILITY_HINTS, QUESTION_ABILITY_LABELS, QUESTION_TYPE_LABELS } from '@english-study/shared'
+import type { ChildTextbookOption, ParentReport, QuestionAbility, QuestionType, SpecialPractice, SpecialPracticeCreate, TextbookPreview } from '@english-study/shared'
 import { formatDateTimeCN } from '@english-study/shared'
 
 const route = useRoute()
@@ -91,6 +91,141 @@ function selectPreviewTextbook() {
     selectedTextbookIds.value = [...selectedTextbookIds.value, previewTextbook.value.id]
   }
   previewOpen.value = false
+}
+
+// 专项练习：家长给孩子建的固定题型套题（一种题型 + 单元范围 + 每套默认 10 题）。
+const SPECIAL_TYPE_OPTIONS: { value: QuestionType; label: string }[] = [
+  'definition_choice',
+  'letter_fill',
+  'sentence_fill',
+  'image_choice',
+  'audio_choice',
+  'pronunciation_choice',
+].map((value) => ({ value, label: QUESTION_TYPE_LABELS[value] }))
+
+const specialPractices = ref<SpecialPractice[]>([])
+const specialLoading = ref(false)
+const createOpen = ref(false)
+const createLoading = ref(false)
+const createUnitsLoading = ref(false)
+const createSaving = ref(false)
+const formTitle = ref('')
+const formType = ref<QuestionType>('definition_choice')
+const formUnitIds = ref<string[]>([])
+const formCount = ref(10)
+// 每本已指定课本的单元（新建时一次性取回，按课本分组勾选）。
+const createTextbookUnits = ref<{ textbookId: string; textbookName: string; units: { id: string; unitNo: number; unitName: string; wordCount: number }[] }[]>([])
+const deleteTarget = ref<SpecialPractice | null>(null)
+const deleting = ref(false)
+
+const assignedTextbooks = computed(() => textbooks.value.filter((item) => item.assigned))
+
+async function loadSpecialPractices() {
+  specialLoading.value = true
+  try {
+    const result = await api.get<{ data: SpecialPractice[] }>(`/parent/children/${route.params.id}/special-practices`)
+    specialPractices.value = result.data || []
+  } catch (error) {
+    toast.error(errorMessage(error, '专项练习加载失败'))
+  } finally {
+    specialLoading.value = false
+  }
+}
+
+// 套题的单元按课本分组展示：三上：Unit 1、Unit 2；三下：Unit 1。
+function groupSpecialUnits(item: SpecialPractice) {
+  const groups: { textbookName: string; unitNames: string[] }[] = []
+  for (const unit of item.units) {
+    const group = groups.find((entry) => entry.textbookName === unit.textbookName)
+    const label = `Unit ${unit.unitNo} · ${unit.unitName}`
+    if (group) group.unitNames.push(label)
+    else groups.push({ textbookName: unit.textbookName, unitNames: [label] })
+  }
+  return groups
+}
+
+async function openCreate() {
+  formTitle.value = ''
+  formType.value = 'definition_choice'
+  formUnitIds.value = []
+  formCount.value = 10
+  createTextbookUnits.value = []
+  createOpen.value = true
+  createLoading.value = true
+  createUnitsLoading.value = true
+  try {
+    const groups = await Promise.all(
+      assignedTextbooks.value.map(async (textbook) => {
+        const result = await api.get<{ data: { id: string; unitNo: number; unitName: string; wordCount: number }[] }>(
+          `/parent/children/${route.params.id}/textbooks/${textbook.id}/units`,
+        )
+        return { textbookId: textbook.id, textbookName: textbook.name, units: result.data || [] }
+      }),
+    )
+    createTextbookUnits.value = groups.filter((group) => group.units.length > 0)
+  } catch (error) {
+    toast.error(errorMessage(error, '单元列表加载失败'))
+  } finally {
+    createUnitsLoading.value = false
+    createLoading.value = false
+  }
+}
+
+function toggleCreateUnit(unitId: string) {
+  formUnitIds.value = formUnitIds.value.includes(unitId)
+    ? formUnitIds.value.filter((id) => id !== unitId)
+    : [...formUnitIds.value, unitId]
+}
+
+function toggleCreateTextbook(group: { textbookId: string; units: { id: string }[] }) {
+  const ids = group.units.map((unit) => unit.id)
+  const allSelected = ids.every((id) => formUnitIds.value.includes(id))
+  formUnitIds.value = allSelected
+    ? formUnitIds.value.filter((id) => !ids.includes(id))
+    : [...new Set([...formUnitIds.value, ...ids])]
+}
+
+async function createSpecial() {
+  if (!formUnitIds.value.length) {
+    toast.error('请至少勾选一个单元')
+    return
+  }
+  if (createSaving.value) return
+  createSaving.value = true
+  try {
+    const body: SpecialPracticeCreate = {
+      title: formTitle.value.trim() || undefined,
+      questionType: formType.value,
+      unitIds: formUnitIds.value,
+      questionCount: formCount.value,
+    }
+    const result = await api.post<{ data: SpecialPractice & { eligibleWordCount?: number } }>(
+      `/parent/children/${route.params.id}/special-practices`,
+      body,
+    )
+    specialPractices.value = [result.data, ...specialPractices.value]
+    createOpen.value = false
+    toast.success(`已创建「${result.data.title}」，所选单元里有 ${result.data.eligibleWordCount ?? 0} 个词能出这种题型`)
+  } catch (error) {
+    toast.error(errorMessage(error, '创建失败'))
+  } finally {
+    createSaving.value = false
+  }
+}
+
+async function confirmDelete() {
+  if (!deleteTarget.value || deleting.value) return
+  deleting.value = true
+  try {
+    await api.delete(`/parent/children/${route.params.id}/special-practices/${deleteTarget.value.id}`)
+    specialPractices.value = specialPractices.value.filter((item) => item.id !== deleteTarget.value!.id)
+    toast.success('已删除该套专项练习')
+    deleteTarget.value = null
+  } catch (error) {
+    toast.error(errorMessage(error, '删除失败'))
+  } finally {
+    deleting.value = false
+  }
 }
 
 async function load() {
@@ -179,6 +314,7 @@ onMounted(() => {
   load()
   loadTextbooks()
   loadReviewLimit()
+  loadSpecialPractices()
 })
 </script>
 
@@ -317,6 +453,134 @@ onMounted(() => {
             @click="selectPreviewTextbook"
           >
             {{ selectedTextbookIds.includes(previewTextbook.id) ? '已勾选' : '勾选这本课本' }}
+          </button>
+        </template>
+      </Modal>
+
+      <section class="card mt-6 p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="eyebrow">专项练习</p>
+            <h2 class="mt-1 section-title">专项练习套题</h2>
+            <p class="mt-1 text-xs text-muted">给孩子指定一种题型和一个单元范围，孩子每次打开都随机出题，只练这一种题型。</p>
+          </div>
+          <button class="btn-primary btn-sm" :disabled="!assignedTextbooks.length" @click="openCreate">
+            新建套题
+          </button>
+        </div>
+        <p v-if="!assignedTextbooks.length" class="mt-4 text-xs text-muted">先在上面指定课本，才能建专项练习。</p>
+        <div v-else-if="specialLoading" class="mt-4 space-y-2">
+          <div v-for="index in 2" :key="index" class="skeleton h-16" />
+        </div>
+        <div v-else-if="specialPractices.length" class="mt-4 space-y-2">
+          <div
+            v-for="item in specialPractices"
+            :key="item.id"
+            class="rounded-xl border border-line/70 bg-white/60 px-3.5 py-3"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm font-medium text-ink">{{ item.title }}</p>
+                <p class="mt-0.5 text-[11px] text-muted">
+                  {{ QUESTION_TYPE_LABELS[item.questionType] }} · 每套 {{ item.questionCount }} 题 · 共 {{ item.wordCount }} 个词
+                </p>
+              </div>
+              <button type="button" class="shrink-0 rounded-lg px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50" @click="deleteTarget = item">
+                删除
+              </button>
+            </div>
+            <p class="mt-1.5 text-xs leading-relaxed text-muted">
+              <template v-for="(group, index) in groupSpecialUnits(item)" :key="group.textbookName">
+                <span v-if="index > 0">；</span>{{ group.textbookName }}：{{ group.unitNames.join('、') }}
+              </template>
+            </p>
+          </div>
+        </div>
+        <p v-else class="mt-4 text-xs text-muted">还没建专项练习。点右上角“新建套题”，选一种题型和单元范围即可。</p>
+      </section>
+
+      <Modal
+        :open="createOpen"
+        title="新建专项练习"
+        description="选一种题型、勾选单元范围，每套默认 10 题。孩子每次打开这套练习，都会从这些单元里随机出题，只出这一种题型。"
+        wide
+        @close="createOpen = false"
+      >
+        <div class="space-y-5">
+          <div>
+            <label class="form-label">名称（可选）</label>
+            <input v-model="formTitle" type="text" maxlength="50" placeholder="不填则自动用题型命名，如“听音选词专项”" class="form-input">
+          </div>
+          <div>
+            <label class="form-label">题型（固定一种）</label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="option in SPECIAL_TYPE_OPTIONS"
+                :key="option.value"
+                type="button"
+                class="rounded-full border px-3 py-1.5 text-xs font-medium transition"
+                :class="formType === option.value ? 'border-forest bg-forest text-white' : 'border-line bg-white text-ink hover:border-forest/40'"
+                @click="formType = option.value"
+              >
+                {{ option.label }}
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">单元范围（可跨多本课本勾选）</label>
+            <div v-if="createUnitsLoading" class="space-y-2">
+              <div v-for="index in 3" :key="index" class="skeleton h-10" />
+            </div>
+            <div v-else-if="createTextbookUnits.length" class="space-y-4">
+              <div v-for="group in createTextbookUnits" :key="group.textbookId">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="text-sm font-medium text-ink">{{ group.textbookName }}</p>
+                  <button type="button" class="text-xs font-medium text-forest-deep underline underline-offset-2" @click="toggleCreateTextbook(group)">
+                    {{ group.units.every((unit) => formUnitIds.includes(unit.id)) ? '取消全选' : '全选' }}
+                  </button>
+                </div>
+                <div class="mt-2 space-y-1.5">
+                  <label
+                    v-for="unit in group.units"
+                    :key="unit.id"
+                    class="flex cursor-pointer items-center gap-2.5 rounded-lg border border-line/60 bg-white/60 px-3 py-2"
+                  >
+                    <input :checked="formUnitIds.includes(unit.id)" type="checkbox" class="size-4 shrink-0 accent-[#2f5f4c]" @change="toggleCreateUnit(unit.id)">
+                    <span class="min-w-0 flex-1 text-sm text-ink">Unit {{ unit.unitNo }} · {{ unit.unitName }}</span>
+                    <span class="shrink-0 text-xs text-muted">{{ unit.wordCount }} 词</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <p v-else class="text-xs text-muted">已指定的课本里暂无单元。</p>
+          </div>
+          <div>
+            <label class="form-label">每套题数</label>
+            <input v-model.number="formCount" type="number" min="1" max="50" step="1" class="form-input w-28">
+            <p class="mt-1 text-xs text-muted">默认 10 题，1–50 题；所选单元里能出该题型的词不够时，按实际能出的出。</p>
+          </div>
+        </div>
+        <template #footer>
+          <button class="btn-ghost btn-sm" @click="createOpen = false">取消</button>
+          <button class="btn-primary btn-sm" :disabled="createSaving || !formUnitIds.length" @click="createSpecial">
+            <Loader2 v-if="createSaving" :size="14" class="animate-spin" />
+            创建套题
+          </button>
+        </template>
+      </Modal>
+
+      <Modal
+        :open="!!deleteTarget"
+        title="删除这套专项练习？"
+        description="删除后孩子端将不再看到这套练习；已经开局的会话与答题记录会保留。"
+        @close="deleteTarget = null"
+      >
+        <p v-if="deleteTarget" class="text-sm text-ink">「{{ deleteTarget.title }}」· {{ QUESTION_TYPE_LABELS[deleteTarget.questionType] }} · 每套 {{ deleteTarget.questionCount }} 题</p>
+        <template #footer>
+          <button class="btn-ghost btn-sm" @click="deleteTarget = null">取消</button>
+          <button class="btn-primary btn-sm !bg-red-600" :disabled="deleting" @click="confirmDelete">
+            <Loader2 v-if="deleting" :size="14" class="animate-spin" />
+            确认删除
           </button>
         </template>
       </Modal>

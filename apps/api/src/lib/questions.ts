@@ -28,7 +28,8 @@ function shuffle<T>(values: T[]): T[] {
   return copy
 }
 
-function availableTypes(word: Word): QuestionType[] {
+/** 该词能出哪些题型（专项练习预过滤用：只留能出固定题型的词）。 */
+export function availableTypes(word: Word): QuestionType[] {
   const types: QuestionType[] = []
   if (word.chineseDef.trim()) types.push('definition_choice')
   if (word.spelling.replace(/[^a-zA-Z]/g, '').length >= 3) types.push('letter_fill')
@@ -268,6 +269,9 @@ export function buildQuestions(
   selectedRows: WordRow[],
   unitRows: WordRow[],
   startIndex = 0,
+  // 专项练习：固定一种题型（不走轮换）。若某词最终仍出不了该题型
+  // （如看图题干扰项不足），生成函数会回落，调用方须按类型过滤掉回落的题。
+  fixedType?: QuestionType,
 ): QuestionPayload[] {
   const allWords = unitRows.map(mapWord)
   const selected = selectedRows.map(mapWord)
@@ -275,7 +279,7 @@ export function buildQuestions(
 
   selected.forEach((word, index) => {
     const sequence = startIndex + index
-    let type = chooseType(word, sequence)
+    let type = fixedType ?? chooseType(word, sequence)
     let options: string[] | null = null
     let stem: string | null = null
     let prompt = ''

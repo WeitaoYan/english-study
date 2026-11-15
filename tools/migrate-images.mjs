@@ -324,6 +324,8 @@ async function main() {
   const progress = loadProgress()
   if (!progress.done) progress.done = {}
   if (!progress.failed) progress.failed = {}
+  // noImage：四路都找不到合适图的词，留空、不再重试（用户 2026-11-15 拍板：不追覆盖率）。
+  if (!progress.noImage) progress.noImage = {}
 
   let words
   if (ONLY_WORDS) {
@@ -355,16 +357,20 @@ async function main() {
     word.pendingSource = pending ? pending.source : null
   }
 
-  const stats = { imported: 0, upgraded: 0, keptPhoto: 0, deferred: 0, bySource: {}, failed: 0, skipped: 0 }
+  const stats = { imported: 0, upgraded: 0, keptPhoto: 0, deferred: 0, bySource: {}, failed: 0, skipped: 0, noImage: 0 }
   let ovCapped = false
-  // 小批量：先滤掉已完成（worker 内会跳过）的词再切 LIMIT，让 --limit 指“实际要处理的词数”，
-  // 否则前面已完成的词会把名额占掉、小批量跑不到新词。--words 指定词时不过滤（由 worker 按原逻辑处理）。
-  const batch = ONLY_WORDS
-    ? words.slice(0, LIMIT)
+  // 小批量：先滤掉已完成（worker 内会跳过）和已确认无图（留空）的词再切 LIMIT，
+  // 让 --limit 指“实际要处理的词数”，否则前面已完成的词会把名额占掉、小批量跑不到新词。
+  // --words 指定词时不过滤（由 worker 按原逻辑处理）。
+  const actionable = ONLY_WORDS
+    ? words
     : (FORCE ? words : words.filter((word) => {
-      const doneEntry = progress.done[word.spelling.toLowerCase()]
+      const key = word.spelling.toLowerCase()
+      if (progress.noImage[key]) return false
+      const doneEntry = progress.done[key]
       return !(doneEntry && (doneEntry.source === 'twemoji' || doneEntry.source === 'openverse-illustration' || doneEntry.keptPhoto))
-    })).slice(0, LIMIT)
+    }))
+  const batch = actionable.slice(0, LIMIT)
   // 4 并发：单词全程约 10 秒（代理延迟），串行 1700+ 个词要 5 小时，并发后约 1 小时。
   // 进度对象是共享内存，saveProgress 是同步写文件，各 worker 写出的都是最新全量。
   const CONCURRENCY = 4
@@ -377,8 +383,12 @@ async function main() {
       const word = batch[next++]
       const key = word.spelling.toLowerCase()
       const doneEntry = progress.done[key]
-      // 已有卡通图（或已确认保留照片）的跳过；已有照片的（done 来源是 wikipedia/openverse）
-      // 是升级候选，不跳过。
+      // 已确认无图（留空）的词不再重试；已有卡通图（或已确认保留照片）的跳过；
+      // 已有照片的（done 来源是 wikipedia/openverse）是升级候选，不跳过。
+      if (!FORCE && progress.noImage[key]) {
+        stats.skipped++
+        continue
+      }
       if (doneEntry && !FORCE && (doneEntry.source === 'twemoji' || doneEntry.source === 'openverse-illustration' || doneEntry.keptPhoto)) {
         stats.skipped++
         continue
@@ -434,9 +444,11 @@ async function main() {
           if (!DRY_RUN) saveProgress(progress)
           continue
         }
-        progress.failed[key] = '无卡通、无维基首图、Openverse 无可用结果'
-        stats.failed++
-        console.log(`✗ ${word.spelling}：无卡通、无维基首图、Openverse 无可用结果`)
+        // 四路都找不到合适图：留空，记 noImage，不再重试（不追覆盖率）。
+        progress.noImage[key] = '无卡通、无维基首图、Openverse 无可用结果'
+        delete progress.failed[key]
+        stats.noImage++
+        console.log(`○ ${word.spelling}：无合适图，留空`)
         if (!DRY_RUN) saveProgress(progress)
         continue
       }
@@ -461,9 +473,10 @@ async function main() {
   await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()))
   if (!DRY_RUN) saveProgress(progress)
 
-  const processed = stats.imported + stats.upgraded + stats.keptPhoto + stats.failed + stats.skipped
-  const totalRemaining = ONLY_WORDS ? 0 : Math.max(0, words.length - processed)
-  console.log(`\n导入 ${stats.imported} 张新图、升级 ${stats.upgraded} 张照片为卡通（${Object.entries(stats.bySource).map(([s, n]) => `${s} ${n}`).join('、') || '无'}），保留照片 ${stats.keptPhoto} 个，留到明天 ${stats.deferred} 个，失败 ${stats.failed} 个，跳过 ${stats.skipped} 个，剩余待导约 ${totalRemaining} 个${DRY_RUN ? ' [dry-run，未写入]' : ''}`)
+  // 剩余待导 = 可处理词数 - 本批已解决的（新图/升级/保留/留空/跳过）；留到明天与失败（临时）仍算剩余。
+  const resolved = stats.imported + stats.upgraded + stats.keptPhoto + stats.noImage + stats.skipped
+  const totalRemaining = ONLY_WORDS ? 0 : Math.max(0, actionable.length - resolved)
+  console.log(`\n导入 ${stats.imported} 张新图、升级 ${stats.upgraded} 张照片为卡通（${Object.entries(stats.bySource).map(([s, n]) => `${s} ${n}`).join('、') || '无'}），保留照片 ${stats.keptPhoto} 个，留空 ${stats.noImage} 个，留到明天 ${stats.deferred} 个，失败 ${stats.failed} 个，跳过 ${stats.skipped} 个，剩余待导约 ${totalRemaining} 个${DRY_RUN ? ' [dry-run，未写入]' : ''}`)
   if (ovCapped) {
     console.log('Openverse 当日额度（180 次）已用完，剩下的词明天再跑（进度文件已保存，断点续跑）。')
   }

@@ -1,549 +1,4711 @@
 {
   "done": {
     "fish": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 3.0",
-      "imageId": "img-39d19c86-0bf3-46eb-971b-f31856c4082d"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-71de4605-b046-4bd7-ae22-766b5cdfc6fb"
     },
     "happy": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-23c151cf-72a0-4168-b002-96b0771369ea"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d40dfcd2-ab6d-463c-a908-3c7b8b7fff2e"
     },
     "moon": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 3.0",
-      "imageId": "img-e32f5e1b-6eb4-4919-ab77-dd2e95dc9c7b"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ae31bfa2-42ab-4c14-bc53-6ef2320d3d2b"
     },
     "run": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-b4592cd0-80cd-4b25-bc78-f85a36dc08fd"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1f6dafb5-4d43-42c2-befd-c60ab5aeca90"
     },
     "sun": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 4.0",
-      "imageId": "img-60869232-f6ae-4a17-86dd-917b1021db7d"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e57803c4-9730-4f02-a0f9-74bb3e33d117"
     },
     "december": {
       "source": "wikipedia",
-      "license": "CC BY-SA 4.0",
-      "imageId": "img-7b56bea6-5726-4cf8-ab53-daa4a947bcd7"
+      "imageId": "img-7b56bea6-5726-4cf8-ab53-daa4a947bcd7",
+      "keptPhoto": true
     },
     "friday": {
       "source": "wikipedia",
-      "license": "CC BY-SA 4.0",
-      "imageId": "img-459f6112-5ad8-4581-9aad-5cdc5951ce87"
+      "imageId": "img-459f6112-5ad8-4581-9aad-5cdc5951ce87",
+      "keptPhoto": true
     },
     "monday": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-10a1c100-f2c9-432d-a97d-a5956f73c7bd"
+      "imageId": "img-10a1c100-f2c9-432d-a97d-a5956f73c7bd",
+      "keptPhoto": true
     },
     "february": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-21b58c9f-a4b8-4b5e-b0fa-69b7d03e38f4"
+      "imageId": "img-21b58c9f-a4b8-4b5e-b0fa-69b7d03e38f4",
+      "keptPhoto": true
     },
     "saturday": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-dde3f1a2-c690-42ec-8db2-f64ad3e9da21"
+      "imageId": "img-dde3f1a2-c690-42ec-8db2-f64ad3e9da21",
+      "keptPhoto": true
     },
     "september": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-ff93e3d6-46c4-48e9-8938-15daae1a2c41"
+      "imageId": "img-ff93e3d6-46c4-48e9-8938-15daae1a2c41",
+      "keptPhoto": true
     },
     "mr": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-ae5df2f4-6aab-4833-888b-f72937212a4e"
+      "imageId": "img-ae5df2f4-6aab-4833-888b-f72937212a4e",
+      "keptPhoto": true
     },
     "sunday": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-05ef4d2c-726c-4271-b592-1514fa438eab"
+      "imageId": "img-05ef4d2c-726c-4271-b592-1514fa438eab",
+      "keptPhoto": true
     },
     "t-shirt": {
       "source": "wikipedia",
-      "license": "CC BY 2.0",
-      "imageId": "img-f0db3926-3e69-46e4-a9ae-fa68d982ab1a"
+      "imageId": "img-f0db3926-3e69-46e4-a9ae-fa68d982ab1a",
+      "keptPhoto": true
     },
     "tuesday": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-bfe225e3-8a2a-41e7-b271-f38b66bcb0c9"
+      "imageId": "img-bfe225e3-8a2a-41e7-b271-f38b66bcb0c9",
+      "keptPhoto": true
     },
     "wednesday": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-33fb2872-7002-43c4-8e41-2e4e9c6840a0"
+      "imageId": "img-33fb2872-7002-43c4-8e41-2e4e9c6840a0",
+      "keptPhoto": true
     },
     "thursday": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-dc24784d-f6c6-4a61-8a46-86b79c6735b1"
+      "imageId": "img-dc24784d-f6c6-4a61-8a46-86b79c6735b1",
+      "keptPhoto": true
     },
     "tv": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-d78fa027-a1a9-448d-9b47-9d9881a33468"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2010690a-dba6-43d7-b43b-8f17437433e3"
     },
     "a": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-ee7d8807-d631-4d63-b30f-ec48083f28b2"
+      "imageId": "img-ee7d8807-d631-4d63-b30f-ec48083f28b2",
+      "keptPhoto": true
     },
     "ability": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-4ddb7ede-712c-47d0-a32a-ee131cf3c0aa"
+      "imageId": "img-4ddb7ede-712c-47d0-a32a-ee131cf3c0aa",
+      "keptPhoto": true
     },
     "about": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-32209448-5f10-45b9-bc93-2da706f9e998"
+      "imageId": "img-32209448-5f10-45b9-bc93-2da706f9e998",
+      "keptPhoto": true
     },
     "above": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-a76fa768-f630-4d41-92a7-0aabe7fe282c"
+      "imageId": "img-a76fa768-f630-4d41-92a7-0aabe7fe282c",
+      "keptPhoto": true
     },
     "able": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-b3504d2a-070b-4e1e-b080-85452782a6dd"
+      "imageId": "img-b3504d2a-070b-4e1e-b080-85452782a6dd",
+      "keptPhoto": true
     },
     "abroad": {
       "source": "openverse",
-      "license": "Public Domain",
-      "imageId": "img-539ac82e-8f50-4686-a543-a84ec0e20d33"
+      "imageId": "img-539ac82e-8f50-4686-a543-a84ec0e20d33",
+      "keptPhoto": true
     },
     "accident": {
       "source": "wikipedia",
-      "license": "CC BY 3.0",
-      "imageId": "img-ccb887fc-1c8a-4618-bfbf-cd9306f2ac3b"
+      "imageId": "img-ccb887fc-1c8a-4618-bfbf-cd9306f2ac3b",
+      "keptPhoto": true
     },
     "absent": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-efc4ea8b-f601-412c-9e93-910eda7e2332"
+      "imageId": "img-efc4ea8b-f601-412c-9e93-910eda7e2332",
+      "keptPhoto": true
     },
     "accept": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-4bd413b3-ca22-43d0-a667-28d4e40e6f46"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b60f0999-d935-4965-ab96-dede70ff1767"
     },
     "across": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-e1650eac-f01d-4c87-b805-5474d3642375"
+      "imageId": "img-e1650eac-f01d-4c87-b805-5474d3642375",
+      "keptPhoto": true
     },
     "achieve": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-62c83c9d-00de-486e-b700-580a1cc37993"
+      "imageId": "img-62c83c9d-00de-486e-b700-580a1cc37993",
+      "keptPhoto": true
     },
     "action": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-57af5a1f-9228-4afc-a4b7-179b21234b8b"
+      "imageId": "img-57af5a1f-9228-4afc-a4b7-179b21234b8b",
+      "keptPhoto": true
     },
     "act": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-81fe7837-b624-488d-ac19-8cdc79a23be7"
+      "imageId": "img-81fe7837-b624-488d-ac19-8cdc79a23be7",
+      "keptPhoto": true
     },
     "active": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-ade7af59-e1f7-4987-8dbe-a34fd7c64fdf"
+      "imageId": "img-ade7af59-e1f7-4987-8dbe-a34fd7c64fdf",
+      "keptPhoto": true
     },
     "activity": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-33634ffd-1afc-4bf5-ba82-5f7a9415f0c2"
+      "imageId": "img-33634ffd-1afc-4bf5-ba82-5f7a9415f0c2",
+      "keptPhoto": true
     },
     "actor": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-5299a500-0d27-4517-8918-61ba48a962a5"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3fccf5b3-d209-4c66-a2eb-dd68377a918e"
     },
     "actress": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-264fe55d-5823-4ea4-bf65-f54199d44247"
+      "imageId": "img-264fe55d-5823-4ea4-bf65-f54199d44247",
+      "keptPhoto": true
     },
     "add": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-4b158736-8728-41d7-b560-af163bb2c136"
+      "imageId": "img-4b158736-8728-41d7-b560-af163bb2c136",
+      "keptPhoto": true
     },
     "advantage": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-b0ee46f5-5b48-450e-bcf6-0cba5b6a0f19"
+      "imageId": "img-b0ee46f5-5b48-450e-bcf6-0cba5b6a0f19",
+      "keptPhoto": true
     },
     "advice": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-90143ef2-f07b-4c1e-b18f-0cbd7af27a1c"
+      "imageId": "img-90143ef2-f07b-4c1e-b18f-0cbd7af27a1c",
+      "keptPhoto": true
     },
     "adventure": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-68adffc4-a382-42e5-9098-cb87e6f1a938"
+      "imageId": "img-68adffc4-a382-42e5-9098-cb87e6f1a938",
+      "keptPhoto": true
     },
     "afternoon": {
       "source": "wikipedia",
-      "license": "CC BY-SA 2.0",
-      "imageId": "img-77a1b060-75df-4c51-9479-cac7e86136b6"
+      "imageId": "img-77a1b060-75df-4c51-9479-cac7e86136b6",
+      "keptPhoto": true
     },
     "advise": {
       "source": "openverse",
-      "license": "CC0",
-      "imageId": "img-520532b6-c21a-41a2-a948-951b93fb3749"
+      "imageId": "img-520532b6-c21a-41a2-a948-951b93fb3749",
+      "keptPhoto": true
     },
     "afraid": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-ff864364-e666-49e3-89f1-e3a64b6034c7"
+      "imageId": "img-ff864364-e666-49e3-89f1-e3a64b6034c7",
+      "keptPhoto": true
     },
     "after": {
       "source": "openverse",
-      "license": "CC0",
-      "imageId": "img-d6b3309a-3ee7-4540-b7e1-0a66863894e0"
+      "imageId": "img-d6b3309a-3ee7-4540-b7e1-0a66863894e0",
+      "keptPhoto": true
     },
     "afterschool": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-1c09a2b1-3edd-48d3-a7d7-5bc3615cb047"
+      "imageId": "img-1c09a2b1-3edd-48d3-a7d7-5bc3615cb047",
+      "keptPhoto": true
     },
     "again": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-faff4e85-97a7-48ab-be05-7a93818807a6"
+      "imageId": "img-faff4e85-97a7-48ab-be05-7a93818807a6",
+      "keptPhoto": true
     },
     "age": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-a4e8d6ec-09eb-4b9b-96c9-1e1a23593b3c"
+      "imageId": "img-a4e8d6ec-09eb-4b9b-96c9-1e1a23593b3c",
+      "keptPhoto": true
     },
     "against": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-60e5be56-89d8-489c-8bab-00cdbb2b01d6"
+      "imageId": "img-60e5be56-89d8-489c-8bab-00cdbb2b01d6",
+      "keptPhoto": true
     },
     "aid": {
-      "source": "wikipedia",
+      "source": "twemoji",
       "license": "CC BY 4.0",
-      "imageId": "img-93c798b1-82af-4e88-992e-6667eeacf1ae"
+      "imageId": "img-ddd816b6-320f-4fb8-b664-13660a686a70"
     },
     "agree": {
-      "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-6a807b30-9740-48d6-9a7f-7f4200b4b236"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a75de0f1-b182-4a30-a09b-96107a82bb25"
     },
     "ago": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-95bd4ee2-2053-44d7-80e5-28d1682bd181"
+      "imageId": "img-95bd4ee2-2053-44d7-80e5-28d1682bd181",
+      "keptPhoto": true
     },
     "ahead": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-b82d623d-00d8-49e6-831c-5052810caa22"
+      "imageId": "img-b82d623d-00d8-49e6-831c-5052810caa22",
+      "keptPhoto": true
     },
     "airport": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 3.0",
-      "imageId": "img-fc35ee54-9c43-4e2c-b20a-ba691f950b10"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6f546c84-a2a9-4760-9980-9b0094a92d17"
     },
     "alarm": {
-      "source": "wikipedia",
-      "license": "CC BY 2.0",
-      "imageId": "img-6b998563-86d0-41e3-b2de-292c65681528"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-59ab3cdf-db0f-4aac-81d9-446f838964b0"
     },
     "album": {
       "source": "wikipedia",
-      "license": "CC0",
-      "imageId": "img-f298e758-0b2b-473a-9df4-e725d93f4bd7"
+      "imageId": "img-f298e758-0b2b-473a-9df4-e725d93f4bd7",
+      "keptPhoto": true
     },
     "air": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-41ef97fe-a99f-46e1-a09d-a7bc3f91858a"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a2e1944f-2625-4259-8e5b-f23f12c7f258"
     },
     "alike": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-fb0d7e0e-7145-41a8-9c9b-7d9787b31d1e"
+      "imageId": "img-fb0d7e0e-7145-41a8-9c9b-7d9787b31d1e",
+      "keptPhoto": true
     },
     "alive": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-3a774a22-a0fd-4968-8ad3-fcf9e4d66d4a"
+      "imageId": "img-3a774a22-a0fd-4968-8ad3-fcf9e4d66d4a",
+      "keptPhoto": true
     },
     "allow": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-c939b006-252c-40e9-b3d9-c29df4c9eb5c"
+      "imageId": "img-c939b006-252c-40e9-b3d9-c29df4c9eb5c",
+      "keptPhoto": true
     },
     "all": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-b3e57849-e6ad-4864-b9f0-91bf68502d8d"
+      "imageId": "img-b3e57849-e6ad-4864-b9f0-91bf68502d8d",
+      "keptPhoto": true
     },
     "aloud": {
       "source": "wikipedia",
-      "license": "CC BY 2.0",
-      "imageId": "img-388281ab-30d5-4a3f-a10a-acf376c9fdee"
+      "imageId": "img-388281ab-30d5-4a3f-a10a-acf376c9fdee",
+      "keptPhoto": true
     },
     "almost": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-7b5a17d9-194f-4afa-b8fd-915dfe9fffdd"
+      "imageId": "img-7b5a17d9-194f-4afa-b8fd-915dfe9fffdd",
+      "keptPhoto": true
     },
     "alone": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-e88d1956-3efd-444c-830a-3ba2b3e47050"
+      "imageId": "img-e88d1956-3efd-444c-830a-3ba2b3e47050",
+      "keptPhoto": true
     },
     "along": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-38401da4-752a-4146-92af-bbc36231f8d2"
+      "imageId": "img-38401da4-752a-4146-92af-bbc36231f8d2",
+      "keptPhoto": true
     },
     "alphabet": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-1d786cfd-fc2a-415b-b367-36f66dadaffe"
+      "imageId": "img-1d786cfd-fc2a-415b-b367-36f66dadaffe",
+      "keptPhoto": true
     },
     "always": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-1e68a715-4880-42f2-8a2d-08a13e3e9db9"
+      "imageId": "img-1e68a715-4880-42f2-8a2d-08a13e3e9db9",
+      "keptPhoto": true
     },
     "already": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-c0cba3ea-9147-4087-a325-bf6059e2be7a"
+      "imageId": "img-c0cba3ea-9147-4087-a325-bf6059e2be7a",
+      "keptPhoto": true
     },
     "also": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-c5f06744-7bd5-4a0c-9c72-ed703bad54e0"
+      "imageId": "img-c5f06744-7bd5-4a0c-9c72-ed703bad54e0",
+      "keptPhoto": true
     },
     "amazing": {
       "source": "openverse",
-      "license": "Public Domain",
-      "imageId": "img-3c51213c-689f-416e-ae5c-9883affbd105"
+      "imageId": "img-3c51213c-689f-416e-ae5c-9883affbd105",
+      "keptPhoto": true
     },
     "ambulance": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 4.0",
-      "imageId": "img-15f4627c-af81-4295-83a9-7cb751c6cddd"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0af2fe49-3f1a-4466-9989-1db92761a661"
     },
     "animal": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 4.0",
-      "imageId": "img-f6103a8b-522a-4b17-af90-ad493a91df76"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a42b0818-f4d7-48ee-af3c-072ceb8af069"
     },
     "ankle": {
       "source": "wikipedia",
-      "license": "CC BY-SA 3.0",
-      "imageId": "img-255a4d3c-363f-4cb4-b90f-179f00909ba6"
+      "imageId": "img-255a4d3c-363f-4cb4-b90f-179f00909ba6",
+      "keptPhoto": true
     },
     "ant": {
-      "source": "wikipedia",
-      "license": "CC BY 2.0",
-      "imageId": "img-d2aca78d-2228-4eaa-87bb-9105a3068892"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ccf4d9ae-ea31-424e-8a31-262a298f00d0"
     },
     "angry": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-cb818cc0-35a1-45bf-a4ed-adb77e90f123"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a59e90ac-a4bf-48d0-aac6-59caef5ee7f3"
     },
     "another": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-145e43f3-3df9-44e0-8840-da3323dfeefb"
+      "imageId": "img-145e43f3-3df9-44e0-8840-da3323dfeefb",
+      "keptPhoto": true
     },
     "answer": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-3950dce8-5f57-417a-8484-ed37b4a8c6cf"
+      "imageId": "img-3950dce8-5f57-417a-8484-ed37b4a8c6cf",
+      "keptPhoto": true
     },
     "any": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-37443b2b-8c68-482b-9a60-5baf9bd7cfb2"
+      "imageId": "img-37443b2b-8c68-482b-9a60-5baf9bd7cfb2",
+      "keptPhoto": true
     },
     "anymore": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-930b06fb-6564-477f-890b-db97232df95b"
+      "imageId": "img-930b06fb-6564-477f-890b-db97232df95b",
+      "keptPhoto": true
     },
     "anyone": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-86aef8a6-b98e-41e2-9bfa-8b626fe4f345"
+      "imageId": "img-86aef8a6-b98e-41e2-9bfa-8b626fe4f345",
+      "keptPhoto": true
     },
     "anything": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-5fc4a0d0-292f-4144-aee7-e027bee4efa7"
+      "imageId": "img-5fc4a0d0-292f-4144-aee7-e027bee4efa7",
+      "keptPhoto": true
     },
     "appear": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-abaad473-5ee0-44c1-8537-d0c552539325"
+      "imageId": "img-abaad473-5ee0-44c1-8537-d0c552539325",
+      "keptPhoto": true
     },
     "appointment": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-03903c30-39c8-4cf1-be20-53e11d774b5b"
+      "imageId": "img-03903c30-39c8-4cf1-be20-53e11d774b5b",
+      "keptPhoto": true
     },
     "appreciate": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-bf3c1892-effa-49cb-9908-2cfec2b068fb"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a364dbff-1306-4598-8712-1ac4cc0dd46f"
     },
     "approach": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-48b70c88-f852-42ab-836e-176dca5e9a1b"
+      "imageId": "img-48b70c88-f852-42ab-836e-176dca5e9a1b",
+      "keptPhoto": true
     },
     "area": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-3fa1ba0a-9234-4100-a5df-409fba12ce47"
+      "imageId": "img-3fa1ba0a-9234-4100-a5df-409fba12ce47",
+      "keptPhoto": true
     },
     "arm": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 4.0",
-      "imageId": "img-10e608e9-d231-4bde-85c1-48cbf35e8251"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b33c5f0d-9e1e-413a-b23a-a28d08e6db46"
     },
     "argue": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-b2030b39-02a0-4d33-b314-73f7fc6dd0de"
+      "imageId": "img-b2030b39-02a0-4d33-b314-73f7fc6dd0de",
+      "keptPhoto": true
     },
     "army": {
-      "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-d569a6cd-798a-4ab9-a71b-6ed5b03a3da8"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d95b2a9a-d4cd-435e-886e-ce35cf855372"
     },
     "arrange": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-fc067b0e-0fe5-4dd3-8827-0a706d0097a2"
+      "imageId": "img-fc067b0e-0fe5-4dd3-8827-0a706d0097a2",
+      "keptPhoto": true
     },
     "around": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-6ef2a83b-b89b-4e76-afe0-ec4584c5d98e"
+      "imageId": "img-6ef2a83b-b89b-4e76-afe0-ec4584c5d98e",
+      "keptPhoto": true
     },
     "art": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 3.0",
-      "imageId": "img-353102b1-5a59-4285-a7e7-d95740ccd16c"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1173f5d5-624d-435a-8118-db54b7759097"
     },
     "arrive": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-1d50aa63-02bf-44f0-a7d3-e3c422620f74"
+      "imageId": "img-1d50aa63-02bf-44f0-a7d3-e3c422620f74",
+      "keptPhoto": true
     },
     "artist": {
-      "source": "wikipedia",
-      "license": "CC BY-SA 4.0",
-      "imageId": "img-c7961d8d-7030-44c4-b6f7-34f7f982477f"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ae31340b-461c-4ec8-ba40-8f0d657ee60c"
     },
     "ashamed": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-09af7cf3-298f-4e78-9a66-52a9751db316"
+      "imageId": "img-09af7cf3-298f-4e78-9a66-52a9751db316",
+      "keptPhoto": true
     },
     "article": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-d0c5ffe1-be60-41be-a6f1-bd856b16114e"
+      "imageId": "img-d0c5ffe1-be60-41be-a6f1-bd856b16114e",
+      "keptPhoto": true
     },
     "aside": {
       "source": "openverse",
-      "license": "CC0",
-      "imageId": "img-7a83d48c-f22a-436f-861e-b874cb7cde44"
+      "imageId": "img-7a83d48c-f22a-436f-861e-b874cb7cde44",
+      "keptPhoto": true
     },
     "ask": {
-      "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-026e8ba7-3b61-449a-b8ad-5cfd20fc4d95"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3898605a-d45a-41d5-a53f-201ed6da20ec"
     },
     "athlete": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-eca58491-61ac-4fbe-9167-29fa6338be88"
+      "imageId": "img-eca58491-61ac-4fbe-9167-29fa6338be88",
+      "keptPhoto": true
     },
     "asleep": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-2a09b10a-7408-4b3c-bb6c-17309bce9d28"
+      "imageId": "img-2a09b10a-7408-4b3c-bb6c-17309bce9d28",
+      "keptPhoto": true
     },
     "atmosphere": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-048b121d-5256-47e2-9613-749cdb53fe43"
+      "imageId": "img-048b121d-5256-47e2-9613-749cdb53fe43",
+      "keptPhoto": true
     },
     "assist": {
-      "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-bcf330a7-0157-4fb6-b3c9-8ea05954738a"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d269915b-c155-4741-9561-70e98ada0b5e"
     },
     "attack": {
-      "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-25379524-90d9-42c8-b6fe-c50f6d77a9c4"
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2599d6c0-0bf8-40a0-b5f9-c9706ba15d43"
     },
     "attempt": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-f4c8e74b-9c61-4844-b3c4-b269d7f39d9b"
+      "imageId": "img-f4c8e74b-9c61-4844-b3c4-b269d7f39d9b",
+      "keptPhoto": true
     },
     "attention": {
       "source": "wikipedia",
-      "license": "CC BY 2.0",
-      "imageId": "img-8d07bfe9-1a2d-430f-8234-9d46b2af6160"
+      "imageId": "img-8d07bfe9-1a2d-430f-8234-9d46b2af6160",
+      "keptPhoto": true
     },
     "attend": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-58f6fd17-646e-4680-a264-47ebd07c1912"
+      "imageId": "img-58f6fd17-646e-4680-a264-47ebd07c1912",
+      "keptPhoto": true
     },
     "aunt": {
       "source": "wikipedia",
-      "license": "CC BY-SA 2.0",
-      "imageId": "img-2cb77969-6f9b-439b-8f25-a56267999a9e"
+      "imageId": "img-2cb77969-6f9b-439b-8f25-a56267999a9e",
+      "keptPhoto": true
     },
     "attitude": {
+      "source": "openverse-illustration",
+      "license": "CC0",
+      "imageId": "img-e8b95214-2c71-449d-9409-2785aa164bfb"
+    },
+    "attract": {
       "source": "openverse",
-      "license": "CC BY-SA",
-      "imageId": "img-a2724dda-958b-4050-8136-1b426e0510f0"
+      "imageId": "img-19652d64-3a53-41f7-9606-939f5a9a6148",
+      "keptPhoto": true
+    },
+    "author": {
+      "source": "openverse",
+      "imageId": "img-fc6b3473-67d7-4a8a-b762-bfec4adddbd8",
+      "keptPhoto": true
+    },
+    "autumn": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-acc18036-ab81-41ba-8d72-3f59352630b0"
+    },
+    "available": {
+      "source": "openverse",
+      "imageId": "img-8a73fb32-ed26-4ff8-808c-c87bf03176a1",
+      "keptPhoto": true
+    },
+    "average": {
+      "source": "openverse",
+      "imageId": "img-06cc317d-813b-4755-a543-38bdc36e63cf",
+      "keptPhoto": true
+    },
+    "avoid": {
+      "source": "openverse",
+      "imageId": "img-fef441dd-6a93-43eb-8fc4-28ed7fcf9da3",
+      "keptPhoto": true
+    },
+    "awake": {
+      "source": "openverse",
+      "imageId": "img-9685362e-73e7-4b18-9d26-ef871a053d3d",
+      "keptPhoto": true
+    },
+    "award": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-81b22dc3-4697-489c-b087-138dcf64514b"
+    },
+    "baby": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-619d1927-6f78-4318-8ba6-1fd610b03194"
+    },
+    "away": {
+      "source": "openverse",
+      "imageId": "img-fc9c4fa3-1ec2-4ca1-824f-c4536cbc0609",
+      "keptPhoto": true
+    },
+    "awful": {
+      "source": "openverse",
+      "imageId": "img-0a6b611d-47c4-472a-8487-41ee6983e3f5",
+      "keptPhoto": true
+    },
+    "back": {
+      "source": "openverse",
+      "imageId": "img-03e15d71-0cd0-4c66-a877-aa8b893e4c73",
+      "keptPhoto": true
+    },
+    "ball": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6baf4563-a8a3-430c-b0ac-545033510bcb"
+    },
+    "balloon": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-16e9d465-e8a6-4eaa-b698-237c3e4760e4"
+    },
+    "bamboo": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5b685cd0-aa76-49cf-a7d2-4f30285961ca"
+    },
+    "bad": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bd77b46c-e4f6-472d-bdd0-9db0ea0c03f1"
+    },
+    "bake": {
+      "source": "openverse",
+      "imageId": "img-ca8caa7b-5295-48cb-a37e-f0ddd8114f1e",
+      "keptPhoto": true
+    },
+    "banana": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a092218b-0d5b-412b-bc80-0d0b0fee4a10"
+    },
+    "bank": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7b0bc812-33a4-42cc-bc04-b96f9d452756"
+    },
+    "basket": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8535cf3e-2084-43a1-aaaa-bde5564ced1a"
+    },
+    "basketball": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-00282b2e-e5c3-4967-890a-21980057b6c3"
+    },
+    "basic": {
+      "source": "openverse",
+      "imageId": "img-40b5bd43-070a-4779-a258-4b770551cb5a",
+      "keptPhoto": true
+    },
+    "band": {
+      "source": "openverse",
+      "imageId": "img-79fedc45-f2a0-4556-ad32-a5606cfc5be4",
+      "keptPhoto": true
+    },
+    "beach": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-88e5214e-15b5-4d90-8424-fb87086f83a5"
+    },
+    "bean": {
+      "source": "wikipedia",
+      "imageId": "img-c8e24aff-e81c-4b84-a980-a976a842ad4d",
+      "keptPhoto": true
+    },
+    "bathroom": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0f400a1f-e0c1-405e-9b28-3cf082260367"
+    },
+    "bath": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e00f0a3d-3394-4a12-977c-fb8455ff0d72"
+    },
+    "bear": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c2c21cca-abd3-49e4-9d47-403d2a8e6a77"
+    },
+    "beautiful": {
+      "source": "openverse",
+      "imageId": "img-85ef03a2-49c1-43bb-bb5c-977139d13803",
+      "keptPhoto": true
+    },
+    "because": {
+      "source": "openverse",
+      "imageId": "img-ea36284e-78cf-4c7f-9835-f5dd910a49e0",
+      "keptPhoto": true
+    },
+    "become": {
+      "source": "openverse",
+      "imageId": "img-64704e02-17c3-4d93-b4ef-01cf6facc9ef",
+      "keptPhoto": true
+    },
+    "bed": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-03f8284b-ca87-453d-a633-fa8e3e023526"
+    },
+    "bee": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6674a247-f359-4696-8923-8785f2a4b7c2"
+    },
+    "beef": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a6354ec9-9a20-4e8b-8632-f6fa55ab70aa"
+    },
+    "bedroom": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-12483f25-ec12-4a8e-a6b9-818ac6d47010"
+    },
+    "beep": {
+      "source": "openverse",
+      "imageId": "img-4895c92f-8cc5-4873-9cf1-17d1e5144756",
+      "keptPhoto": true
+    },
+    "before": {
+      "source": "openverse",
+      "imageId": "img-42f88641-fd34-445e-bfca-7bc34290c642",
+      "keptPhoto": true
+    },
+    "begin": {
+      "source": "openverse",
+      "imageId": "img-2949ce1f-6a33-4701-acf4-6dd28e670e76",
+      "keptPhoto": true
+    },
+    "behind": {
+      "source": "openverse",
+      "imageId": "img-2e0ab717-2343-4e96-9064-33834eb6416f",
+      "keptPhoto": true
+    },
+    "bell": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-42e6f8d8-4855-4091-875e-4b2a2c3063b3"
+    },
+    "believe": {
+      "source": "openverse",
+      "imageId": "img-34648884-37b3-4505-a324-0ba42f8949eb",
+      "keptPhoto": true
+    },
+    "belong": {
+      "source": "openverse",
+      "imageId": "img-8fd1a7be-e3f1-4602-949c-cd039877fceb",
+      "keptPhoto": true
+    },
+    "below": {
+      "source": "openverse",
+      "imageId": "img-31b4412d-ea00-4464-a9da-91364bb3f954",
+      "keptPhoto": true
+    },
+    "belt": {
+      "source": "openverse",
+      "imageId": "img-3875c0d9-b49c-469f-b904-b9001aa2d8c7",
+      "keptPhoto": true
+    },
+    "bench": {
+      "source": "openverse",
+      "imageId": "img-864adec2-dbf5-4187-95c6-7360250c2fb9",
+      "keptPhoto": true
+    },
+    "bend": {
+      "source": "openverse",
+      "imageId": "img-9de3e87e-86e4-4ef0-a83d-56cd75238e52",
+      "keptPhoto": true
+    },
+    "beside": {
+      "source": "openverse",
+      "imageId": "img-4ad7021a-e8a0-4b56-a02d-7bb22a118f9b",
+      "keptPhoto": true
+    },
+    "best": {
+      "source": "openverse",
+      "imageId": "img-7f6f8ce3-0460-4cce-83a0-07e00acb9a15",
+      "keptPhoto": true
+    },
+    "better": {
+      "source": "openverse",
+      "imageId": "img-f45e0ff6-a65f-456c-9545-a0cea6ee931c",
+      "keptPhoto": true
+    },
+    "between": {
+      "source": "openverse",
+      "imageId": "img-63a73f8a-d397-4be4-ba66-3e442e6a7f11",
+      "keptPhoto": true
+    },
+    "big": {
+      "source": "openverse",
+      "imageId": "img-a25ea49a-6270-482b-8494-ead6a46d9384",
+      "keptPhoto": true
+    },
+    "bike": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b021a5e6-c035-46cc-8646-f465bddd506b"
+    },
+    "biscuit": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-24a55103-493f-407b-b300-6218345aaa7e"
+    },
+    "birthday": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ffbd7bc5-7f16-411d-bef2-3096e2e95a4d"
+    },
+    "blanket": {
+      "source": "wikipedia",
+      "imageId": "img-9414ec3c-5458-4351-b9ee-4f44f221fd05",
+      "keptPhoto": true
+    },
+    "bill": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-526d088e-9dab-40ae-add7-10d32897c509"
+    },
+    "bit": {
+      "source": "openverse",
+      "imageId": "img-573a3f0d-cc91-4f5b-82bc-736fcbb0826e",
+      "keptPhoto": true
+    },
+    "black": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4a18776e-5a9f-4308-84bd-d9c26d5142c7"
+    },
+    "blood": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-79df3231-7086-45fa-b8ff-fa2b9e30aee1"
+    },
+    "block": {
+      "source": "openverse",
+      "imageId": "img-903301e6-786b-4fd7-975f-52abdca86a17",
+      "keptPhoto": true
+    },
+    "blind": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-683d4dba-e6f4-4caf-9701-2a6cc96f30d7"
+    },
+    "blue": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f414fd38-f09f-4771-af5b-97d413f6098d"
+    },
+    "blow": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f2fa162d-6aa8-49b0-a946-2b99e9feccb2"
+    },
+    "boat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f4775638-a389-4380-ac3e-5e7a38980e64"
+    },
+    "board": {
+      "source": "openverse",
+      "imageId": "img-4acd0621-a1e3-4bd8-9579-129f9d97799d",
+      "keptPhoto": true
+    },
+    "body": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b0c4e7f5-0ede-4989-9440-00b6d6df2475"
+    },
+    "bold": {
+      "source": "openverse",
+      "imageId": "img-7829cdcf-3dcf-418a-915f-d0287814a7e8",
+      "keptPhoto": true
+    },
+    "boil": {
+      "source": "openverse",
+      "imageId": "img-ff4be61e-c04f-457d-8e67-93649b70951e",
+      "keptPhoto": true
+    },
+    "bone": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9c971769-efcc-4a59-ae4a-a74d6d64fbcc"
+    },
+    "bookmark": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bd15feda-f2a7-4657-b968-ac7119ccdab9"
+    },
+    "boot": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9e78cd41-a783-44c6-9bf2-f632fc3518ba"
+    },
+    "boring": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f7d050f5-d8cb-4eb3-9a20-280b692a7183"
+    },
+    "bored": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4855f83f-8b21-4752-b236-7ecd4f9ca5a6"
+    },
+    "born": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-cf3fb9d2-44ed-4310-8ebc-95930477d1d0"
+    },
+    "borrow": {
+      "source": "openverse",
+      "imageId": "img-34dbc30f-0117-4e4a-8769-931c436aff5d",
+      "keptPhoto": true
+    },
+    "bottle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f078538b-6748-45c1-93d2-47e963520b21"
+    },
+    "both": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-107c04e3-f154-4e19-8f6f-9cd2adbe461e"
+    },
+    "bother": {
+      "source": "openverse",
+      "imageId": "img-8d6da0cf-0a07-4613-9b8f-a9c69e12b5b4",
+      "keptPhoto": true
+    },
+    "bowl": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-361448af-073f-4a52-805f-460da426f0bc"
+    },
+    "box": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-cb94e417-4830-432e-b2ed-b958552e8c18"
+    },
+    "bottom": {
+      "source": "openverse",
+      "imageId": "img-e37abb03-3298-4057-8b0e-47a1dbbc070e",
+      "keptPhoto": true
+    },
+    "boss": {
+      "source": "openverse",
+      "imageId": "img-f5e7a13e-c767-43fe-87f8-da8d45b60269",
+      "keptPhoto": true
+    },
+    "boy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a996e8b9-2196-4cad-95fd-c1428c9e5b80"
+    },
+    "brain": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b2ddbeeb-85c4-4269-b7b6-2fe6aaa1bcb8"
+    },
+    "branch": {
+      "source": "wikipedia",
+      "imageId": "img-acce1204-9731-48dc-a687-d6d1c1eee31b",
+      "keptPhoto": true
+    },
+    "bread": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-74f2d2d8-4cb5-40c1-a1ee-f88d677891eb"
+    },
+    "breakfast": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bc9b5f0b-a645-42cf-b192-588fb20cd56a"
+    },
+    "brave": {
+      "source": "openverse",
+      "imageId": "img-7e850b25-c172-4a49-b92f-52d57fcf296e",
+      "keptPhoto": true
+    },
+    "brick": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-350e8718-b15b-4ce6-b725-79a7247d52ea"
+    },
+    "break": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c5404a0a-1681-4910-a058-f436b69a7097"
+    },
+    "breath": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-343ff9a7-9b51-473b-8c2a-c07158294ac7"
+    },
+    "breathe": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1a751d3a-6571-4f9a-9c30-d7633ac6b6c5"
+    },
+    "bright": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bb45f244-0821-4330-8709-6135710e6cdc"
+    },
+    "bridge": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-da830654-9cc9-4915-9eac-a09318413266"
+    },
+    "bring": {
+      "source": "openverse",
+      "imageId": "img-8ba96b84-5254-4a55-9550-46d8c860bd32",
+      "keptPhoto": true
+    },
+    "broad": {
+      "source": "openverse",
+      "imageId": "img-f0de8906-ed51-4a8d-b18d-44b6523525e8",
+      "keptPhoto": true
+    },
+    "brother": {
+      "source": "wikipedia",
+      "imageId": "img-efbc2d29-9dec-4ed4-9624-e0249c79f0ed",
+      "keptPhoto": true
+    },
+    "brown": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8ab80374-08c1-43b7-ad46-0567baa790a7"
+    },
+    "brush": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bc30367f-7f84-4aa0-a286-0633ca920f5a"
+    },
+    "bucket": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-97a14586-ee10-40f7-ad5f-76394db7851d"
+    },
+    "broken": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6cad97aa-9e30-4b4e-a2b6-a0566966e0c2"
+    },
+    "bubble": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-08c2347b-81ea-4278-8de6-0ea9b892281d"
+    },
+    "build": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1f521639-4c75-4757-b4b5-d73fca2ac32a"
+    },
+    "bulb": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-42aec124-9b71-4ea1-a2c2-77c7050c3104"
+    },
+    "building": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fc198ae1-c2ad-4851-aaad-db90ac8bce74"
+    },
+    "burn": {
+      "source": "wikipedia",
+      "imageId": "img-17a7d091-2879-42f9-b38d-262c554f7e21",
+      "keptPhoto": true
+    },
+    "bus": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-be444b4a-b992-48a8-b93a-2b5e921ea73a"
+    },
+    "business": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b7691a67-4250-48cd-8ec8-655d85d09b7b"
+    },
+    "button": {
+      "source": "wikipedia",
+      "imageId": "img-7daea1f0-7f14-4377-a4c2-5815e6ef4ed9",
+      "keptPhoto": true
+    },
+    "butter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bc64680b-a0ff-443e-adf1-1172e7f304f8"
+    },
+    "busy": {
+      "source": "openverse",
+      "imageId": "img-db37e08a-3a95-4ddd-9135-d53d57ffc358",
+      "keptPhoto": true
+    },
+    "cake": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3159149c-f949-423d-91f4-c7e3b1df929f"
+    },
+    "cage": {
+      "source": "wikipedia",
+      "imageId": "img-141b3d33-83c3-4925-b225-fa7d61d59226",
+      "keptPhoto": true
+    },
+    "bye": {
+      "source": "openverse",
+      "imageId": "img-5c34b414-5bab-439f-933b-9d6144ba977a",
+      "keptPhoto": true
+    },
+    "calculator": {
+      "source": "wikipedia",
+      "imageId": "img-821a2d9b-6d36-4dee-b1c1-9aafb29dec09",
+      "keptPhoto": true
+    },
+    "calendar": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-95b23e90-65f8-4e49-9649-fab8755caa86"
+    },
+    "cabbage": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8ee64ee3-e735-45b0-b245-3a20a8c0c076"
+    },
+    "camera": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-37a945f9-2774-439f-b075-e4e64022a08c"
+    },
+    "camel": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f8f6ed93-803b-4670-bac8-821688a4149d"
+    },
+    "call": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f48fe0e8-c3d0-4a2a-b626-baabd2b5c089"
+    },
+    "campus": {
+      "source": "wikipedia",
+      "imageId": "img-97121365-3522-4843-b75b-a644ac0ed6c4",
+      "keptPhoto": true
+    },
+    "calm": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-53038994-c4a9-4daf-aafa-51bfb33e2d73"
+    },
+    "cancer": {
+      "source": "wikipedia",
+      "imageId": "img-e1d371d7-5d39-4f02-8a8f-f931d1ac1b62",
+      "keptPhoto": true
+    },
+    "camp": {
+      "source": "openverse",
+      "imageId": "img-603bd8b3-e1de-4012-9fd1-a07e79fd79f3",
+      "keptPhoto": true
+    },
+    "candle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ebb5f7b0-4311-48ee-b2da-bf25e5422c79"
+    },
+    "candy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1e817854-9c54-4b84-9ede-8ce437744794"
+    },
+    "can": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1b14bd5f-e952-4c7c-8600-63e3761d8900"
+    },
+    "captain": {
+      "source": "wikipedia",
+      "imageId": "img-f9d81fe7-e46a-4ff7-bd58-661c139f5fc0",
+      "keptPhoto": true
+    },
+    "canteen": {
+      "source": "openverse",
+      "imageId": "img-176c3b83-04e0-42a6-861b-860716b9b77d",
+      "keptPhoto": true
+    },
+    "cap": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5cfd5e17-738b-4bbf-b9eb-028d776f7335"
+    },
+    "car": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-917c0342-ac1d-46fa-b573-008f72ebb38d"
+    },
+    "care": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c566fc1f-9140-4584-a921-ca59a09fa748"
+    },
+    "carpet": {
+      "source": "wikipedia",
+      "imageId": "img-2d8a8677-3d66-45cc-8845-4c818000d481",
+      "keptPhoto": true
+    },
+    "carpenter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b5d297f5-0fc5-483e-af5f-1d80f8421927"
+    },
+    "careless": {
+      "source": "openverse",
+      "imageId": "img-f1bcb7b5-856a-401b-95c5-dd96dae3806c",
+      "keptPhoto": true
+    },
+    "carrot": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-392fad04-6560-4349-81f7-162eb3db2981"
+    },
+    "cartoon": {
+      "source": "wikipedia",
+      "imageId": "img-42772023-cce6-4780-8bb7-fca316d5b32e",
+      "keptPhoto": true
+    },
+    "cash": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a8ddd3ff-ead3-415e-ade1-23bf408cdc68"
+    },
+    "carry": {
+      "source": "openverse",
+      "imageId": "img-ee6d4c28-acbc-46bd-ac34-181ae0f1fd07",
+      "keptPhoto": true
+    },
+    "case": {
+      "source": "openverse",
+      "imageId": "img-8d8483b6-7a17-4221-95ca-f0de9b903286",
+      "keptPhoto": true
+    },
+    "cashier": {
+      "source": "openverse-illustration",
+      "license": "CC0",
+      "imageId": "img-4c496e60-3b85-4a94-a701-af95da6df2ff"
+    },
+    "castle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ca924351-6964-4dd4-ac6a-2ee087de1690"
+    },
+    "cauliflower": {
+      "source": "openverse-illustration",
+      "license": "CC0",
+      "imageId": "img-98aaf226-1f73-44e1-98c1-612908ded833"
+    },
+    "cattle": {
+      "source": "wikipedia",
+      "imageId": "img-36f7ff3b-14a8-4371-a580-296d882b892a",
+      "keptPhoto": true
+    },
+    "casual": {
+      "source": "openverse",
+      "imageId": "img-5df7054f-0724-4d65-affa-9550dd3a8610",
+      "keptPhoto": true
+    },
+    "catch": {
+      "source": "openverse",
+      "imageId": "img-b7176d90-3a6e-475c-9608-3664f8fc3c3e",
+      "keptPhoto": true
+    },
+    "cave": {
+      "source": "wikipedia",
+      "imageId": "img-3fa2bf62-721a-4cfc-b451-9bb9b0dc0f4c",
+      "keptPhoto": true
+    },
+    "ceiling": {
+      "source": "wikipedia",
+      "imageId": "img-9076dad1-3879-4331-9315-3f3fdfae6b77",
+      "keptPhoto": true
+    },
+    "cause": {
+      "source": "openverse",
+      "imageId": "img-b19e58b6-8bb8-4f2a-af52-e54827cf9b4d",
+      "keptPhoto": true
+    },
+    "celebrate": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-490cf6df-7602-4beb-9f6f-93a3a3356e5a"
+    },
+    "celebration": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bdd2d3c7-2013-4e4a-8a01-614a46c3cfe7"
+    },
+    "celery": {
+      "source": "wikipedia",
+      "imageId": "img-91bfca73-e9e1-4a8e-bd7a-dbed58dbbcae",
+      "keptPhoto": true
+    },
+    "cent": {
+      "source": "openverse",
+      "imageId": "img-a295b80b-8527-4abd-a2f6-1e166ee89a18",
+      "keptPhoto": true
+    },
+    "centre": {
+      "source": "openverse",
+      "imageId": "img-723e1147-9f45-4c79-a41b-32509fb7ec37",
+      "keptPhoto": true
+    },
+    "central": {
+      "source": "openverse",
+      "imageId": "img-67cc22f6-29eb-43ff-9c8e-da2f54febca1",
+      "keptPhoto": true
+    },
+    "cereal": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b9fa6aff-f76a-417b-944e-4bbfc71f8934"
+    },
+    "century": {
+      "source": "openverse",
+      "imageId": "img-ddda7ad0-cc3f-4bb6-9003-6385963948e1",
+      "keptPhoto": true
+    },
+    "ceremony": {
+      "source": "wikipedia",
+      "imageId": "img-32f56c96-bfe6-474a-aee7-4c295e979989",
+      "keptPhoto": true
+    },
+    "chain": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d78e110a-956b-46bc-a85e-4770a43d15c2"
+    },
+    "chair": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6b05ea65-29fc-4ba8-8987-84ca6a223324"
+    },
+    "chalk": {
+      "source": "wikipedia",
+      "imageId": "img-8075c8c5-8a64-4f44-9b3b-8fa187fa2708",
+      "keptPhoto": true
+    },
+    "certainly": {
+      "source": "openverse",
+      "imageId": "img-e5bd360e-24b4-4708-960f-0659fc0c07aa",
+      "keptPhoto": true
+    },
+    "certain": {
+      "source": "openverse",
+      "imageId": "img-0a4aef33-4e13-482f-9399-689c140e07c4",
+      "keptPhoto": true
+    },
+    "ancient": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8b5e9177-2777-42ee-a0c0-978e1513a4ba"
+    },
+    "buy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-aea267d4-6aea-408a-b018-3c073a54ff41"
+    },
+    "chat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f6067f91-aab0-46c8-a863-0a5011a41b60"
+    },
+    "chart": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-47ef0b99-99e0-4ae8-8143-541c25c0c0b9"
+    },
+    "chemistry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-19444890-1cfe-4685-bc34-e8702d665b9f"
+    },
+    "cheese": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6ee05782-27e1-41e1-9709-d129ff7fe402"
+    },
+    "cherry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a0197712-52ec-4a38-af50-b6196776a271"
+    },
+    "chess": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b5e33562-fea2-415c-ac23-a193b5066312"
+    },
+    "child": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-124a9b77-b72f-4145-a6bc-b48cc23c9bd3"
+    },
+    "chicken": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2c538f91-9187-4b0d-8666-364e1459748c"
+    },
+    "chips": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-07a68127-dead-4feb-aaf4-7131435d4945"
+    },
+    "children": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-69ac5508-2c77-403e-89fc-80bb960a59b8"
+    },
+    "chocolate": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7fa8b75d-e5d3-4bb7-984f-46d46642cbb6"
+    },
+    "chopsticks": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7438e838-a3ea-4877-abce-da77e003ddb5"
+    },
+    "church": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9f3943a0-fb49-4a29-87c9-ac97dc01d634"
+    },
+    "christmas": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-27dcd63a-2e2a-4e70-93f8-abf8644126b7"
+    },
+    "cinema": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3ff2a5be-abcd-4e7f-862d-e559ff708ce3"
+    },
+    "city": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-62b2479f-7020-4251-ac7f-c0925147a1f9"
+    },
+    "clap": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-22d47524-38cc-42f8-9823-05ca61b83990"
+    },
+    "clerk": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-485a9258-6707-4875-bd13-137d3cd27609"
+    },
+    "click": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9ea52fd4-f99e-4cba-b92f-cf402bcdc86f"
+    },
+    "climb": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a96352bb-4900-4161-b00a-953f4564f2bc"
+    },
+    "clock": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bcb21172-9108-4cee-8cb2-c71b0afd8b87"
+    },
+    "cloth": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9be5eb92-bed9-4656-91cc-8d05e9b5d5e3"
+    },
+    "cloud": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b03c7f9f-1b2e-45c3-89b4-a49f0adf6973"
+    },
+    "cloudy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ef1ef54b-a006-4dd3-b0ca-d7a1d4ce679a"
+    },
+    "clothes": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-02509634-5c97-45fe-9284-1644683529f1"
+    },
+    "coat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c2c2053e-ff86-4835-8cf4-f9ca199f976b"
+    },
+    "coin": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-82539efc-c6c8-490a-9d59-f2f7ee544eac"
+    },
+    "coconut": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3a274542-2c14-439a-899c-03ae8914557a"
+    },
+    "coffee": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-40a674c6-4dba-4a14-ac03-0ec61b9f0a55"
+    },
+    "cold": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f97e268b-0146-4e9c-98ea-1a935d3110f2"
+    },
+    "college": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9962ce77-5675-4cf7-9cec-84bc2a1a92bd"
+    },
+    "comedy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ee9c7589-f733-4da2-8ee7-c828e65b2e0c"
+    },
+    "come": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d139b1a6-7fe1-4d6c-af80-21f788f6f0de"
+    },
+    "competition": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b98b3f67-2d67-4724-8c4b-04db53420ee4"
+    },
+    "composition": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-df4410b8-c786-44a0-96cc-ae6815213687"
+    },
+    "computer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e5cee73b-7fe9-48cd-ba8d-e4a88c97ce36"
+    },
+    "concert": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-cea91556-9afe-43ec-9338-99a0f5a537b3"
+    },
+    "congratulations": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3d9d2288-5755-4394-98cb-462037c1a44c"
+    },
+    "cook": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9575b725-d34f-4c96-a7ca-35f5c94f30e4"
+    },
+    "cookie": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7df4504d-92bc-4f37-8305-4015ba9265b5"
+    },
+    "cooking": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e07f3a08-db67-4dc2-84ae-e42d98633a8a"
+    },
+    "cool": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4be91a31-603f-431f-9fcd-ea343ecbe00d"
+    },
+    "corn": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-19d4094e-eec4-4456-8d48-53f339e1bc0f"
+    },
+    "count": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-87440ce5-02dd-4813-be48-724f49e2d1d1"
+    },
+    "country": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-14bdbcc3-dbe6-4cfe-9aa7-8df69e0ff44f"
+    },
+    "cow": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ba204e17-504e-4129-b91c-15f27f31c2d5"
+    },
+    "crab": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3dcd37fa-ffcc-43db-9975-77787de35da8"
+    },
+    "crayon": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f9caa713-5a37-46db-a0fe-6709041a3edb"
+    },
+    "crazy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0674de06-bf01-435c-8cd4-687326b90fd9"
+    },
+    "cream": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-20b412d4-bebd-4d1e-b5ba-50af832aac1e"
+    },
+    "create": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-87507ef5-44fb-44dd-8040-fe98601a88ef"
+    },
+    "cry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5e9de067-948b-4d6d-98e0-468b6ad0755c"
+    },
+    "cucumber": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f6fb8edd-5516-4720-8617-2f6d294a7e18"
+    },
+    "culture": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ce3be4c6-e8e9-4c2d-bcb5-d8df04d068cb"
+    },
+    "cup": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5c4fe6df-0f42-4567-a623-ce36ed291c67"
+    },
+    "cupcake": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bde2a6ac-fb2d-4726-bff1-a18ea451546f"
+    },
+    "cut": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0629f419-5b8a-4720-8744-50353fb2cef9"
+    },
+    "cute": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f38b6e70-925f-4d9c-8ded-c3d0da550d8d"
+    },
+    "cycle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-50171f75-1750-47d7-b030-4db9d6326a6a"
+    },
+    "dad": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1c610367-d247-4e3e-93e2-83c58c6ef8d9"
+    },
+    "dance": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-306c44fc-0452-499f-8623-6359879119d8"
+    },
+    "dancer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-083fce50-5c82-4d21-8518-e59193b96d76"
+    },
+    "danger": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-249a3813-e51f-4fe4-aab0-67215f4709d0"
+    },
+    "date": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ff0a67c9-6018-444c-ae5a-519f4e050772"
+    },
+    "daughter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1ae9a436-2a44-4433-9517-88bc1994e899"
+    },
+    "dawn": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-122a22c7-bcd1-4978-a920-9d168f2b09b8"
+    },
+    "day": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5d264565-90e7-4446-a509-94c751b706d7"
+    },
+    "deaf": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e7ac1fda-8d64-472e-8a17-40eda5121e55"
+    },
+    "dead": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d9390949-4df7-46cb-9b2b-d251e1406750"
+    },
+    "deal": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e8a6682d-b36d-4881-902d-b9e59215d808"
+    },
+    "death": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e425aafe-8eb1-4d48-a6d0-1207910fc402"
+    },
+    "deer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b837e18a-cb83-4fc9-bd12-53799ef967ce"
+    },
+    "degree": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5bc2161f-5758-4581-bd7d-fb3866697312"
+    },
+    "delicious": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1a924e19-b5b9-49cd-ab83-93b5d24baca6"
+    },
+    "dentist": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-aaa87fb7-80c6-4982-bbc8-e07b2eff875b"
+    },
+    "desert": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7d80bb4b-4a29-4d29-bf0d-97c105545fff"
+    },
+    "design": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-92e966df-e2c5-4168-a65c-7047e7282b26"
+    },
+    "dessert": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b1f74e91-ffd3-4d4d-8e04-bb94a9dd7163"
+    },
+    "detective": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-45ec35d3-3113-4f86-84c1-0afdc56ca5ee"
+    },
+    "diamond": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d706495f-d546-49e1-81d6-636cba63af99"
+    },
+    "dig": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-11256666-587a-4782-8e8b-b00f48ed948b"
+    },
+    "dining": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2bc1f91c-86d2-4a7b-8b9a-f9384db34cd4"
+    },
+    "dinner": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-123632fa-1e20-41c6-b922-e4819571c21c"
+    },
+    "direction": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2bcee738-350c-4d97-b533-79c927c47d74"
+    },
+    "dish": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3a3dae0f-d834-4545-aca2-26d4cfac84cc"
+    },
+    "dislike": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-274664e6-659b-4ee0-a3db-4cf3361b44de"
+    },
+    "doll": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3abae04e-e38d-41aa-8d2f-57ec933db986"
+    },
+    "dollar": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2c7bf817-1bbb-4733-90fc-803ab1f67f64"
+    },
+    "dolphin": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4af8a868-2cf6-46bc-86f4-e0fb7fc42133"
+    },
+    "door": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f86439fa-a38f-41fb-b19c-02dadb40c60e"
+    },
+    "doubt": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-33cfb75b-faf8-40b8-a53a-a289903453d5"
+    },
+    "downtown": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-41534f0a-beff-4970-aa87-798062110178"
+    },
+    "dragon": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-32dd2f8b-ed08-4102-85c6-079b22d75fc3"
+    },
+    "drama": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8a790505-9a2f-4de4-9578-c73124635779"
+    },
+    "draw": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5abd3d9d-2d17-4796-b157-253889a4c012"
+    },
+    "dream": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d597cdb4-3a41-499a-b770-218ef868e9f4"
+    },
+    "dress": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2fdb4739-cb50-493f-b9b1-6d670294cc6f"
+    },
+    "drink": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2d79992e-31d8-4de6-b5bc-8a6c3799ae91"
+    },
+    "drop": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9ccca97b-7fa7-4af9-938e-68702f292155"
+    },
+    "drum": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-06db676c-e3bd-4eee-8b97-3935b1bc75b8"
+    },
+    "duck": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fa0e823e-d403-4446-8939-8b633f47befa"
+    },
+    "dumpling": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-02613588-fe47-4a31-a9b9-3493fa86602c"
+    },
+    "eagle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-037431fa-ce63-4d2f-9b20-740da83b5e1d"
+    },
+    "ear": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8ad6e960-9f56-4c56-8be6-373eb2c8abbb"
+    },
+    "earphones": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c700a149-2f1a-4824-8696-7df8ae8b2c74"
+    },
+    "earth": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4d9724a8-c18e-43e3-934b-f65df54abf72"
+    },
+    "east": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7a154fdb-2364-4d8c-bccf-bfbb1d3a0ff4"
+    },
+    "eat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-539ddd01-ff6d-40cf-97fc-b62b1f6e62f9"
+    },
+    "education": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c5fad5be-5f6d-476d-b162-aa3398a74352"
+    },
+    "eight": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-79753844-7284-411d-bc0a-13bcc22504b3"
+    },
+    "egg": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5371e4ec-09a7-4cd5-a62d-943b17aae1b7"
+    },
+    "elder": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-69cee6b9-22d8-4967-a001-d78f8eacfe74"
+    },
+    "elderly": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ac2df339-1bb7-466e-9bf7-1d935a5b9453"
+    },
+    "electric": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-29c70fd3-0384-4f36-931c-0c7be962c977"
+    },
+    "electricity": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e620cd66-7a41-4e5a-bf98-ed8086747c6a"
+    },
+    "elephant": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8722f25f-986f-4b24-a0c8-55fb632cc8bb"
+    },
+    "email": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-14c9b7af-e69c-45db-b665-a48a72daa31c"
+    },
+    "eleven": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-307b26ce-7d7f-4918-9a05-6e5e47267500"
+    },
+    "energy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1ad0428c-e0ea-4ef8-b269-d6d78147298c"
+    },
+    "engineer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-32e71566-2058-4478-b9a4-795fbb0b3437"
+    },
+    "environment": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ae5b1f7e-ad77-4d68-96ab-623e0d72657e"
+    },
+    "envelope": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-70f2cc58-a7d8-41b5-adab-6dc5d8c0d8c3"
+    },
+    "evening": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-dbdbd785-d9d6-4154-b23e-2ee2f4787d58"
+    },
+    "event": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f47b5ef7-8200-49f9-9734-4c7d0aeabcdb"
+    },
+    "excited": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5f97a90d-59b0-4f23-bf84-701c0643b1be"
+    },
+    "exercise": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e497b3be-2bd8-4045-9459-008b2eee754b"
+    },
+    "eye": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-46d7238e-c281-4423-872e-091abc5c8609"
+    },
+    "face": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-78113f79-e682-44a3-aeae-9d1bafd61ab3"
+    },
+    "factory": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-45f975c5-29e7-4fe4-ac93-22a8091f1128"
+    },
+    "fairy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d223e48e-9878-480f-af27-13a384033469"
+    },
+    "farm": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-135e2522-d4aa-42ac-a28d-731222e1be78"
+    },
+    "farmer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e41f7aa5-dfe7-45f5-a55c-28b90effbe13"
+    },
+    "father": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-832814fd-60d7-4a62-b5fd-78f349f2ad95"
+    },
+    "feather": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-00bf7fe1-727d-4ff9-9e34-6b210a87461a"
+    },
+    "fear": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-569a25a1-13ea-46b9-8b35-bc8c317797db"
+    },
+    "ferry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bbee79dd-1af1-48c7-8e99-cfffb37b33f5"
+    },
+    "festival": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ac02dd4b-3d24-4b46-b821-6512c14f2249"
+    },
+    "fever": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b9c55b72-c399-473f-9d6e-cb5138125966"
+    },
+    "film": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-126426f4-86ba-46ca-af32-883edd74e893"
+    },
+    "file": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-42e318f9-5175-445c-869e-086600edc9ad"
+    },
+    "find": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c7ccf182-7789-40bb-b59e-a19d12787984"
+    },
+    "fine": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-625d6c7a-4cbe-4794-9da9-95315e6b9e39"
+    },
+    "finger": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-efc70cca-7ef2-496c-93c5-e4d03902e0e3"
+    },
+    "fire": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0f404fb1-d956-4efd-bbc7-128ec3f58ea6"
+    },
+    "fireman": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5687541d-2289-4e6d-9d35-9508d53ef91e"
+    },
+    "firework": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bbe864cd-b4b6-4ab7-8878-8e36ac27c43e"
+    },
+    "fisherman": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bfdff01a-7fb2-4715-93f2-d722323eab48"
+    },
+    "five": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4f4f440e-80df-4590-b84c-71fee1a0dfa8"
+    },
+    "fix": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-708ca399-b47a-4ce1-82f7-7f506050c16b"
+    },
+    "flag": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ae80acd5-d110-4b9d-9677-d2d91f49cefe"
+    },
+    "flower": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-96bb9637-b8bf-400f-b886-dae85de436f2"
+    },
+    "fly": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c5b9cf6a-8d8f-44d5-8044-b5020999c490"
+    },
+    "fog": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0505b93e-cc8e-419f-b5a9-0246a094f9b8"
+    },
+    "foggy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7f2fd573-ae58-43b8-be7b-4605098c1bd1"
+    },
+    "food": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-44b4754c-98a0-459c-86e0-531449812749"
+    },
+    "foot": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-41f3fc9a-599c-46ba-a9a6-334bf385812c"
+    },
+    "football": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-39530815-9c64-4b0a-9362-22714f398a48"
+    },
+    "fork": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f2c8f3c5-42d5-4034-9e66-6949dabf0843"
+    },
+    "four": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c751f0b1-a4b6-453f-8b9e-5f8d4335f70d"
+    },
+    "fox": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e29909a5-fe4c-4cc9-8f99-a28e2cde5c69"
+    },
+    "friend": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2530c2d5-3e82-44af-8274-71efd05b9a2b"
+    },
+    "friendship": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-341f328b-2f54-4eee-9bbd-b29dc8a9b432"
+    },
+    "frog": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-edb0754f-a112-4d81-8eb0-09a49123e375"
+    },
+    "fruit": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-984aa4ae-8187-4acb-ad0c-f94fdb035d95"
+    },
+    "full": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e1eef81f-8d06-495f-8a65-817dd8cdb32d"
+    },
+    "fun": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-74d8be58-7cf0-41a5-b73d-1e1d31ea1ab7"
+    },
+    "funny": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f3c12cbb-1458-4750-be5e-e2e4d4d61b84"
+    },
+    "game": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-411e343c-112a-49e8-8093-677c5aaa2c2a"
+    },
+    "garden": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b7f02fc9-5382-49b1-97bd-88b1982c30de"
+    },
+    "gardener": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-65b87e7b-f617-41e8-875d-71a0e4d90928"
+    },
+    "gas": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f9082ac2-b825-4a6c-9b3d-73cd254b6106"
+    },
+    "gentleman": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c4c2e715-8ad4-4881-b3dd-68448d10d95d"
+    },
+    "gift": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-402337b5-5b19-42d1-83dc-dfb5c4807169"
+    },
+    "giraffe": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c4c5a50e-2141-498c-9512-122d376f96f4"
+    },
+    "girl": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-22780389-4299-4bfd-a283-4b881f620f4b"
+    },
+    "glad": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3c4ecd64-c807-4e7f-97ba-197da63250eb"
+    },
+    "glasses": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c5f9e31b-27fc-4a5e-847e-09626cbd3134"
+    },
+    "glass": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f6adb074-c436-4d32-8dc5-6a35fcaf9204"
+    },
+    "glove": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e9c661ff-d82b-45e7-9731-63492c675759"
+    },
+    "goal": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a0210c0a-103b-413d-9846-7c4e0198a840"
+    },
+    "goat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8b12a328-ebd4-4fbf-92e5-0a7cdedcfc13"
+    },
+    "gold": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ce00e195-8521-4701-9328-bbf4c0bd07ce"
+    },
+    "goodbye": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-28ed5b27-48e8-4e9d-a46e-2ffe622624a0"
+    },
+    "gorilla": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e2f0445f-3294-427d-bd25-7559947bf58e"
+    },
+    "grain": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f8616b18-3a53-4f09-8736-155a6b76c50e"
+    },
+    "grandma": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-229017f6-560b-49fb-b623-42b4f484e4cb"
+    },
+    "grandpa": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-dc5e0880-1bca-46e4-bad6-51632e5fdb18"
+    },
+    "grape": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3473b192-87f0-4e7f-adce-41762845d60d"
+    },
+    "grass": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-18311062-72c9-4ae5-839a-33ac6fa800de"
+    },
+    "grateful": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-32757b47-3a77-4be4-ab4f-f96dead96ac3"
+    },
+    "green": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-19bae3eb-be99-474f-a66b-a1d2289147b7"
+    },
+    "grow": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-75fc9c31-8b77-404a-929d-00ca133b8076"
+    },
+    "group": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8c6ff5f4-c261-498c-813d-41951297c55d"
+    },
+    "guard": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3e3005bb-5473-444a-9a14-92564a0e58ad"
+    },
+    "guide": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-28c1f3a6-0d48-4be6-a8dc-4f576208a4a8"
+    },
+    "guitar": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-cb67e641-f2b8-4db6-bebc-f716d1d0cd7e"
+    },
+    "hammer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-33ae4a33-ae14-49bb-8e6f-47226d510bbe"
+    },
+    "hand": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c3043991-de90-409b-8f79-e2c051cfd9e1"
+    },
+    "handbag": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6a83ef27-b78f-4492-9bea-9d4f6f125235"
+    },
+    "happiness": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-91a297fe-6b79-4488-9aa2-926d76986970"
+    },
+    "harvest": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4251878a-4051-4286-a737-83ac8f3b0949"
+    },
+    "hat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c63ba898-0431-4d2e-98d1-5e9e705fb435"
+    },
+    "hate": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0212468b-abb6-48f6-82ed-1593d3664e9c"
+    },
+    "head": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b93a2c07-6071-489c-9d71-014ae4f3e2a9"
+    },
+    "headline": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b7ac76a7-fdc0-4812-881c-886177dcb81a"
+    },
+    "healthy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-84ecc3f9-1a0d-4c18-bf42-d4e4d85c618e"
+    },
+    "hear": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0032cbd9-d0f1-4307-a713-155d3746b609"
+    },
+    "heart": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-97cbe047-1f3a-4b25-aaaa-3b95061bcb18"
+    },
+    "heat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bc394051-34fa-4781-a877-50f48f980967"
+    },
+    "heavy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8211cd2a-6313-4d92-a4f1-ef44fa1d73d5"
+    },
+    "heel": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-06a6e2af-f5ae-48a3-ba6d-074191268b1e"
+    },
+    "helicopter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1e4ebea9-82d8-4a42-9e10-f0735d7af41b"
+    },
+    "hello": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-752b5975-4a5c-45ca-b2d8-8804cfabf155"
+    },
+    "helmet": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-795701c8-edf6-4c3c-86c3-ddd9d7927572"
+    },
+    "here": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ee8f2778-a8cf-472f-85d2-cf6436255d7b"
+    },
+    "hero": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7e4caa3e-deef-4d75-84f6-79201bd47cae"
+    },
+    "hi": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a56483e5-d433-463c-a2de-8bb6b58a7074"
+    },
+    "highway": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bf60c0d6-2277-4be8-835e-68a762ac3603"
+    },
+    "hiking": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-043a1e14-d599-4ba3-b1b4-ddeaddf49cfb"
+    },
+    "history": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6904bd44-811a-470e-8ed4-3c4d971c0e7e"
+    },
+    "hit": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1ed30ea9-725c-42c5-93e6-5518df2fecae"
+    },
+    "hold": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-178c678d-5036-4087-9fbf-513d81b94c54"
+    },
+    "hole": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-67d92ab2-4886-45dc-a3ce-1fa894cfb2ee"
+    },
+    "home": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-cc4964b0-e962-4999-bfc8-ac3042532705"
+    },
+    "hooray": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-695cbe3a-dc9d-4e91-800b-3bf80fbb1c06"
+    },
+    "honey": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4d72ce19-c91d-4845-a7ec-45ea1e9e40b3"
+    },
+    "hope": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4ea9654a-1364-4535-b0ff-03f1f5763a68"
+    },
+    "horse": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-dca40178-784f-429f-863c-86ea595b419c"
+    },
+    "hospital": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7209c80f-0808-4a51-9f51-432a54f72476"
+    },
+    "hot": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5a548a8c-d077-4269-a59b-2532123317b1"
+    },
+    "hotel": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-31b3521a-2bea-4b45-9ed3-bc3d8453f982"
+    },
+    "house": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-432f6f94-943e-45f1-8783-21a05f93efbf"
+    },
+    "human": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c1a0f535-e498-4b0d-99f8-6931d7f1ad3d"
+    },
+    "hug": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-80d198f6-a4b1-4e60-b204-f45f28cd6db3"
+    },
+    "hungry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-39bd4945-0878-418b-a45a-cf777110674b"
+    },
+    "hundred": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-74515b97-e496-48d7-8bc0-e0bebf575cba"
+    },
+    "hurt": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2b07de69-3930-4511-8165-0d6c3964db4e"
+    },
+    "ice": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0a2399e1-c29c-455d-8eeb-0e640c041a11"
+    },
+    "ill": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7c753029-f8cc-4b8d-9138-bb612890ea8d"
+    },
+    "idea": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3d24dae7-7b0f-488e-b0f6-e7f98f852747"
+    },
+    "insect": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9ba9f472-a3b0-412a-b046-861d392ed003"
+    },
+    "industry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-35a1a28c-1991-48d7-b4e4-bcf82315dcb4"
+    },
+    "international": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-35ac5ef2-53ec-47ab-b33f-3719d0934a8d"
+    },
+    "instrument": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2375b399-a334-4ea0-9882-799b6e4851de"
+    },
+    "internet": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-648b1fd7-fd26-43c3-a7a8-be875365d8c3"
+    },
+    "island": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-21b0b99c-b9b6-4535-af0a-6380cf0176ed"
+    },
+    "jacket": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5f2c8b0f-61f9-427f-ac3f-2bd21a01015e"
+    },
+    "jazz": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c8931342-f391-471c-b581-aa2ac1c287a5"
+    },
+    "job": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f4bf4480-5693-4e54-8948-3d9db709fc16"
+    },
+    "jeans": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-14209322-17a4-4267-96a3-6371fbf98154"
+    },
+    "joy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d9f748f3-d05a-44c5-89c9-225c1e17baba"
+    },
+    "joke": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-dab48287-4a4a-44a0-a744-377ae5c0402d"
+    },
+    "juice": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fce6c50a-d654-431a-8894-ecb2d2b89fb4"
+    },
+    "jump": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-27a85b62-c015-462d-b6eb-2c1b748d81a5"
+    },
+    "kangaroo": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c31cadb3-f13a-48a9-a998-d24bc7c050b4"
+    },
+    "kettle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-dbb9cf10-fa53-4c46-87f9-8b9bb8067822"
+    },
+    "key": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9b47faaa-6ca5-4375-a1b5-cd8bf29fc48e"
+    },
+    "keyboard": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0dc6ee6a-5064-41bd-9f3a-8a4fee6885f0"
+    },
+    "kid": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ea7a4ce6-f069-4322-aa13-2e1511ef004c"
+    },
+    "king": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3d68d28e-754d-4ee5-81bc-8e54aac6bd39"
+    },
+    "kiss": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2db16ca6-6c3a-419a-83da-6cf9b5f3a548"
+    },
+    "kite": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3eaa9765-8ca1-4b8f-99b5-b61b4fb76b61"
+    },
+    "kitten": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-aeb9ce4e-5e40-4a6f-b720-1fdc52304cdc"
+    },
+    "knife": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-de1745e4-f5a9-432a-9f63-025b313111da"
+    },
+    "knot": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5346c5ca-b14b-46a2-9da9-b42605cabb03"
+    },
+    "knowledge": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-af1bf483-a861-41ba-baf3-2da81b759245"
+    },
+    "ladder": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-15ecefa3-6d7d-40d5-80a2-f1a9e71bfda9"
+    },
+    "lady": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6bff4c6a-531e-489a-803b-eab467a85a16"
+    },
+    "lamb": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1bb6d3d6-a1b2-4425-a9f7-b9f7b907006f"
+    },
+    "lamp": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-278164ea-3632-4627-ada3-df889ef2ffa0"
+    },
+    "lantern": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8d3f2531-6d06-4bc1-bb85-64b27edb4497"
+    },
+    "late": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-10fb8b0b-dd7a-474f-909c-a14430c1f012"
+    },
+    "laugh": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b157311e-6581-4e59-8238-787d833fd626"
+    },
+    "laundry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-333fa44f-2577-4f62-a9c5-b0b5d098c5f3"
+    },
+    "lazy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-50d29d78-0a6b-4c5c-929b-614e634ccd2d"
+    },
+    "leaf": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3e9d7ab9-92ed-4096-aaad-4eda786a27e2"
+    },
+    "learn": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-87af8baf-c3d9-4c22-9080-b8db5df294a8"
+    },
+    "leg": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-42b80452-a738-414e-9314-52100f145a6a"
+    },
+    "lemon": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c48a226e-6206-46f3-b8e5-0bcdd330def4"
+    },
+    "lemonade": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fc8539d2-eaf3-4e83-8586-6208e6c2279a"
+    },
+    "length": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ea3632e5-4460-47f9-a117-5670e8ecf988"
+    },
+    "letter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7f8e951e-89e3-450a-aa5c-73ba965f5376"
+    },
+    "level": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5de51ddd-7978-4d1f-a0f0-e9af4d974ca0"
+    },
+    "library": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-60137bf4-ca7d-43d4-98a7-383ce34de350"
+    },
+    "lie": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-63541985-d35d-42af-a391-a4e3077d99b8"
+    },
+    "lift": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a3ddf99b-f74d-43be-b470-1c2c0140fea9"
+    },
+    "light": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3ce2da21-01ec-4530-bf8b-35fb9be6986d"
+    },
+    "lightning": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-95ed2c28-7c03-4d05-b2fe-0e8b56acae6a"
+    },
+    "like": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-66bdf062-7c82-4201-a470-4c128f3d7d16"
+    },
+    "lion": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-91179ee6-c41e-40ed-a9e5-88c4ad489926"
+    },
+    "lip": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b21de8b4-aba9-4005-845d-75ae954a89bd"
+    },
+    "listen": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-14e93114-d91c-457b-bad5-3a6c30cd2862"
+    },
+    "litter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d45cab1d-b2e1-4ef5-aa98-22b2d11dca2d"
+    },
+    "lizard": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-408b7df3-3300-4c56-943e-d6d015814a4e"
+    },
+    "loaf": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9a8ad552-6eb0-482c-9447-561fbeee6185"
+    },
+    "lock": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-65e1511a-8390-4796-b742-8dc9ddf30583"
+    },
+    "look": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9109aea7-1157-4119-a8ff-ba9782d1bd76"
+    },
+    "loud": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0a84c0b0-7666-48cc-9b6a-972ade1d7c0a"
+    },
+    "love": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-190971fd-089b-44a0-9a38-b5fd3ec2a96a"
+    },
+    "low": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-af7ff4e1-fdb9-4a08-b65b-3133c719bb48"
+    },
+    "luck": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3b2a4038-f962-4ef5-851a-d4e651e85a12"
+    },
+    "luggage": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6619ac29-708f-404a-9fce-9fce748fbf30"
+    },
+    "lucky": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6e946bba-ff40-4d85-91a4-ada8784df84d"
+    },
+    "lunch": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b3d11929-6c54-45c6-948f-3f45aecf0fed"
+    },
+    "mad": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4d407f27-e5de-45d4-806e-50096b4d3dd9"
+    },
+    "magic": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-cfefa5ea-0851-4ed5-a2a8-83e290ac293c"
+    },
+    "magical": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-80a851d3-b650-422c-91b8-ff913df6b14e"
+    },
+    "mailbox": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c9614bb6-4c33-4cf1-8ccd-804df6114016"
+    },
+    "man": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f4a95bed-0fde-4aa4-b2cf-1b50effef271"
+    },
+    "manager": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a18e109e-8806-4586-8b05-030d268e7ea0"
+    },
+    "mango": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-26f3587d-4f2f-4c22-b091-dbd294250f5b"
+    },
+    "mail": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a1ac55b5-5e95-43a4-8a57-390b01277ff4"
+    },
+    "map": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b0411ece-29cc-4f3f-90f7-b93d7372706e"
+    },
+    "mask": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2dd35498-6b08-468f-8b80-c500ce4d5053"
+    },
+    "math": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1fabb664-cdb3-43cc-9b20-e5020b593031"
+    },
+    "meal": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6ef04f32-d959-4ba2-8837-7402993e71fb"
+    },
+    "mean": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-801f3933-d061-4925-aec5-c7ac5fcaa3bc"
+    },
+    "meat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ae9ff3e4-4748-4820-a97f-19b8c5a327a0"
+    },
+    "medicine": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-09d9b3f4-2714-4f37-b409-fe71cd7949ab"
+    },
+    "melt": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-77760631-a467-46c4-8c5f-a2d4057b68ed"
+    },
+    "message": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0c57716f-cb55-44bf-9936-01d014107f85"
+    },
+    "midnight": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8fc8b9dd-911c-42f9-90c0-616f0a65ff4f"
+    },
+    "mild": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5f55e50e-0ff2-447b-80bf-fcadd5f13a8d"
+    },
+    "milk": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-364c2100-04aa-4f98-a3a4-955d06600d3c"
+    },
+    "mind": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3d80b637-da61-40de-9c04-00a3662ca6f6"
+    },
+    "mirror": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ee349755-2d30-4f91-8cfb-4d8b2eb15e92"
+    },
+    "money": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c310bcf8-5aa1-4d52-9c9c-b2e4dab31f69"
+    },
+    "monkey": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-20138ac5-3902-4809-beb0-7c07dcff0015"
+    },
+    "morning": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-20aaa960-2392-4c15-bea7-c2b081286a74"
+    },
+    "mother": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8aeff70c-08ab-46fb-b8a0-ae201c975236"
+    },
+    "mountain": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2a4128cb-18e7-4021-86f2-06c9032b7bd3"
+    },
+    "mouse": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-600f623d-9d4c-4aef-9c86-2ee9e10529fd"
+    },
+    "mouth": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f76bc3db-8952-4c1b-b9e0-6faaf3bc52c2"
+    },
+    "move": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6c60f9ff-cd1e-44fc-96b1-9e8bc02128bc"
+    },
+    "movie": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5222c1af-8463-4315-87dc-b9f152402a0d"
+    },
+    "museum": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4dae9d7e-3b73-4295-a5b0-f743187f24ca"
+    },
+    "mushroom": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e334b19c-d411-43ef-b911-81e105a62043"
+    },
+    "music": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-111b70bd-d76f-40d0-8465-d98ba41d3c86"
+    },
+    "musician": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f3f55ab8-b1c3-4180-8cf0-43d4f10efc33"
+    },
+    "nail": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b421c59b-845b-4821-af51-0139f2c7e061"
+    },
+    "nap": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1a802557-baac-4fb2-9d89-56f412f164a7"
+    },
+    "nation": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-519d1be6-ef30-46e7-80b0-52bb624f8b24"
+    },
+    "nature": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-137fa2c9-13fc-4bb7-b74b-8c9890005154"
+    },
+    "needle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ea707d3c-1f37-4703-99b9-8b716bcb2151"
+    },
+    "nervous": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-977d1aa4-e7d1-4b1f-b31e-35f16dc48207"
+    },
+    "nest": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9f2f5635-d27f-446f-b201-bfc21cba615f"
+    },
+    "new": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1007872d-0798-40b8-8ac7-ec5365a625ae"
+    },
+    "news": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e30ad774-93e6-4c76-8e87-21e85ede6ccb"
+    },
+    "newspaper": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-090dbbe8-b1d1-4bd9-8d1f-df4b3a2a2150"
+    },
+    "night": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-eff6d87d-49da-4551-afeb-be5dc98f2b5d"
+    },
+    "nine": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bddabce9-b6f6-4b68-a387-ebb2b182633f"
+    },
+    "no": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-87914a83-4d62-47c6-ae2d-9f8fb148af25"
+    },
+    "noise": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ba90f00f-6e95-4a80-804c-1eb0a34cf8a2"
+    },
+    "noisy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-be913916-8f4d-452b-80ed-58835d6a2f92"
+    },
+    "noodles": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-907083e3-3fcf-4e3b-9b96-3e9a1c055d09"
+    },
+    "noon": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1487e286-d8e9-4602-a308-6381dc481aab"
+    },
+    "notebook": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fe7df3f8-b816-43aa-9d9a-0719e6b85b0c"
+    },
+    "nose": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8fe93dcf-51ff-4ba1-879f-ace235092172"
+    },
+    "nut": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7202329c-70d3-4d77-ba7a-33dc8f1c9aa6"
+    },
+    "ocean": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-107e615f-8b01-4afb-a434-2c98aa8a835d"
+    },
+    "offer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f3053052-5517-46ab-8748-53bd261daf0d"
+    },
+    "office": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-036fdf42-3129-4ec7-87b2-c2df27b1b9b5"
+    },
+    "officer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fc6b912d-da82-4cf6-bb32-b2d16260420e"
+    },
+    "oh": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3c80ba17-e470-491d-959f-25bef95f2524"
+    },
+    "oil": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6766aefc-a503-4666-9f4f-6864d61e1854"
+    },
+    "ok": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-46724e96-9a8e-4b1e-b647-3cee59a3985e"
+    },
+    "old": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2e54b14f-9eee-4f68-b509-b57f43d98f2a"
+    },
+    "one": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f90b5b71-1f57-45a9-842c-586778054a60"
+    },
+    "open": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bb8aacc5-8edc-4b37-91f3-d8a97c31dbd9"
+    },
+    "onion": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-22eb7f10-ef7c-41ad-a925-af7c8e4c80da"
+    },
+    "orange": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-88b5027c-0ad0-44ae-9efb-2b376467437c"
+    },
+    "owl": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bd8be100-92a7-47d3-bbfc-4e897ea3f739"
+    },
+    "ox": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-41ef936d-1583-4378-abff-b5f8b7eba245"
+    },
+    "package": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-406f170a-ab77-4a6a-8bad-0d23cbdb09b8"
+    },
+    "page": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7378f85b-6c20-496a-a5dd-e55d277e8621"
+    },
+    "pain": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8438322f-bf4c-4d54-b948-a10b83f5d67b"
+    },
+    "painter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-af34aba4-4d5f-4ab8-b25e-fb8ba783fd9e"
+    },
+    "paint": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a09d2118-03b7-4f6b-8a01-847eef708822"
+    },
+    "painting": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-068d8fdb-8163-45c3-a608-bbce67fc3448"
+    },
+    "pair": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8612a147-18c4-4ec8-92f4-a7fa0f5be1fb"
+    },
+    "panda": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-511238fe-d9da-42e2-b026-c82b81056af4"
+    },
+    "paper": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5ac7b11a-d45e-450b-bcb6-f52de193d4b5"
+    },
+    "parent": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6a4c6e69-c394-4fcd-9e3c-19593ffbf300"
+    },
+    "park": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a74338f8-f435-4853-9310-649b6250ba68"
+    },
+    "party": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0b46e0e5-0966-4fec-9006-6cf689a13726"
+    },
+    "pass": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-32219397-81c3-4c92-9a94-099a681f678a"
+    },
+    "peace": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0b34c6da-64f5-4780-97e5-07d14865fe42"
+    },
+    "peanut": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-213307e8-3128-463f-ab31-81754907ece2"
+    },
+    "pencil": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5aa4657f-3d62-494a-8764-85190bcfdc9c"
+    },
+    "people": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7e44ef2f-94c2-4c83-8302-aa4ce28b9c17"
+    },
+    "perfect": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5da89beb-839b-4bd7-a898-41e4085d044a"
+    },
+    "pepper": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a28f0b56-21ae-4078-ac11-c9265fb2953a"
+    },
+    "person": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-68be887b-7e59-4047-822b-696acf4b3394"
+    },
+    "pet": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c586f387-9b30-492f-9aaa-e25122f5ad59"
+    },
+    "phew": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9341bb8b-3788-45ad-80f0-55da31a431d1"
+    },
+    "phone": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6d1da21e-20d2-4bd3-94ee-73b43090e726"
+    },
+    "piano": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8333296e-bfc1-43b3-a61a-d44fd29fe159"
+    },
+    "photo": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ce8797d1-1197-42ff-9822-220349a51cbf"
+    },
+    "pick": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-eb5d2306-86ab-4b41-9314-f4d49be716d6"
+    },
+    "picnic": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-20276f05-5d1a-4764-a9dc-b000440f4ed6"
+    },
+    "piece": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b4c5f888-cc9d-41ab-9a62-2fbb02d710dc"
+    },
+    "picture": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-77a7f719-a860-4cb8-9457-55a5f10a9329"
+    },
+    "pig": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-79ec42d0-3fc6-498f-8fe5-2fd0e5e22910"
+    },
+    "pineapple": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0a22c2bb-98c3-41e7-864b-90d0b16603a3"
+    },
+    "pizza": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a3ec195c-5e09-4ff5-ae68-8ffacaa5812b"
+    },
+    "plane": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4ca07596-9166-469e-b81e-0106f3028144"
+    },
+    "planet": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0db8193a-7d42-423b-ba43-d2a35ec97453"
+    },
+    "plant": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c9eff52f-158c-4fac-bac3-be7bbdaddeb6"
+    },
+    "plate": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-707d4ccd-3956-45a7-a925-24712ed5cf61"
+    },
+    "play": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9ad7583b-ce29-45cf-966e-c0e4b3c2c54d"
+    },
+    "player": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2a07cddf-7ef4-42b5-ab64-4b6da45a8f3f"
+    },
+    "playground": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a0be56c3-0838-4a02-ab5f-b6193454b7f1"
+    },
+    "please": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ecc454be-132f-4dca-821d-d93fb3f1ce47"
+    },
+    "point": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-43fdf42c-3092-41f2-a248-b056deac6a93"
+    },
+    "police": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-32ff84e2-500c-4f4c-976b-e585b3476dee"
+    },
+    "policeman": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-58c53776-825e-4cc0-bfa6-95805b6f7e4e"
+    },
+    "pollution": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-15ea2bb8-87be-4297-a7ae-c525e1ada746"
+    },
+    "pork": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5b1488f2-744a-4db7-bf1b-331a6b45dc88"
+    },
+    "post": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9cd67201-6f66-4525-992f-d6d0ed12fef3"
+    },
+    "potato": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-66b016e1-2510-4f64-b1b8-0683fefd02c1"
+    },
+    "power": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4df0f7c8-f4d3-4452-b174-7074611739be"
+    },
+    "praise": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d0d580ef-adc4-480b-84ed-2c29f14c2c5a"
+    },
+    "present": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7b57dbca-4a0e-42d1-a58b-7b7ac63e6619"
+    },
+    "pretty": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7a0c7b6a-df55-42a0-b181-0698a8cce35e"
+    },
+    "prince": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e72b823e-4d44-4dc8-84a3-d7a9a3a1fa07"
+    },
+    "prize": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4521b497-d7a1-4dd6-8470-b022d11a8c67"
+    },
+    "protect": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-17dc5c6b-e2e7-43a4-8999-d87517c84096"
+    },
+    "pupil": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-290995c1-e993-4ddd-be13-778fd6881ace"
+    },
+    "proud": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-77249d82-0aae-469a-abf2-8d2418a4ff10"
+    },
+    "purple": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c03c8f2f-1e18-484b-bc63-7dcc8a9ad428"
+    },
+    "puzzle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-36f182a2-0df1-43fc-a166-eef2d4b38567"
+    },
+    "quarter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3a7d20ee-d7c4-493d-ba08-f7d5635e6817"
+    },
+    "queen": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e25f896f-d4e8-4c05-a306-0e6689b64946"
+    },
+    "question": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-04fb6bb7-3e84-472f-9dfe-f5032f7b5639"
+    },
+    "quiet": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ba609687-16d3-4c2e-bd02-be56ef1ea55b"
+    },
+    "rabbit": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-72dd986c-cdd4-401c-9ecc-cb4f1aab1634"
+    },
+    "race": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d42c828b-dcfd-4835-a6c2-b7661aef4a6d"
+    },
+    "radio": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e4a6e56f-96df-4ef8-aa2b-330bb6e1e0f4"
+    },
+    "railway": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-604e3cc4-85ce-4550-9f52-c7155b2bef03"
+    },
+    "rain": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e9da437a-f4a5-496a-abcc-f7dead3c6f7f"
+    },
+    "rainbow": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-810d19dc-f84a-419b-9a9d-12532a11ab6b"
+    },
+    "rainy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-307283ec-f375-42cb-8d82-12affa2a09f3"
+    },
+    "read": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f8a0fd7c-e243-45dd-a605-8110271dacf8"
+    },
+    "receive": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ba4f7249-8d39-431d-b61d-f49d901e9f8f"
+    },
+    "red": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d18d2d96-eed9-4598-b365-d8b594fce940"
+    },
+    "repair": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5902f527-2801-48d5-9ac5-e5197c1fc323"
+    },
+    "rescue": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2f2ffc5d-1c12-406a-9a6e-c956b52a35ac"
+    },
+    "respect": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0ee68081-1102-44ad-ac73-19494a3c88bd"
+    },
+    "rest": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-544e864d-2e9d-4e47-8236-6cddeb01a757"
+    },
+    "restaurant": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-12cb12f2-8783-45c9-8c92-0c0fc5b984f5"
+    },
+    "rice": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-aae70345-d73f-4919-8b19-648d71c385c5"
+    },
+    "rich": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fa36ed33-5cc2-470b-8a92-85c6d72c633c"
+    },
+    "right": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b4699e4b-8c1d-4d70-b453-6dfe20dd8569"
+    },
+    "ring": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-426af91c-3c46-4c8c-bca7-e5574288b7d0"
+    },
+    "road": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-92258821-cc0a-427d-8716-b3d71783f34e"
+    },
+    "robot": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-428f8fbd-596a-413d-8eb2-7619f03492e0"
+    },
+    "rock": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-67db49db-fc94-4d81-b367-995342723bf2"
+    },
+    "rope": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fe34740b-749e-45bf-b6e6-d1765f440eff"
+    },
+    "rose": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-63fd8faa-033e-413a-831d-97dcb5cbae02"
+    },
+    "rubbish": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c8aaf384-0686-40b4-beaa-1e5b1605bcd8"
+    },
+    "ruler": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b5016b1d-82f2-4c37-9b76-5d25d7b443f4"
+    },
+    "sad": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-349425a0-e9b2-47ab-b4c9-2e7c989833bd"
+    },
+    "safety": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f308534b-abfc-4d70-9cba-81efdf9a41c4"
+    },
+    "salad": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8939234f-8785-4909-b856-86ae94343829"
+    },
+    "sale": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-62b4b5ce-fb34-404b-8472-98ecd61ab888"
+    },
+    "salt": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-21dd7ca7-75d1-41ba-991a-d9f672f28fb7"
+    },
+    "sand": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1eadafcc-5e65-4265-ba64-a2bdeeff1556"
+    },
+    "sandwich": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a3f1126e-8ce5-4f7c-8703-bd2b453bf97c"
+    },
+    "say": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-744cd307-5349-48c1-ab7a-3b61e7c2c984"
+    },
+    "scared": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a70035f9-9310-4043-b6a1-f17f838516cb"
+    },
+    "scarf": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d7b1c57e-a10e-46ec-a082-14742111afbe"
+    },
+    "science": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5b1d31a3-2283-4d6f-ad5a-1dcd92291ac4"
+    },
+    "scientist": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f0296500-da62-48d5-bfbb-7ed72b337299"
+    },
+    "scissors": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-68fbf5f5-9ee2-4be1-98b9-a07a62df67fa"
+    },
+    "sea": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-21044727-b7ae-4ae6-9b57-810ce6ff5839"
+    },
+    "search": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c1805752-6b27-4d7a-a1a2-77cfd8ce5e99"
+    },
+    "seat": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7b2d1731-a653-457d-89f0-ecce1e46fbb8"
+    },
+    "second": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-cdff8d28-7451-46b6-ae0d-685fbd8d3f4c"
+    },
+    "secret": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f6b32be7-72c6-4c26-9062-8fc9b02113ec"
+    },
+    "see": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-670a2329-ad55-4ef9-a42f-433e6856e501"
+    },
+    "seed": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e7590716-c8e0-40a5-85c7-95cdd2c76e63"
+    },
+    "seven": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-741df7e2-e20f-47a4-9eff-3effdfd6a8de"
+    },
+    "sharp": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-422cb039-d0c9-408d-99f4-bac9dcb375d9"
+    },
+    "sheep": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5eb6a3ce-16ed-4aa7-928e-f94629875685"
+    },
+    "shine": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-136cd2d1-6ef4-4745-ab38-6a3567508e6f"
+    },
+    "ship": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9757b4be-ecba-46ec-b243-dfa42a43bacd"
+    },
+    "shirt": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-435260cf-8a6c-4e72-8931-2ef04240b14b"
+    },
+    "shoe": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a2091d86-ecc0-4134-80fe-1697a8ed371e"
+    },
+    "shop": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2a22da5c-a747-4d65-bf54-18c7672c61f4"
+    },
+    "shout": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f4b2b9f9-d8e1-498b-ae4b-b3812249b3ca"
+    },
+    "shorts": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0c79a744-ea59-4798-8bfe-b635190007e0"
+    },
+    "show": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b3f622a0-22d6-4955-9b06-3832a0b1b402"
+    },
+    "shower": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-67a760ae-d08c-4622-aa45-5a557b453b9f"
+    },
+    "sick": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-97cabd86-e312-4c06-81b4-e829d1371fb6"
+    },
+    "shy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-54060a03-5eb6-4a9a-8d82-58f7deb01e49"
+    },
+    "sing": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-126aaa9b-8a83-497c-85f2-63a7c956a6ed"
+    },
+    "six": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a96ab35f-ca82-4cd4-8ea5-a5bc5b35fd73"
+    },
+    "sit": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-da19370d-8d92-46e9-b45b-5e3f1e8777db"
+    },
+    "singer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c755d673-ff77-4da5-a706-d69bab6f8d5d"
+    },
+    "skate": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-61e30679-90fe-4ef8-8ffe-804dee6d272a"
+    },
+    "skirt": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-267121ae-55e3-4a5a-a63f-1d502aee37d8"
+    },
+    "ski": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4713d52a-deb0-4465-83ab-375a72dae12f"
+    },
+    "sky": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-56e02dc6-b621-4d96-a65e-925c02eafaf4"
+    },
+    "sleep": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3f20bc9d-0887-4de1-90e7-15315ffd485d"
+    },
+    "sleepy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ae346a03-1931-4457-8136-da5702cd148c"
+    },
+    "smart": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9e40c9fd-0ad9-480f-877e-f5bc4f04b164"
+    },
+    "slow": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-508dfd4b-f840-43ea-8f7b-8a56a8f584da"
+    },
+    "smell": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e523bfad-330e-4682-9174-4eb1d6035d5c"
+    },
+    "smile": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e28d7907-8802-44e7-8cbf-91b5838d04ef"
+    },
+    "snack": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4f467ab3-ea5f-4d14-8b05-cdf974148e9f"
+    },
+    "snake": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5760c0e9-09b3-4f7a-8b3c-b70d03ad4700"
+    },
+    "snow": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-59665d5a-1317-4a5b-9459-6fa762c48a78"
+    },
+    "snowman": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f71de55b-b8d9-4260-b87a-e1be2e4b9ddc"
+    },
+    "soccer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d590e7e3-c86f-4fc6-88de-b8bc6c6f127c"
+    },
+    "soap": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4c866f3c-bc55-4cc6-a7cb-1d7aa4de5423"
+    },
+    "soft": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d81385fe-ae59-49e3-9dc1-876f57f5616f"
+    },
+    "son": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2c1ee724-8f8f-4a27-9030-eac4c908e6d9"
+    },
+    "sorry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ed405d07-240f-42dc-988d-17167563b9b5"
+    },
+    "song": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d4221bb9-ba92-43a9-bb47-9a58f13c05f3"
+    },
+    "sound": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d9a4a941-5c74-480d-85cf-518dc7722558"
+    },
+    "soup": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5a630ce1-6c9e-46bc-be2e-58aff847f576"
+    },
+    "space": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-870fa8cf-91c2-4555-9ea4-477f09362173"
+    },
+    "speak": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4cd18a84-cd2a-454a-819d-a8e087b854ae"
+    },
+    "spring": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7ae8fb08-e877-4748-9906-3d38e0192c40"
+    },
+    "stand": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0f5a7c92-b117-4f13-86c1-cc5dc20c0352"
+    },
+    "star": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f3b25ed7-5917-4737-9ce7-9a37d9c38456"
+    },
+    "station": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e4030b1b-eaa4-4cf8-a8ba-b955cbb25556"
+    },
+    "stone": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4e25b898-d586-42ea-9567-7637382827c5"
+    },
+    "stop": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fb8fd512-c64e-4e0c-9b75-aac431497db7"
+    },
+    "store": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c50efd3c-6f39-4503-ae74-2927e00e28a0"
+    },
+    "straight": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c07415cb-0358-488f-8efb-e18412382413"
+    },
+    "strawberry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-323fd8dc-3e4c-46d6-baf3-88b7136f0499"
+    },
+    "strong": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-fbc4b839-2854-4ec8-8ea0-d53cd17dc80e"
+    },
+    "student": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-5a876ccf-3d5b-431b-b7f5-aa21acdf6c18"
+    },
+    "study": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e49d848f-22c5-4997-9604-4cd1fa527900"
+    },
+    "subway": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-174b5e6a-0c36-4975-a8f3-7e63dbc3cdb9"
+    },
+    "summer": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1d48e66c-94d6-4494-ac2d-30e1ca31e6a6"
+    },
+    "sunflower": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-29050b10-ddc0-4a01-8de5-03f19ef0785e"
+    },
+    "sunny": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6e4372a5-0a16-4963-93c9-1bf165d0c8a3"
+    },
+    "sunshine": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a05589f6-5157-40ed-8887-401fb953ca9f"
+    },
+    "surprise": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6f717b16-9077-4b68-bcdc-48327aa61da6"
+    },
+    "sushi": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7ff12f43-af77-4b94-abfe-196790f68c6d"
+    },
+    "sweep": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-21f3c489-8b81-41ee-bdca-19d0b89092a2"
+    },
+    "sweet": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-9e4f9ae5-a6c9-432f-9d38-66b846f1be39"
+    },
+    "swim": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4a360af8-90f5-44ed-a57e-5c8261da52ed"
+    },
+    "take": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d76aecb4-17bd-4c32-9fc7-82a2e75fa24e"
+    },
+    "talk": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d2393f86-e0d1-40d2-a108-40fee6aa4155"
+    },
+    "taste": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-33f137b4-50fb-45d1-8b13-fd87527e3fc8"
+    },
+    "taxi": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-49b39dff-daca-4349-9e8d-daf07b158948"
+    },
+    "tea": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-eb4f7eef-cf8d-4bb7-a542-c4f97ed3571d"
+    },
+    "teach": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-24a71443-efa6-42d9-9be0-3c33a9b40c58"
+    },
+    "teapot": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-05a931e5-9cc4-4615-980d-7e070b1680cf"
+    },
+    "telephone": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-470f5a64-8a31-468d-bf97-dc8c4e6cc4b3"
+    },
+    "television": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e5cf23ee-14aa-4f92-805b-294f5362a4de"
+    },
+    "temperature": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-72c9fa85-7f6c-4cd9-9884-795faba29458"
+    },
+    "ten": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3e6e6c8e-3ea9-408a-a49c-e2469a9431bc"
+    },
+    "tennis": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-452cebeb-27d1-4571-b8e9-210eeafc1430"
+    },
+    "tent": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c0b60644-8cbd-4a01-8f6a-0a4f3222b282"
+    },
+    "textbook": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-48839499-f020-4e74-a99f-712996d04c0e"
+    },
+    "test": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d92fe080-0b6f-4ad6-9e66-f1580018760e"
+    },
+    "thank": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-52ae2f8c-35a2-4986-9f23-c3ba4cc41440"
+    },
+    "thanks": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-85b07bfa-e3cd-4ead-a6e6-df993681105f"
+    },
+    "theatre": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-16ad2cae-e533-4eb8-9f0d-689d5cc477b4"
+    },
+    "think": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-08cee331-daaf-432c-aa41-f18f93061694"
+    },
+    "third": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-61f31d26-615d-437e-a2de-476dd90a16c5"
+    },
+    "thought": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-00df5bcb-e61d-474b-b785-99a7b6a2dda5"
+    },
+    "three": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ed4cbee3-1648-447c-83f6-dbcdd88d8ced"
+    },
+    "thunder": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-05effc7c-aaaa-4033-8e1f-812b98a0bb1f"
+    },
+    "ticket": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8910d48b-d439-4a34-ac8a-773d6839dcb6"
+    },
+    "tie": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8247d654-4e69-4faa-a6d0-b0de04d55cf0"
+    },
+    "chinese": {
+      "source": "openverse",
+      "imageId": "img-f8b0216b-bac3-4008-a333-abc5dd2113fd",
+      "keptPhoto": true
+    },
+    "english": {
+      "source": "openverse",
+      "imageId": "img-b8aa5965-1af1-4e6c-ae30-9f9826073aa9",
+      "keptPhoto": true
+    },
+    "among": {
+      "source": "openverse",
+      "imageId": "img-742ceb6a-e790-4dc5-ab90-515e666b570d",
+      "keptPhoto": true
+    },
+    "amount": {
+      "source": "openverse",
+      "imageId": "img-c18926cc-92d5-4e67-8f3e-5f777a19d44d",
+      "keptPhoto": true
+    },
+    "capital": {
+      "source": "openverse",
+      "imageId": "img-d72deb12-1fdf-455b-bd04-e6c6fabffbaf",
+      "keptPhoto": true
+    },
+    "careful": {
+      "source": "openverse",
+      "imageId": "img-305b9731-2a9e-45d1-bd0f-cfbaca9a97f7",
+      "keptPhoto": true
+    },
+    "card": {
+      "source": "openverse",
+      "imageId": "img-07413b15-ead2-470e-b0c5-425e68a77767",
+      "keptPhoto": true
+    },
+    "carefully": {
+      "source": "openverse",
+      "imageId": "img-f429cab3-fa15-4476-97f7-abb46dd6842b",
+      "keptPhoto": true
+    },
+    "time": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7881224d-734f-49a0-a2af-bb0d711409b6"
+    },
+    "tiny": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4f5e35b0-b5a3-4561-9be7-c4e5258fb0d6"
+    },
+    "toast": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-52376a86-d992-4d14-8c43-aee2ca70cfaa"
+    },
+    "tired": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b116b992-c0b6-490c-8b00-281f4ed672e6"
+    },
+    "together": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1f4c33fe-9dba-47a1-9dd6-cea28caf90b6"
+    },
+    "toilet": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a96fee81-f832-4428-94dc-df585a92b9fe"
+    },
+    "tomato": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-125ded7e-c769-4e54-8681-342681b24419"
+    },
+    "tongue": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bc97ade1-8917-4b62-85c2-43164acdae6a"
+    },
+    "tool": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2d551417-9789-42e4-9756-2be7a312779a"
+    },
+    "tooth": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7072eac2-1ae0-4630-ad05-baef17076c03"
+    },
+    "toothbrush": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d0fd06c7-cf32-4cae-b13c-65e61ca637fc"
+    },
+    "tower": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-364b1718-05ed-4d05-a418-49865da84a41"
+    },
+    "toy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-46ea8c41-2ea2-4d6d-ac76-afeeb6550e28"
+    },
+    "traffic": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4efeafc0-74f5-4364-9043-0e054ee8812d"
+    },
+    "train": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c127d34f-8578-4419-a87d-4f02c5a41d45"
+    },
+    "tram": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d704d5a7-79b5-403f-b487-94227e11bb6b"
+    },
+    "travel": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6751a882-0ae3-49d4-9bfe-ac7329df1fa7"
+    },
+    "treasure": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-20837833-05fa-4fa9-92b5-7bc9b003e494"
+    },
+    "trouble": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3988e521-f27a-41a7-a152-edbe6e25480e"
+    },
+    "trousers": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-76dde793-e61f-43a1-b56c-7152bd55b9d2"
+    },
+    "truck": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3a4ee4bf-2972-4750-9847-7bd04d8b24d7"
+    },
+    "turtle": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2ab94944-6548-48dd-9176-0db0318ee9e2"
+    },
+    "twelve": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-41211930-988b-4104-90be-e2d06330d5a0"
+    },
+    "two": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-dad3dfd9-ce5e-4e57-ba63-b2180e48d17e"
+    },
+    "type": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c7a41f95-994f-4437-ad3c-e1d6583d7075"
+    },
+    "umbrella": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f263f9ae-ec02-4548-9a8e-dbb0915942b5"
+    },
+    "underground": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-8fac291c-0bef-4ed4-9aec-e3dba8297c83"
+    },
+    "unhappy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-51efd948-be66-4632-8fe3-a771e14cb34b"
+    },
+    "university": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3c0b9f72-d744-4c57-8f96-eeeea47ac791"
+    },
+    "uniform": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-74c23924-78f4-4f50-a6e8-98c5346f98bd"
+    },
+    "up": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-1506cbf2-0524-4d58-b962-20d5b51708f5"
+    },
+    "upset": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-12e8e258-a020-4cf2-ab09-def9dbfd05f4"
+    },
+    "vacation": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-70630772-3cc7-4ec6-82e5-23c38c52b899"
+    },
+    "volleyball": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-4dfe8001-46aa-459f-8224-bd6b7fb1f6e4"
+    },
+    "vote": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c0a5d36c-7a45-44d0-80e7-98e6af010068"
+    },
+    "wait": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3568f766-17f3-4d5f-bea2-116c31a9ad06"
+    },
+    "wake": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7d4d1f41-fe11-48d9-af70-69b2f60699de"
+    },
+    "walk": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e24eea87-15ff-462d-98e3-24490e0e3d71"
+    },
+    "wall": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-bb7c2161-dada-40f2-b7e3-9e0d940a2fa8"
+    },
+    "watch": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-3badfda0-c7f9-4646-821c-abab59f207cb"
+    },
+    "whale": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6c011299-c652-45b8-a6fd-0d48cea4ede3"
+    },
+    "wheel": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-39b10f3d-7986-41bd-9c93-ab65232e9728"
+    },
+    "weather": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-6eff2048-312a-489c-899c-7705b5ce2cca"
+    },
+    "white": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b5a8a6de-b560-44cb-947c-c05ad51d79b2"
+    },
+    "wild": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-189e11cd-9ad8-4900-b60c-6d83dd42112b"
+    },
+    "wind": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-742400fd-9ce9-4233-84f2-f52a5d760ca7"
+    },
+    "win": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a87dfd12-d8a6-4de0-9cde-2bca847f4081"
+    },
+    "window": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-ddb03909-bd19-4052-aff8-481420d8f1f1"
+    },
+    "winter": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-7f87b394-7218-4a08-8044-977bc217dd84"
+    },
+    "wish": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-2e6de6c2-463d-4a38-bf93-eca2e56bfd2e"
+    },
+    "wolf": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-a11cbaec-f50c-428d-98d5-5d441c4b20f4"
+    },
+    "woman": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-f3a73fdf-89c5-4dcd-805a-8ab916360f7c"
+    },
+    "woof": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-d1cff7c9-db27-4dd7-a4fc-e8421fa735d1"
+    },
+    "work": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e6211002-28ba-420c-9207-7bb1d6d1e63e"
+    },
+    "worker": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-42558186-54bf-45a0-b96a-ed3c86fd3ae2"
+    },
+    "world": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-0e6c787d-b2d9-49c9-8816-98313a03bdab"
+    },
+    "worried": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e850441c-b8ce-430c-a05b-670e0f9b4c13"
+    },
+    "worry": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-15197193-ba10-435a-9550-cc407871e8a7"
+    },
+    "write": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-e79d5482-74bf-4f6e-a461-a89f4a4c4f20"
+    },
+    "x-ray": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-c34809b8-87c5-489e-9576-e26f16f5f22a"
+    },
+    "yellow": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-b7fd4cca-c936-43a9-b8f4-abb48aff743c"
+    },
+    "yes": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-613bc0ac-f0ee-4a88-b2f7-745d8c04a2fc"
+    },
+    "young": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-069ef27f-4ad0-4c22-927c-72e64d95061b"
+    },
+    "yummy": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-802323c7-5514-45d7-bdd3-1c253f4c6f70"
+    },
+    "zebra": {
+      "source": "twemoji",
+      "license": "CC BY 4.0",
+      "imageId": "img-88ef7ee6-44ce-4555-a7a8-0ca15d810bd6"
+    },
+    "april": {
+      "source": "openverse",
+      "license": "CC0",
+      "imageId": "img-ca363e6e-78dc-4881-9c3a-b34f3344a9f5"
+    },
+    "chameleon": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 2.0",
+      "imageId": "img-2d715375-0198-4331-89ef-2cc9eb050b97"
+    },
+    "champion": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-21048044-f721-437b-a5cb-1a41b723f9b2"
+    },
+    "cheek": {
+      "source": "wikipedia",
+      "license": "CC0",
+      "imageId": "img-2b0c321e-880d-4c32-9fa3-1075e3a61475"
+    },
+    "chase": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-4a1065b0-6ecc-4c75-9a11-845fe7276565"
+    },
+    "china": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-e91db3cb-eb2b-4d09-9371-dfe41bb2be13"
+    },
+    "circle": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-e5574013-7960-4eea-bfc4-741a611db410"
+    },
+    "classroom": {
+      "source": "wikipedia",
+      "license": "CC BY 2.0",
+      "imageId": "img-057ecc70-a136-48d2-acbf-fcb13833a10a"
+    },
+    "cleaner": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-05f5b761-3941-4ea8-9e62-28a996900f8e"
+    },
+    "climate": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-ecd6b87e-18c5-4226-9c87-19661426e024"
+    },
+    "clean": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-b34774e8-4d75-47a2-8e92-6fbee20bbb85"
+    },
+    "clinic": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 3.0",
+      "imageId": "img-f665b69f-27af-4b05-8774-06bd436575c8"
+    },
+    "coal": {
+      "source": "wikipedia",
+      "license": "CC BY 4.0",
+      "imageId": "img-162a6432-f478-496f-a1e3-d9ef6aa40cda"
+    },
+    "coast": {
+      "source": "wikipedia",
+      "license": "CC BY 2.5",
+      "imageId": "img-354e9a2b-5fad-4edc-ad0e-b2cab53179d2"
+    },
+    "comb": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 4.0",
+      "imageId": "img-06ac7dbd-3eb8-4457-85de-27c1afdf2e2f"
+    },
+    "company": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 3.0",
+      "imageId": "img-531dc155-0bb2-4980-ab41-433de449309e"
     }
   },
   "failed": {
-    "chinese": "维基无首图、Openverse 无可用结果",
-    "english": "维基无首图、Openverse 无可用结果",
-    "april": "维基无首图、Openverse 无可用结果",
     "i": "非 JPG/PNG 或大小不在 5KB–2MB 内（4094 字节）",
-    "ms": "维基无首图、Openverse 无可用结果",
     "address": "非 JPG/PNG 或大小不在 5KB–2MB 内（69878 字节）",
-    "an": "维基无首图、Openverse 无可用结果",
-    "among": "维基无首图、Openverse 无可用结果",
-    "amount": "维基无首图、Openverse 无可用结果",
-    "ancient": "维基无首图、Openverse 无可用结果",
-    "and": "维基无首图、Openverse 无可用结果"
+    "tiger": "Command failed: python3 /home/hatch/workspace/tools/run_wrangler_cf.py /home/hatch/workspace/english-study/apps/api d1 e"
   },
-  "openverseDay": "2026-11-13",
-  "openverseCount": 83
+  "openverseDay": "2026-11-15",
+  "openverseCount": 135,
+  "noImage": {
+    "ms": "无卡通、无维基首图、Openverse 无可用结果",
+    "an": "无卡通、无维基首图、Openverse 无可用结果",
+    "and": "无卡通、无维基首图、Openverse 无可用结果",
+    "be": "无卡通、无维基首图、Openverse 无可用结果",
+    "but": "无卡通、无维基首图、Openverse 无可用结果",
+    "by": "无卡通、无维基首图、Openverse 无可用结果",
+    "challenge": "无卡通、无维基首图、Openverse 无可用结果",
+    "change": "无卡通、无维基首图、Openverse 无可用结果",
+    "chance": "无卡通、无维基首图、Openverse 无可用结果",
+    "channel": "无卡通、无维基首图、Openverse 无可用结果",
+    "charity": "无卡通、无维基首图、Openverse 无可用结果",
+    "character": "无卡通、无维基首图、Openverse 无可用结果",
+    "charge": "无卡通、无维基首图、Openverse 无可用结果",
+    "chapter": "无卡通、无维基首图、Openverse 无可用结果",
+    "check": "无卡通、无维基首图、Openverse 无可用结果",
+    "cheap": "无卡通、无维基首图、Openverse 无可用结果",
+    "cheep": "无卡通、无维基首图、Openverse 无可用结果",
+    "cheerful": "无卡通、无维基首图、Openverse 无可用结果",
+    "cheer": "无卡通、无维基首图、Openverse 无可用结果",
+    "choice": "无卡通、无维基首图、Openverse 无可用结果",
+    "chimney": "无卡通、无维基首图、Openverse 无可用结果",
+    "chore": "无卡通、无维基首图、Openverse 无可用结果",
+    "choose": "无卡通、无维基首图、Openverse 无可用结果",
+    "chug": "无卡通、无维基首图、Openverse 无可用结果",
+    "class": "无卡通、无维基首图、Openverse 无可用结果",
+    "citizen": "无卡通、无维基首图、Openverse 无可用结果",
+    "classmate": "无卡通、无维基首图、Openverse 无可用结果",
+    "clear": "无卡通、无维基首图、Openverse 无可用结果",
+    "clever": "无卡通、无维基首图、Openverse 无可用结果",
+    "club": "无卡通、无维基首图、Openverse 无可用结果",
+    "coach": "无卡通、无维基首图、Openverse 无可用结果",
+    "close": "无卡通、无维基首图、Openverse 无可用结果",
+    "colour": "无卡通、无维基首图、Openverse 无可用结果",
+    "collect": "无卡通、无维基首图、Openverse 无可用结果",
+    "collar": "无卡通、无维基首图、Openverse 无可用结果",
+    "colourful": "无卡通、无维基首图、Openverse 无可用结果",
+    "comic": "无卡通、无维基首图、Openverse 无可用结果",
+    "comfortable": "无卡通、无维基首图、Openverse 无可用结果",
+    "communicate": "无卡通、无维基首图、Openverse 无可用结果",
+    "common": "无卡通、无维基首图、Openverse 无可用结果",
+    "confident": "无卡通、无维基首图、Openverse 无可用结果",
+    "compare": "无卡通、无维基首图、Openverse 无可用结果",
+    "connect": "无卡通、无维基首图、Openverse 无可用结果",
+    "complete": "无卡通、无维基首图、Openverse 无可用结果",
+    "corner": "无卡通、无维基首图、Openverse 无可用结果",
+    "copy": "无卡通、无维基首图、Openverse 无可用结果",
+    "correct": "无卡通、无维基首图、Openverse 无可用结果",
+    "cost": "无卡通、无维基首图、Openverse 无可用结果"
+  }
 }

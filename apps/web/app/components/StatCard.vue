@@ -20,13 +20,13 @@ const toneMap = {
 </script>
 
 <template>
-  <div class="card p-5">
+  <div class="card min-w-0 p-5">
     <div class="flex items-start justify-between gap-3">
-      <div>
+      <div class="min-w-0">
         <p class="text-[11px] font-medium tracking-wide text-muted">{{ label }}</p>
         <p class="mt-2 font-display text-3xl leading-none tracking-tight text-ink">{{ value }}</p>
       </div>
-      <span v-if="icon" class="grid size-9 place-items-center rounded-xl" :class="toneMap[tone]">
+      <span v-if="icon" class="grid size-9 shrink-0 place-items-center rounded-xl" :class="toneMap[tone]">
         <component :is="icon" :size="17" :stroke-width="1.8" />
       </span>
     </div>

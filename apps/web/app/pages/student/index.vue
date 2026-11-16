@@ -128,7 +128,7 @@ onMounted(() => {
         />
       </section>
 
-      <div class="mt-6 grid gap-6 lg:grid-cols-[1.45fr_0.85fr]">
+      <div class="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[1.45fr_0.85fr]">
         <section>
           <div class="mb-3 flex items-end justify-between">
             <div>
@@ -141,7 +141,7 @@ onMounted(() => {
             </NuxtLink>
           </div>
 
-          <div v-if="data.textbooks.length" class="grid gap-4 sm:grid-cols-2">
+          <div v-if="data.textbooks.length" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <NuxtLink
               v-for="textbook in data.textbooks"
               :key="textbook.id"

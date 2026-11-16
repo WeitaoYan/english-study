@@ -35,6 +35,8 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* 兜底：移动端个别长内容意外撑宽时不产生整页横向滚动。 */
+    overflow-x: clip;
   }
 
   body {

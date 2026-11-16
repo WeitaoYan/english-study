@@ -317,7 +317,7 @@ export async function getUnitProgress(
   const now = new Date().toISOString()
   const { results } = await env.DB.prepare(
     `SELECT u.id, u.textbook_id, u.unit_no, u.unit_name, u.sort_order,
-       COUNT(DISTINCT uw.word_id) AS word_count,
+       COUNT(DISTINCT CASE WHEN w.id IS NOT NULL THEN uw.word_id END) AS word_count,
        COUNT(DISTINCT CASE WHEN wm.id IS NOT NULL THEN uw.word_id END) AS learned_words,
        COUNT(DISTINCT CASE WHEN wm.strength >= 3 THEN uw.word_id END) AS mastered_words,
        COUNT(DISTINCT CASE WHEN wm.is_weak = 1 OR (wm.next_review_time IS NOT NULL AND wm.next_review_time <= ?)

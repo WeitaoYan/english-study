@@ -29,6 +29,14 @@ export function dateKeyInCN(date = new Date()): string {
   }).format(date)
 }
 
+/** 中国日期 D 对应的 UTC 区间 [D 00:00+08:00, D+1 00:00+08:00)，左闭右开。
+ * 与 date(列, '+8 hours') = D 语义等价，但能让 answered_at 上的索引走范围查找
+ * （函数包住列会让索引失效）。沿用 /admin/stats 同类修复（2d7a18f）的口径。 */
+export function cnDayUtcRange(dateKey: string): [string, string] {
+  const start = new Date(`${dateKey}T00:00:00+08:00`)
+  return [start.toISOString(), new Date(start.getTime() + 86400000).toISOString()]
+}
+
 export function weekKeyInCN(date = new Date()): string {
   const day = new Intl.DateTimeFormat('sv-SE', {
     timeZone: 'Asia/Shanghai',

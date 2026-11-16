@@ -14,7 +14,7 @@ import { getCalendar, getWordsForUnits, WORD_COLUMNS, MASTERY_COLUMNS, mapJoined
 import { mapWord } from '../lib/mappers'
 import { availableTypes } from '../lib/questions'
 import { enrichSpecialPractices } from '../lib/special'
-import { dateKeyInCN, nowIso, safeJson, startOfCNWeek, uuid } from '../lib/utils'
+import { cnDayUtcRange, dateKeyInCN, nowIso, safeJson, startOfCNWeek, uuid } from '../lib/utils'
 
 const parent = new Hono<AppEnv>()
 parent.use('*', requireAuth, requireRole('parent'))
@@ -66,10 +66,22 @@ async function periodStats(
   studentId: string,
   range: { today?: string; since?: string },
 ) {
-  const where = range.today
-    ? `date(pr.answered_at, '+8 hours') = ?`
-    : `pr.answered_at >= ?`
-  const value = range.today || range.since || nowIso()
+  // 中国日 D 对应 UTC 区间 [D-1 16:00:00Z, D 16:00:00Z)：用范围比较替代
+  // date(answered_at, '+8 hours') = ?，否则函数包住列、idx_record_time 失效。
+  // CROSS JOIN 固定连接顺序：先按 answered_at 范围扫 practice_record，
+  // 再按 session_id 回查 practice_session——实测普通 JOIN 会让优化器改从
+  // practice_session 驱动，读该孩子全部历史记录。active_days 仍在 SELECT
+  // 里按中国日去重，语义不变。
+  let where: string
+  let values: string[]
+  if (range.today) {
+    const [dayStartUtc, dayEndUtc] = cnDayUtcRange(range.today)
+    where = `pr.answered_at >= ? AND pr.answered_at < ?`
+    values = [dayStartUtc, dayEndUtc]
+  } else {
+    where = `pr.answered_at >= ?`
+    values = [range.since || nowIso()]
+  }
   const row = await env.DB.prepare(
     `SELECT COUNT(*) AS answered,
        COALESCE(SUM(pr.is_correct), 0) AS correct,
@@ -77,9 +89,9 @@ async function periodStats(
        COALESCE(SUM(pr.duration), 0) AS duration_ms,
        COUNT(DISTINCT date(pr.answered_at, '+8 hours')) AS active_days
      FROM practice_record pr
-     JOIN practice_session ps ON ps.id = pr.session_id
+     CROSS JOIN practice_session ps ON ps.id = pr.session_id
      WHERE ps.user_id = ? AND ${where}`,
-  ).bind(studentId, value).first<{
+  ).bind(studentId, ...values).first<{
     answered: number
     correct: number
     words: number
@@ -567,11 +579,12 @@ parent.get('/children/:id/report', async (c) => {
   const calendar = await getCalendar(c.env, child.student_user_id, days)
   const todayStart = new Date(`${today}T00:00:00+08:00`).toISOString()
   const todayNewWords = await newWordsSince(c.env, child.student_user_id, todayStart)
+  const [todayStartUtc, todayEndUtc] = cnDayUtcRange(today)
   const reviewedToday = await c.env.DB.prepare(
     `SELECT COUNT(DISTINCT pr.word_id) AS total
-     FROM practice_record pr JOIN practice_session ps ON ps.id = pr.session_id
-     WHERE ps.user_id = ? AND ps.mode = 'review' AND date(pr.answered_at, '+8 hours') = ?`,
-  ).bind(child.student_user_id, today).first<{ total: number }>()
+     FROM practice_record pr CROSS JOIN practice_session ps ON ps.id = pr.session_id
+     WHERE ps.user_id = ? AND ps.mode = 'review' AND pr.answered_at >= ? AND pr.answered_at < ?`,
+  ).bind(child.student_user_id, todayStartUtc, todayEndUtc).first<{ total: number }>()
   const pending = await c.env.DB.prepare(
     `SELECT COUNT(*) AS total FROM incentive_event
      WHERE family_id = ? AND student_user_id = ? AND status = 'pending_confirm'`,

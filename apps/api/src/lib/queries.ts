@@ -1,7 +1,7 @@
 import type { Unit, UnitWordMastery, Word } from '@english-study/shared'
 import type { Env, MasteryRow, WordRow } from '../types'
 import { mapWord, mapMastery } from './mappers'
-import { bool, safeJson } from './utils'
+import { bool, cnDayUtcRange, safeJson } from './utils'
 
 export interface JoinedWordRow extends WordRow {
   unit_id: string | null
@@ -359,17 +359,22 @@ export async function getCalendar(env: Env, userId: string, days = 30) {
     month: '2-digit',
     day: '2-digit',
   }).format(start)
+  // 起始中国日 00:00 对应的 UTC 时刻：用范围比较替代 date() >= ?，
+  // 并用 CROSS JOIN 固定连接顺序，先按 answered_at 范围扫 practice_record
+  // （实测普通 JOIN 会让优化器改从 practice_session 驱动，读该用户全部历史记录）。
+  // SELECT/GROUP BY 里的 date() 只对范围内行计算，分组语义不变。
+  const [startUtc] = cnDayUtcRange(startKey)
   const { results } = await env.DB.prepare(
     `SELECT date(pr.answered_at, '+8 hours') AS day,
        COUNT(*) AS answered,
        COALESCE(SUM(pr.is_correct), 0) AS correct,
        COALESCE(SUM(pr.duration), 0) AS duration_ms
      FROM practice_record pr
-     JOIN practice_session ps ON ps.id = pr.session_id
-     WHERE ps.user_id = ? AND date(pr.answered_at, '+8 hours') >= ?
+     CROSS JOIN practice_session ps ON ps.id = pr.session_id
+     WHERE ps.user_id = ? AND pr.answered_at >= ?
      GROUP BY day
      ORDER BY day`,
-  ).bind(userId, startKey).all<{
+  ).bind(userId, startUtc).all<{
     day: string
     answered: number
     correct: number

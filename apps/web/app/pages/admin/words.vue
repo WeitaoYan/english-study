@@ -15,7 +15,7 @@ import {
   Volume2,
   VolumeX,
 } from 'lucide-vue-next'
-import type { AudioCandidate, Collocation, ExampleSentence, Word, WordAudioInfo } from '@english-study/shared'
+import type { AudioCandidate, Collocation, ExampleSentence, ImageCandidate, Word, WordAudioInfo, WordImageInfo } from '@english-study/shared'
 import { csvCell, xlsxToCsv } from '../../utils/xlsx'
 
 interface AdminWord extends Word {
@@ -217,6 +217,132 @@ async function invalidateAudio() {
     toast.error(errorMessage(error, '下架失败'))
   } finally {
     invalidating.value = false
+  }
+}
+
+// 配图换源：当前配图 + 备选图片（预览后更换），或把当前配图标记无效。
+const imageOpen = ref(false)
+const imageWord = ref<AdminWord | null>(null)
+const imageInfo = ref<WordImageInfo | null>(null)
+const imageLoading = ref(false)
+const imageError = ref('')
+const imageCandidates = ref<ImageCandidate[]>([])
+const imageCandidatesLoading = ref(false)
+const imageCandidatesError = ref('')
+const switchingImageUrl = ref('')
+const invalidatingImage = ref(false)
+const confirmInvalidateImage = ref(false)
+
+function imageSourceLabel(source: string | null): string {
+  switch (source) {
+    case 'twemoji': return 'Twemoji 卡通'
+    case 'openverse-illustration': return 'Openverse 插画'
+    case 'wikipedia': return '维基百科'
+    case 'openverse': return 'Openverse 照片'
+    case 'upload': return '人工上传'
+    case 'import': return '配图导入'
+    case 'admin-switch': return '管理端换源'
+    default: return source || '未知来源'
+  }
+}
+
+async function openImage(word: AdminWord) {
+  imageWord.value = word
+  imageInfo.value = null
+  imageError.value = ''
+  imageCandidates.value = []
+  imageCandidatesError.value = ''
+  confirmInvalidateImage.value = false
+  imageOpen.value = true
+  imageLoading.value = true
+  imageCandidatesLoading.value = true
+  try {
+    const info = await api.get<{ data: WordImageInfo | null }>(`/admin/words/${word.id}/image`)
+    imageInfo.value = info.data
+  } catch (error) {
+    imageError.value = errorMessage(error, '当前配图加载失败')
+  } finally {
+    imageLoading.value = false
+  }
+  try {
+    const result = await api.get<{ data: ImageCandidate[] }>(`/admin/words/${word.id}/image/candidates`)
+    imageCandidates.value = result.data
+  } catch (error) {
+    imageCandidatesError.value = errorMessage(error, '备选图片加载失败')
+  } finally {
+    imageCandidatesLoading.value = false
+  }
+}
+
+function closeImage() {
+  imageOpen.value = false
+}
+
+async function reloadImageCandidates() {
+  if (!imageWord.value) return
+  imageCandidatesLoading.value = true
+  imageCandidatesError.value = ''
+  try {
+    const result = await api.get<{ data: ImageCandidate[] }>(`/admin/words/${imageWord.value.id}/image/candidates`)
+    imageCandidates.value = result.data
+  } catch (error) {
+    imageCandidatesError.value = errorMessage(error, '备选图片加载失败')
+  } finally {
+    imageCandidatesLoading.value = false
+  }
+}
+
+async function switchImage(candidate: ImageCandidate) {
+  if (!imageWord.value || switchingImageUrl.value) return
+  switchingImageUrl.value = candidate.url
+  try {
+    const result = await api.post<{ data: WordImageInfo }>(`/admin/words/${imageWord.value.id}/image/switch`, {
+      url: candidate.url,
+      source: candidate.source,
+      license: candidate.license,
+      creator: candidate.creator,
+      attribution: candidate.attribution,
+      kind: candidate.kind,
+    })
+    imageInfo.value = result.data
+    const row = words.value.find((w) => w.id === imageWord.value!.id)
+    if (row) {
+      row.imageUrl = result.data.imageUrl
+      row.imageStatus = 'approved'
+      row.hasImage = true
+      row.imageAttribution = result.data.attribution
+    }
+    toast.success(`已换成${candidate.label}`)
+  } catch (error) {
+    toast.error(errorMessage(error, '更换失败'))
+  } finally {
+    switchingImageUrl.value = ''
+  }
+}
+
+async function invalidateImage() {
+  if (!imageWord.value) return
+  if (!confirmInvalidateImage.value) {
+    confirmInvalidateImage.value = true
+    return
+  }
+  invalidatingImage.value = true
+  try {
+    await api.delete(`/admin/words/${imageWord.value.id}/image`)
+    imageInfo.value = null
+    const row = words.value.find((w) => w.id === imageWord.value!.id)
+    if (row) {
+      row.imageUrl = null
+      row.imageStatus = null
+      row.hasImage = false
+      row.imageAttribution = null
+    }
+    confirmInvalidateImage.value = false
+    toast.success('该词配图已下架，看图选词不再出它')
+  } catch (error) {
+    toast.error(errorMessage(error, '下架失败'))
+  } finally {
+    invalidatingImage.value = false
   }
 }
 
@@ -579,12 +705,17 @@ onMounted(async () => {
                 </div>
               </td>
               <td>
-                <span v-if="word.imageUrl && word.imageStatus === 'approved'" class="chip-forest !py-0.5">
-                  <ImageIcon :size="10" /> 已通过
-                </span>
-                <span v-else-if="word.imageStatus === 'pending'" class="chip-clay !py-0.5">待审核</span>
-                <span v-else-if="word.hasImage" class="chip !py-0.5">已有图</span>
-                <span v-else class="text-[10px] text-muted">缺少</span>
+                <div class="flex items-center gap-1">
+                  <span v-if="word.imageUrl && word.imageStatus === 'approved'" class="chip-forest !py-0.5">
+                    <ImageIcon :size="10" /> 已通过
+                  </span>
+                  <span v-else-if="word.imageStatus === 'pending'" class="chip-clay !py-0.5">待审核</span>
+                  <span v-else-if="word.hasImage" class="chip !py-0.5">已有图</span>
+                  <span v-else class="text-[10px] text-muted">缺少</span>
+                  <button class="btn-ghost btn-sm" @click="openImage(word)">
+                    {{ word.imageUrl && word.imageStatus === 'approved' ? '换图' : '选图' }}
+                  </button>
+                </div>
               </td>
               <td>
                 <div class="flex items-center gap-1">
@@ -859,6 +990,83 @@ onMounted(async () => {
       </div>
       <template #footer>
         <button class="btn-secondary" @click="closeAudio">关闭</button>
+      </template>
+    </Modal>
+
+    <Modal
+      :open="imageOpen"
+      :title="imageWord ? `配图 · ${imageWord.spelling}` : '配图'"
+      description="预览备选图片，选一张换上去；也可以把当前配图下架。"
+      wide
+      @close="closeImage"
+    >
+      <div class="space-y-6">
+        <section>
+          <p class="eyebrow">当前配图</p>
+          <div v-if="imageLoading" class="mt-2 flex items-center gap-2 text-xs text-muted">
+            <Loader2 :size="14" class="animate-spin" />
+            加载中…
+          </div>
+          <p v-else-if="imageError" class="mt-2 rounded-xl border border-danger/15 bg-danger-soft px-3.5 py-2.5 text-xs text-danger">
+            {{ imageError }}
+          </p>
+          <div v-else-if="imageInfo" class="mt-2 flex flex-wrap items-center gap-3 rounded-xl border border-line bg-paper/70 px-4 py-3.5">
+            <img :src="imageInfo.imageUrl || ''" :alt="imageWord?.spelling" class="size-16 shrink-0 rounded-lg border border-line bg-white object-contain">
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-ink">{{ imageSourceLabel(imageInfo.source) }} · {{ imageInfo.license }}</p>
+              <p class="mt-0.5 truncate text-[10px] text-muted">{{ imageInfo.attribution }}</p>
+              <p class="mt-0.5 text-[10px] text-muted">{{ imageInfo.createdAt }}</p>
+            </div>
+            <button class="btn-danger btn-sm" :disabled="invalidatingImage" @click="invalidateImage">
+              <Loader2 v-if="invalidatingImage" :size="13" class="animate-spin" />
+              <ImageIcon v-else :size="13" />
+              {{ confirmInvalidateImage ? '确认下架？' : '标记无效' }}
+            </button>
+          </div>
+          <p v-else class="mt-2 text-xs text-muted">暂无配图，可从下面选一张加上。</p>
+          <p v-if="confirmInvalidateImage" class="mt-2 text-[10px] leading-relaxed text-danger">
+            下架后看图选词不再出这个词；R2 里的文件保留，随时可以重新换源恢复。
+          </p>
+        </section>
+
+        <section>
+          <p class="eyebrow">备选图片</p>
+          <div v-if="imageCandidatesLoading" class="mt-2 flex items-center gap-2 text-xs text-muted">
+            <Loader2 :size="14" class="animate-spin" />
+            正在从 Twemoji / Openverse / 维基百科找图…
+          </div>
+          <div v-else-if="imageCandidatesError" class="mt-2 flex flex-wrap items-center gap-3 rounded-xl border border-danger/15 bg-danger-soft px-3.5 py-2.5">
+            <p class="flex-1 text-xs text-danger">{{ imageCandidatesError }}</p>
+            <button class="btn-secondary btn-sm" @click="reloadImageCandidates">重试</button>
+          </div>
+          <p v-else-if="!imageCandidates.length" class="mt-2 text-xs text-muted">没找到备选图片，换个拼写或稍后再试。</p>
+          <div v-else class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            <div
+              v-for="candidate in imageCandidates"
+              :key="candidate.url"
+              class="overflow-hidden rounded-xl border border-line bg-paper/70"
+            >
+              <div class="grid h-28 place-items-center bg-white p-2">
+                <img :src="candidate.url" :alt="candidate.label" class="max-h-full max-w-full object-contain" loading="lazy">
+              </div>
+              <div class="border-t border-line/70 p-3">
+                <p class="text-xs font-medium text-ink">{{ candidate.label }}</p>
+                <p class="mt-0.5 truncate text-[10px] text-muted">{{ candidate.license }} · {{ candidate.creator }}</p>
+                <button
+                  class="btn-primary btn-sm mt-2 w-full"
+                  :disabled="!!switchingImageUrl"
+                  @click="switchImage(candidate)"
+                >
+                  <Loader2 v-if="switchingImageUrl === candidate.url" :size="13" class="animate-spin" />
+                  用这个
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <template #footer>
+        <button class="btn-secondary" @click="closeImage">关闭</button>
       </template>
     </Modal>
 

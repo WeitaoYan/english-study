@@ -208,6 +208,31 @@ export interface WordAudioInfo {
   createdAt: string | null
 }
 
+/** 管理端更换单词配图时的备选图片（可直接预览）。 */
+export interface ImageCandidate {
+  url: string
+  /** 显示标签，如“Twemoji 卡通”“Openverse 插画”“维基百科首图”。 */
+  label: string
+  /** 来源：twemoji | openverse-illustration | wikipedia | openverse。 */
+  source: string
+  license: string
+  creator: string
+  attribution: string
+  /** svg（Twemoji）或 photo（JPG/PNG）。 */
+  kind: 'svg' | 'photo'
+}
+
+/** 单词当前配图（管理端）。 */
+export interface WordImageInfo {
+  imageUrl: string | null
+  source: string | null
+  license: string | null
+  creator: string | null
+  attribution: string | null
+  status: 'pending' | 'approved' | 'rejected' | null
+  createdAt: string | null
+}
+
 /** 单元内单个词的最新掌握度（每次打开单元都重新算，不进本地缓存）。 */
 export interface UnitWordMastery {
   wordId: string

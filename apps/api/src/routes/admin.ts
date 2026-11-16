@@ -9,6 +9,7 @@ import { parseCsv, parseListCell } from '../lib/csv'
 import { safeJson, uuid, nowIso } from '../lib/utils'
 import { enrichWordWithAI } from '../lib/ai'
 import { downloadVerifiedMp3, listAudioCandidates } from '../lib/audio-sources'
+import { downloadVerifiedImage, listImageCandidates } from '../lib/image-sources'
 import type { WordRow } from '../types'
 
 const admin = new Hono<AppEnv>()
@@ -881,6 +882,149 @@ admin.delete('/words/:id/audio', async (c) => {
   const word = await c.env.DB.prepare('SELECT id FROM word WHERE id = ?').bind(wordId).first<{ id: string }>()
   if (!word) return c.json({ error: '单词不存在' }, 404)
   await c.env.DB.prepare('DELETE FROM word_audio WHERE word_id = ?').bind(wordId).run()
+  return c.json({ ok: true })
+})
+
+// ---- 单词配图：当前配图 / 备选图片 / 更换 / 标记无效 ----
+// 与音频换源同款交互：管理端先看当前图，再从四路备选（Twemoji 卡通 /
+// Openverse 插画 / 维基百科首图 / Openverse 照片）里挑一张换上去。
+
+// 单词当前配图（最新一条已通过的 word_image 记录，没有则为 null）。
+admin.get('/words/:id/image', async (c) => {
+  const row = await c.env.DB.prepare(
+    `SELECT image_url, source, license, creator, attribution, status, created_at FROM word_image
+     WHERE word_id = ? AND status = 'approved' ORDER BY created_at DESC LIMIT 1`,
+  ).bind(c.req.param('id')).first<{
+    image_url: string
+    source: string
+    license: string
+    creator: string
+    attribution: string
+    status: 'pending' | 'approved' | 'rejected'
+    created_at: string
+  }>()
+  if (!row) return c.json({ data: null })
+  return c.json({
+    data: {
+      imageUrl: row.image_url,
+      source: row.source,
+      license: row.license,
+      creator: row.creator,
+      attribution: row.attribution,
+      status: row.status,
+      createdAt: row.created_at,
+    },
+  })
+})
+
+// 备选图片：四路并行找候选，供管理端预览后换源（只返回地址与授权信息，不下载）。
+admin.get('/words/:id/image/candidates', async (c) => {
+  const word = await c.env.DB.prepare(
+    'SELECT id, spelling FROM word WHERE id = ?',
+  ).bind(c.req.param('id')).first<{ id: string; spelling: string }>()
+  if (!word) return c.json({ error: '单词不存在' }, 404)
+  const candidates = await listImageCandidates(word.spelling)
+  return c.json({ data: candidates })
+})
+
+// 更换配图：下载候选图并校验，存 R2、新增一条 approved 记录，旧的已通过图置 replaced，
+// 同步 word.has_image / image_id 与 updated_at（单元单词内容指纹随之变化，客户端缓存自动刷新）。
+admin.post('/words/:id/image/switch', async (c) => {
+  const wordId = c.req.param('id')
+  const word = await c.env.DB.prepare(
+    'SELECT id, spelling FROM word WHERE id = ?',
+  ).bind(wordId).first<{ id: string; spelling: string }>()
+  if (!word) return c.json({ error: '单词不存在' }, 404)
+  const body = await parseBody(c, z.object({
+    url: z.string().url().max(1000),
+    source: z.string().max(40),
+    license: z.string().max(100),
+    creator: z.string().max(100),
+    attribution: z.string().max(300),
+    kind: z.enum(['svg', 'photo']),
+  }))
+  // 只接受备选源会出的域名，避免被人利用本接口当任意文件下载跳板。
+  // Openverse 的图多在 Flickr / Pexels / Unsplash / Pixabay，另加 Wikimedia 与 Twemoji。
+  let host = ''
+  try {
+    host = new URL(body.url).hostname
+  } catch {
+    return c.json({ error: '图片地址无效' }, 400)
+  }
+  const allowedHosts = new Set([
+    'twemoji.maxcdn.com',
+    'cdn.jsdelivr.net',
+    'upload.wikimedia.org',
+    'live.staticflickr.com',
+    'images.pexels.com',
+    'images.unsplash.com',
+    'cdn.pixabay.com',
+  ])
+  if (!allowedHosts.has(host) && !/\.staticflickr\.com$/.test(host)) {
+    return c.json({ error: '不支持的图片来源' }, 400)
+  }
+  if (!c.env.IMAGES) return c.json({ error: '图片存储未配置' }, 503)
+  let verified: { buf: ArrayBuffer; ext: 'jpg' | 'png' | 'svg'; contentType: string }
+  try {
+    verified = await downloadVerifiedImage(body.url, body.kind)
+  } catch (error) {
+    return c.json({ error: error instanceof Error ? error.message : '图片下载失败' }, 502)
+  }
+  const imageId = uuid('img')
+  const key = `word-images/${wordId}/${imageId}.${verified.ext}`
+  await c.env.IMAGES.put(key, verified.buf, {
+    httpMetadata: {
+      contentType: verified.contentType,
+      cacheControl: 'public, max-age=31536000, immutable',
+    },
+  })
+  const origin = new URL(c.req.url).origin
+  const imageUrl = `${origin}/api/images/${imageId}`
+  const now = nowIso()
+  const statements = [
+    c.env.DB.prepare(
+      `UPDATE word_image SET status = 'replaced' WHERE word_id = ? AND status = 'approved'`,
+    ).bind(wordId),
+    c.env.DB.prepare(
+      `INSERT INTO word_image (id, word_id, image_url, r2_key, upload_method, status, source, license, creator, attribution, created_at)
+       VALUES (?, ?, ?, ?, 'admin-switch', 'approved', ?, ?, ?, ?, ?)`,
+    ).bind(imageId, wordId, imageUrl, key, body.source, body.license, body.creator, body.attribution, now),
+    c.env.DB.prepare(
+      'UPDATE word SET has_image = 1, image_id = ?, updated_at = ? WHERE id = ?',
+    ).bind(imageId, now, wordId),
+  ]
+  await c.env.DB.batch(statements)
+  return c.json({
+    data: {
+      imageUrl,
+      source: body.source,
+      license: body.license,
+      creator: body.creator,
+      attribution: body.attribution,
+      status: 'approved',
+      createdAt: now,
+    },
+  })
+})
+
+// 标记配图无效：把已通过的图置 rejected，清空 word 的 image_id / has_image，
+// 学生端看图选词不再出它；R2 文件保留，需要时重新换源即可恢复。
+admin.delete('/words/:id/image', async (c) => {
+  const wordId = c.req.param('id')
+  const word = await c.env.DB.prepare('SELECT id FROM word WHERE id = ?').bind(wordId).first<{ id: string }>()
+  if (!word) return c.json({ error: '单词不存在' }, 404)
+  const now = nowIso()
+  const pending = await c.env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM word_image WHERE word_id = ? AND status = 'pending'`,
+  ).bind(wordId).first<{ n: number }>()
+  await c.env.DB.batch([
+    c.env.DB.prepare(
+      `UPDATE word_image SET status = 'rejected' WHERE word_id = ? AND status = 'approved'`,
+    ).bind(wordId),
+    c.env.DB.prepare(
+      'UPDATE word SET has_image = ?, image_id = NULL, updated_at = ? WHERE id = ?',
+    ).bind((pending?.n || 0) > 0 ? 1 : 0, now, wordId),
+  ])
   return c.json({ ok: true })
 })
 

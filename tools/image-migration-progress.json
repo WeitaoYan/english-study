@@ -4572,8 +4572,8 @@
     },
     "april": {
       "source": "openverse",
-      "license": "CC0",
-      "imageId": "img-ca363e6e-78dc-4881-9c3a-b34f3344a9f5"
+      "imageId": "img-ca363e6e-78dc-4881-9c3a-b34f3344a9f5",
+      "keptPhoto": true
     },
     "chameleon": {
       "source": "wikipedia",
@@ -4587,13 +4587,13 @@
     },
     "cheek": {
       "source": "wikipedia",
-      "license": "CC0",
-      "imageId": "img-2b0c321e-880d-4c32-9fa3-1075e3a61475"
+      "imageId": "img-2b0c321e-880d-4c32-9fa3-1075e3a61475",
+      "keptPhoto": true
     },
     "chase": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-4a1065b0-6ecc-4c75-9a11-845fe7276565"
+      "imageId": "img-4a1065b0-6ecc-4c75-9a11-845fe7276565",
+      "keptPhoto": true
     },
     "china": {
       "source": "wikipedia",
@@ -4602,13 +4602,13 @@
     },
     "circle": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-e5574013-7960-4eea-bfc4-741a611db410"
+      "imageId": "img-e5574013-7960-4eea-bfc4-741a611db410",
+      "keptPhoto": true
     },
     "classroom": {
       "source": "wikipedia",
-      "license": "CC BY 2.0",
-      "imageId": "img-057ecc70-a136-48d2-acbf-fcb13833a10a"
+      "imageId": "img-057ecc70-a136-48d2-acbf-fcb13833a10a",
+      "keptPhoto": true
     },
     "cleaner": {
       "source": "wikipedia",
@@ -4617,23 +4617,23 @@
     },
     "climate": {
       "source": "wikipedia",
-      "license": "Public domain",
-      "imageId": "img-ecd6b87e-18c5-4226-9c87-19661426e024"
+      "imageId": "img-ecd6b87e-18c5-4226-9c87-19661426e024",
+      "keptPhoto": true
     },
     "clean": {
       "source": "openverse",
-      "license": "CC BY",
-      "imageId": "img-b34774e8-4d75-47a2-8e92-6fbee20bbb85"
+      "imageId": "img-b34774e8-4d75-47a2-8e92-6fbee20bbb85",
+      "keptPhoto": true
     },
     "clinic": {
       "source": "wikipedia",
-      "license": "CC BY-SA 3.0",
-      "imageId": "img-f665b69f-27af-4b05-8774-06bd436575c8"
+      "imageId": "img-f665b69f-27af-4b05-8774-06bd436575c8",
+      "keptPhoto": true
     },
     "coal": {
       "source": "wikipedia",
-      "license": "CC BY 4.0",
-      "imageId": "img-162a6432-f478-496f-a1e3-d9ef6aa40cda"
+      "imageId": "img-162a6432-f478-496f-a1e3-d9ef6aa40cda",
+      "keptPhoto": true
     },
     "coast": {
       "source": "wikipedia",
@@ -4649,6 +4649,106 @@
       "source": "wikipedia",
       "license": "CC BY-SA 3.0",
       "imageId": "img-531dc155-0bb2-4980-ab41-433de449309e"
+    },
+    "cotton": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-492d5581-d365-4beb-aff9-41c2c6824903"
+    },
+    "cough": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-8f3345c1-2b21-4255-a8ce-35d5a9ed9e1f"
+    },
+    "countryside": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-f9d40d17-9cda-41cd-af8c-1f0a6ebabcd1"
+    },
+    "course": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-48ee625f-88f2-4947-bf66-eea2235f59d3"
+    },
+    "cousin": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-4f0b4969-07bf-4ba3-8c3f-772a78bd0281"
+    },
+    "cover": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-f99c2e90-c9ad-43f1-b715-a642fd8ffe8a"
+    },
+    "cross": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-c9d5836a-8ef5-4a5f-977a-5d9d13863a79"
+    },
+    "crash": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-f0eb4ffa-605b-4b67-9b98-91957e4b2bed"
+    },
+    "crowd": {
+      "source": "wikipedia",
+      "license": "CC BY 2.5",
+      "imageId": "img-4f68c27c-4d25-4cba-aebb-20e489b18fdd"
+    },
+    "cruel": {
+      "source": "openverse",
+      "license": "CC0",
+      "imageId": "img-9b7977bc-be42-4e9b-acfa-c2e4ad799dc7"
+    },
+    "cupboard": {
+      "source": "wikipedia",
+      "license": "Public domain",
+      "imageId": "img-2dd0d40f-f029-488c-88d7-be3fdf388c02"
+    },
+    "cure": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-4f39198e-e13c-42ec-b584-9eac5bae3ff4"
+    },
+    "curious": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-af943497-1876-4dda-b833-b7e126c8b289"
+    },
+    "curtain": {
+      "source": "wikipedia",
+      "license": "CC BY-SA 3.0",
+      "imageId": "img-5383ac22-1717-4e21-937b-5b5c001b836d"
+    },
+    "daddy": {
+      "source": "openverse-illustration",
+      "license": "CC0",
+      "imageId": "img-49f48270-7d7e-47ce-8b04-a106bb1e0799"
+    },
+    "custom": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-9448c9e2-043f-4d45-9e82-f5355d59af8a"
+    },
+    "daily": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-cf6afcd6-85b4-4a1a-b7ae-47de697fbc55"
+    },
+    "dairy": {
+      "source": "openverse-illustration",
+      "license": "CC0",
+      "imageId": "img-b5ae06c2-121c-4630-bfb5-baa8fe0b433b"
+    },
+    "damage": {
+      "source": "openverse",
+      "license": "CC BY-SA",
+      "imageId": "img-a27f8709-10a2-44cb-b76b-657c062f7f15"
+    },
+    "damp": {
+      "source": "openverse",
+      "license": "CC BY",
+      "imageId": "img-1963d57a-0755-454b-8a21-2d15c1846f55"
     }
   },
   "failed": {
@@ -4657,7 +4757,7 @@
     "tiger": "Command failed: python3 /home/hatch/workspace/tools/run_wrangler_cf.py /home/hatch/workspace/english-study/apps/api d1 e"
   },
   "openverseDay": "2026-11-15",
-  "openverseCount": 135,
+  "openverseCount": 180,
   "noImage": {
     "ms": "无卡通、无维基首图、Openverse 无可用结果",
     "an": "无卡通、无维基首图、Openverse 无可用结果",

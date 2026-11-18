@@ -33,6 +33,11 @@ const emptyMessage = ref('')
 const index = ref(0)
 const inputAnswer = ref('')
 const selected = ref('')
+// 错词重练：题目队列是下标数组；答对的词出队，答错的词排到队尾再出现，
+// 每个词一局里最多答 3 次（第 3 次答错也出队，进总结里的“需要再看”）。
+const mistakeQueue = ref<number[]>([])
+const mistakeAttempts = ref(new Map<string, number>())
+const MAX_MISTAKE_ATTEMPTS = 3
 // 后台确认中的题目 key（用于显示“正在同步”）；pendingConfirms 里的请求结算前必须等完，
 // 否则 finish 从库里算成绩会漏掉还在路上的那一题。
 const confirmingKey = ref<string | null>(null)
@@ -44,12 +49,38 @@ const fillBox = ref<HTMLElement | null>(null)
 // watch 创建时会立即求一次值，computed 回调里也随时可能求值，
 // 放在后面会撞上暂时性死区（Cannot access before initialization），
 // 练习页一打开就 500（2026-11-06 实测）。
-const current = computed<QuestionPayload | null>(() => session.value?.questions[index.value] || null)
+const current = computed<QuestionPayload | null>(() => {
+  if (!session.value) return null
+  // 错词重练按队列出题：队首就是当前题；其余模式按下标顺序出题。
+  if (session.value.mode === 'mistake') {
+    const queueIndex = mistakeQueue.value[0]
+    return queueIndex === undefined ? null : session.value.questions[queueIndex] || null
+  }
+  return session.value.questions[index.value] || null
+})
+const mistakeRemaining = computed(() => {
+  if (!session.value) return 0
+  return new Set(mistakeQueue.value.map((i) => session.value!.questions[i]?.wordId)).size
+})
 const progress = computed(() => {
   if (!session.value?.totalCount) return 0
+  if (session.value.mode === 'mistake') {
+    return Math.round(((session.value.totalCount - mistakeRemaining.value) / session.value.totalCount) * 100)
+  }
   return Math.round((index.value / session.value.totalCount) * 100)
 })
-const isLast = computed(() => Boolean(session.value && index.value >= session.value.totalCount - 1))
+const isLast = computed(() => {
+  if (!session.value) return false
+  if (session.value.mode === 'mistake') {
+    // 错词重练的“最后一题”：队里只剩当前这一题，且答完它就会出队
+    // （答对，或一局里第 3 次答错）。
+    if (mistakeQueue.value.length > 1 || !result.value) return false
+    if (result.value.isCorrect) return true
+    const key = current.value?.key || ''
+    return (mistakeAttempts.value.get(key) || 0) + 1 >= MAX_MISTAKE_ATTEMPTS
+  }
+  return Boolean(session.value && index.value >= session.value.totalCount - 1)
+})
 const backTo = computed(() => {
   if (session.value?.unitId) return `/student/units/${session.value.unitId}`
   return '/student'
@@ -58,8 +89,10 @@ const modeTitle = computed(() => {
   if (session.value?.mode === 'review') return '今日复习'
   if (session.value?.mode === 'word') return '单词练习'
   if (session.value?.mode === 'special') return '专项练习'
+  if (session.value?.mode === 'mistake') return '错词重练'
   return '单元练习'
 })
+const emptyTitle = computed(() => (route.query.mode === 'mistake' ? '最近没有错词可以重练' : '今天没有需要复习的单词'))
 
 interface LetterSlot { char: string; blank: boolean; blankIndex: number }
 
@@ -231,11 +264,13 @@ async function start() {
       ? 'review'
       : route.query.mode === 'special'
         ? 'special'
-        : route.query.wordId
-          ? 'word'
-          : 'unit'
+        : route.query.mode === 'mistake'
+          ? 'mistake'
+          : route.query.wordId
+            ? 'word'
+            : 'unit'
     // 复习题数由后端按家长设的每日限额算，前端不传；单元练习默认 10 题；
-    // 专项练习的题数由套题定，前端不传。
+    // 专项练习的题数由套题定，前端不传；错词重练的词单由后端现算，前端不传。
     const body: Record<string, unknown> = { mode }
     if (mode === 'unit') body.limit = 10
     if (route.query.unitId) body.unitId = String(route.query.unitId)
@@ -259,6 +294,10 @@ async function start() {
     }
     session.value = response
     index.value = 0
+    if (response.mode === 'mistake') {
+      mistakeQueue.value = response.questions.map((_, i) => i)
+      mistakeAttempts.value = new Map()
+    }
     questionStart.value = Date.now()
   } catch (err) {
     error.value = errorMessage(err, '练习创建失败')
@@ -369,6 +408,31 @@ function choose(option: string) {
 
 function next() {
   if (!session.value) return
+  if (session.value.mode === 'mistake') {
+    // 错词重练：答对的词出队，答错的词排到队尾再出现；一局里第 3 次答错也出队，
+    // 进总结里的“需要再看”。队空了就结算。
+    const head = mistakeQueue.value[0]
+    if (head !== undefined && result.value) {
+      const key = session.value.questions[head]?.key || ''
+      mistakeQueue.value.shift()
+      if (!result.value.isCorrect) {
+        const attempts = (mistakeAttempts.value.get(key) || 0) + 1
+        mistakeAttempts.value.set(key, attempts)
+        if (attempts < MAX_MISTAKE_ATTEMPTS) mistakeQueue.value.push(head)
+      }
+    }
+    inputAnswer.value = ''
+    selected.value = ''
+    fillLetters.value = []
+    result.value = null
+    questionStart.value = Date.now()
+    if (!mistakeQueue.value.length) {
+      finish()
+      return
+    }
+    if (import.meta.client) window.scrollTo({ top: 0, behavior: 'smooth' })
+    return
+  }
   if (isLast.value) {
     finish()
     return
@@ -425,7 +489,8 @@ onMounted(start)
       </button>
       <div v-if="session" class="flex items-center gap-2 text-[11px] text-muted">
         <span class="chip-forest">{{ modeTitle }}</span>
-        <span>{{ index + 1 }} / {{ session.totalCount }}</span>
+        <span v-if="session.mode === 'mistake'">还剩 {{ mistakeRemaining }} 个词</span>
+        <span v-else>{{ index + 1 }} / {{ session.totalCount }}</span>
       </div>
     </div>
 
@@ -498,7 +563,7 @@ onMounted(start)
     </div>
 
     <div v-else-if="emptyMessage" class="mx-auto max-w-xl">
-      <EmptyState title="今天没有需要复习的单词" :description="emptyMessage">
+      <EmptyState :title="emptyTitle" :description="emptyMessage">
         <template #icon><RotateCcw :size="18" /></template>
         <template #action>
           <NuxtLink to="/student" class="btn-primary">去选课本</NuxtLink>
@@ -510,7 +575,8 @@ onMounted(start)
       <div class="mb-4">
         <div class="mb-2 flex items-center justify-between text-[10px] text-muted">
           <span>本组进度</span>
-          <span>{{ index + 1 }} / {{ session.totalCount }}</span>
+          <span v-if="session.mode === 'mistake'">还剩 {{ mistakeRemaining }} 个词</span>
+          <span v-else>{{ index + 1 }} / {{ session.totalCount }}</span>
         </div>
         <ProgressBar :value="progress" />
       </div>

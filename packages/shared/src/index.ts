@@ -171,6 +171,27 @@ export interface SpecialPracticeCreate {
   questionCount?: number
 }
 
+/**
+ * 错词重练的词单：只取家长报告“错在哪里”里每种题型错得最多的 3 个词，
+ * 每个词配它原来错过的题型（重练就按这个题型出题）。
+ */
+export interface MistakeWord {
+  wordId: string
+  spelling: string
+  chineseDef: string
+  type: QuestionType
+  ability: QuestionAbility
+  /** 该题型下近 days 天答错的次数。 */
+  wrong: number
+}
+
+export interface MistakeReviewResponse {
+  /** 与家长报告默认窗口一致：近 7 天。 */
+  days: number
+  words: MistakeWord[]
+  totalWords: number
+}
+
 export interface Unit {
   id: string
   textbookId: string
@@ -276,7 +297,7 @@ export interface QuestionPayload {
 
 export interface PracticeSessionPayload {
   sessionId: string
-  mode: 'unit' | 'review' | 'word' | 'special'
+  mode: 'unit' | 'review' | 'word' | 'special' | 'mistake'
   unitId: string | null
   specialPracticeId?: string | null
   totalCount: number

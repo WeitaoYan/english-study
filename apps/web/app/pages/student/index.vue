@@ -12,7 +12,7 @@ import {
   Sparkles,
   Target,
 } from 'lucide-vue-next'
-import type { SpecialPractice, StudentDashboard, Textbook } from '@english-study/shared'
+import type { MistakeReviewResponse, MistakeWord, SpecialPractice, StudentDashboard, Textbook } from '@english-study/shared'
 import { formatDateTimeCN, QUESTION_TYPE_LABELS } from '@english-study/shared'
 
 const auth = useAuth()
@@ -73,9 +73,37 @@ async function loadSpecialPractices() {
   }
 }
 
+// 错词重练词单：只取家长报告里每种题型错得最多的 3 个词（近 7 天）。
+const mistakeWords = ref<MistakeWord[]>([])
+const mistakeLoading = ref(false)
+
+const mistakeGroups = computed(() => {
+  const groups: Array<{ type: string; label: string; words: MistakeWord[] }> = []
+  for (const word of mistakeWords.value) {
+    const group = groups.find((item) => item.type === word.type)
+    if (group) group.words.push(word)
+    else groups.push({ type: word.type, label: QUESTION_TYPE_LABELS[word.type] || word.type, words: [word] })
+  }
+  return groups
+})
+
+async function loadMistakeReview() {
+  mistakeLoading.value = true
+  try {
+    const result = await api.get<MistakeReviewResponse>('/student/mistake-review')
+    mistakeWords.value = result.words || []
+  } catch {
+    // 错词词单加载失败不挡首页：静默留空。
+    mistakeWords.value = []
+  } finally {
+    mistakeLoading.value = false
+  }
+}
+
 onMounted(() => {
   load()
   loadSpecialPractices()
+  loadMistakeReview()
 })
 </script>
 
@@ -212,6 +240,32 @@ onMounted(() => {
                   开始练习
                 </NuxtLink>
               </div>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <div class="mb-3">
+              <p class="eyebrow">错词重练</p>
+              <h2 class="mt-1 section-title">把错过的词练熟</h2>
+              <p class="mt-1 text-xs text-muted">只练最近错得最多的词：答对就过关，答错会再出现，直到练熟。</p>
+            </div>
+            <div v-if="mistakeLoading" class="skeleton h-16" />
+            <div v-else-if="mistakeWords.length" class="card flex items-center gap-3 p-4">
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-ink">{{ mistakeWords.length }} 个错词等你重练</p>
+                <p class="mt-0.5 text-xs leading-relaxed text-muted">
+                  <span v-for="(group, groupIndex) in mistakeGroups" :key="group.type">
+                    {{ group.label }}：{{ group.words.map((word) => word.spelling).join('、') }}<span v-if="groupIndex < mistakeGroups.length - 1">；</span>
+                  </span>
+                </p>
+              </div>
+              <NuxtLink to="/student/practice?mode=mistake" class="btn-primary btn-sm shrink-0">
+                开始重练
+              </NuxtLink>
+            </div>
+            <div v-else class="card p-4">
+              <p class="text-sm font-medium text-ink">最近没有错词可以重练</p>
+              <p class="mt-0.5 text-xs text-muted">练几局再来看看，错得最多的词会出现在这里。</p>
             </div>
           </div>
         </section>

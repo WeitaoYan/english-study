@@ -7,6 +7,7 @@ import { parseBody } from '../lib/http'
 import { computeMastery, masteryToApi } from '../lib/srs'
 import { applyManualQuestion, availableTypes, buildQuestions, expectedAnswer, explanationForRow, maskWordInPhrase, type ManualQuestion } from '../lib/questions'
 import { enrichSpecialPractices, getSpecialPracticeForStudent } from '../lib/special'
+import { getTopErrorWords } from '../lib/mistakes'
 import { isQuestionType, mapWord } from '../lib/mappers'
 import {
   currentStreak,
@@ -37,7 +38,7 @@ function normalizeAnswer(value: string): string {
 }
 
 const sessionSchema = z.object({
-  mode: z.enum(['unit', 'review', 'word', 'special']).default('unit'),
+  mode: z.enum(['unit', 'review', 'word', 'special', 'mistake']).default('unit'),
   unitId: z.string().optional(),
   wordId: z.string().optional(),
   // 专项练习：套题 id（mode=special 时必填）。
@@ -210,6 +211,14 @@ student.get('/textbooks', async (c) => {
   return c.json({ data: await getTextbookProgress(c.env, c.get('user').id) })
 })
 
+// 孩子看自己的错词重练词单：只取家长报告里每种题型错得最多的 3 个词
+// （近 7 天，与报告默认窗口一致）。词单为空时前端显示“无词可练”，
+// 不编造词单；开局仍以后端现算的词单为准。
+student.get('/mistake-review', async (c) => {
+  const words = await getTopErrorWords(c.env, c.get('user').id, 7)
+  return c.json({ days: 7, words, totalWords: words.length })
+})
+
 // 孩子看家长给自己建的专项练习套题。
 student.get('/special-practices', async (c) => {
   const user = c.get('user')
@@ -371,11 +380,13 @@ student.post('/practice/sessions', async (c) => {
   const now = nowIso()
   let selected: JoinedWordRow[] = []
   let unitId: string | null = body.unitId || null
-  let mode: 'unit' | 'review' | 'word' | 'special' = body.mode
+  let mode: 'unit' | 'review' | 'word' | 'special' | 'mistake' = body.mode
   let textbookId: string | null = null
   // 专项练习：套题 id 与固定题型；specialPoolRows 是全部指定单元的词（干扰项池）。
   let specialPracticeId: string | null = null
   let specialFixedType: QuestionType | null = null
+  // 错词重练：每个词有自己的固定题型（取自报告里它原来错过的题型）。
+  let mistakeFixedTypes: Map<string, QuestionType> | null = null
   let specialPoolRows: JoinedWordRow[] | null = null
 
   if (body.mode === 'word') {
@@ -470,6 +481,64 @@ student.post('/practice/sessions', async (c) => {
     specialPracticeId = practice.id
     specialFixedType = fixedType
     specialPoolRows = allRows
+  } else if (body.mode === 'mistake') {
+    // 错词重练：词单只取家长报告里每种题型错得最多的 3 个词（近 7 天，
+    // 与报告默认窗口一致），每个词按它原来错过的题型出题；不占每日复习限额。
+    const mistakeWords = await getTopErrorWords(c.env, user.id, 7)
+    if (!mistakeWords.length) {
+      return c.json({
+        sessionId: '',
+        mode,
+        unitId,
+        totalCount: 0,
+        questions: [],
+        empty: true,
+        message: '最近没有错词可以重练，练几局再来看看',
+      })
+    }
+    const wordIds = mistakeWords.map((word) => word.wordId)
+    const placeholders = wordIds.map(() => '?').join(',')
+    // 只留仍在被指定课本里的词：家长可能后来取消了某本课本的指定。
+    const { results: wordUnits } = await c.env.DB.prepare(
+      `SELECT DISTINCT uw.word_id AS word_id, uw.unit_id AS unit_id
+       FROM unit_word uw
+       JOIN unit u ON u.id = uw.unit_id
+       JOIN child_textbook ct ON ct.textbook_id = u.textbook_id AND ct.student_user_id = ?
+       WHERE uw.word_id IN (${placeholders}) AND uw.enabled = 1`,
+    ).bind(user.id, ...wordIds).all<{ word_id: string; unit_id: string }>()
+    const unitsByWord = new Map<string, string[]>()
+    for (const row of wordUnits || []) {
+      const list = unitsByWord.get(row.word_id) || []
+      list.push(row.unit_id)
+      unitsByWord.set(row.word_id, list)
+    }
+    const unitIds = [...new Set((wordUnits || []).map((row) => row.unit_id))]
+    const wordsByUnit = await getWordsForUnits(c.env, user.id, unitIds)
+    const allRows = [...wordsByUnit.values()].flat()
+    // 只留能出该词报告题型的词（没录音的词出不了听音题、没图的出不了看图题），
+    // 出不了的直接跳过，不混进别的题型。
+    const eligible: Array<{ row: JoinedWordRow; type: QuestionType }> = []
+    for (const mistake of mistakeWords) {
+      const row = await getWordById(c.env, user.id, mistake.wordId)
+      if (!row || !unitsByWord.has(mistake.wordId)) continue
+      if (!availableTypes(mapWord(row)).includes(mistake.type)) continue
+      eligible.push({ row, type: mistake.type })
+    }
+    if (!eligible.length) {
+      return c.json({
+        sessionId: '',
+        mode,
+        unitId,
+        totalCount: 0,
+        questions: [],
+        empty: true,
+        message: '这些错词暂时出不了对应的题型，练几局再来看看',
+      })
+    }
+    selected = eligible.map((item) => item.row)
+    mistakeFixedTypes = new Map(eligible.map((item) => [item.row.id, item.type]))
+    // 干扰项从错词所在单元的全部词里取（池子更大，看图/听音题才有足够选项）。
+    specialPoolRows = allRows
   } else {
     if (!body.unitId) return c.json({ error: '请选择单元' }, 400)
     const unitRow = await c.env.DB.prepare(
@@ -513,7 +582,11 @@ student.post('/practice/sessions', async (c) => {
       totalCount: 0,
       questions: [],
       empty: true,
-      message: mode === 'review' ? '今天没有到期需要复习的单词' : '暂时没有可练习的单词',
+      message: mode === 'review'
+        ? '今天没有到期需要复习的单词'
+        : mode === 'mistake'
+          ? '最近没有错词可以重练，练几局再来看看'
+          : '暂时没有可练习的单词',
     })
   }
 
@@ -524,11 +597,13 @@ student.post('/practice/sessions', async (c) => {
   const questions: QuestionPayload[] = []
   for (const row of selected) {
     const pool = specialPoolRows || (row.unit_id ? (context.get(row.unit_id) || [row]) : [row])
-    const generated = buildQuestions([row], pool, questions.length, specialFixedType || undefined)
+    // 错词重练每个词有自己的固定题型；专项练习全队一种题型。
+    const fixedType = mistakeFixedTypes?.get(row.id) ?? specialFixedType ?? undefined
+    const generated = buildQuestions([row], pool, questions.length, fixedType)
     let question = generated[0]
     if (!question) continue
-    // 专项练习题型固定：生成函数回落到别的题型时直接跳过该词，不混进别的题型。
-    if (specialFixedType && question.type !== specialFixedType) continue
+    // 题型固定：生成函数回落到别的题型时直接跳过该词，不混进别的题型。
+    if (fixedType && question.type !== fixedType) continue
     const manual = await findManualQuestion(c.env, row.id, question.type)
     if (manual) {
       const merged = applyManualQuestion(question, mapWord(row), manual)
@@ -537,8 +612,8 @@ student.post('/practice/sessions', async (c) => {
     questions.push(question)
   }
 
-  // 专项练习跨多个单元/课本，不记单本课本；其余模式按首个单元的课本记。
-  if (mode !== 'special') {
+  // 专项练习与错词重练跨多个单元/课本，不记单本课本；其余模式按首个单元的课本记。
+  if (mode !== 'special' && mode !== 'mistake') {
     const firstUnit = selected.find((row) => row.unit_id)?.unit_id
     if (firstUnit) {
       const unitRow = await c.env.DB.prepare(

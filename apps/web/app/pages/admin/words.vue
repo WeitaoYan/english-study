@@ -1046,8 +1046,8 @@ onMounted(async () => {
               :key="candidate.url"
               class="overflow-hidden rounded-xl border border-line bg-paper/70"
             >
-              <div class="grid h-28 place-items-center bg-white p-2">
-                <img :src="candidate.url" :alt="candidate.label" class="max-h-full max-w-full object-contain" loading="lazy">
+              <div class="grid h-28 place-items-center overflow-hidden bg-white p-2">
+                <img :src="candidate.url" :alt="candidate.label" class="size-full object-contain" loading="lazy">
               </div>
               <div class="border-t border-line/70 p-3">
                 <p class="text-xs font-medium text-ink">{{ candidate.label }}</p>

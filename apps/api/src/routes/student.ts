@@ -817,11 +817,12 @@ student.post('/practice/answer', async (c) => {
 student.post('/practice/sessions/:id/finish', async (c) => {
   const user = c.get('user')
   const session = await c.env.DB.prepare(
-    `SELECT id, unit_id, start_time, end_time, total_count, correct_count, duration_ms
+    `SELECT id, unit_id, mode, start_time, end_time, total_count, correct_count, duration_ms
      FROM practice_session WHERE id = ? AND user_id = ?`,
   ).bind(c.req.param('id'), user.id).first<{
     id: string
     unit_id: string | null
+    mode: string
     start_time: string
     end_time: string | null
     total_count: number
@@ -836,11 +837,22 @@ student.post('/practice/sessions/:id/finish', async (c) => {
   let durationMs = session.duration_ms
 
   if (!session.end_time) {
-    const stats = await c.env.DB.prepare(
-      `SELECT COUNT(*) AS total, COALESCE(SUM(is_correct), 0) AS correct,
-         COALESCE(SUM(duration), 0) AS duration
-       FROM practice_record WHERE session_id = ?`,
-    ).bind(session.id).first<{ total: number; correct: number; duration: number }>()
+    // 错词重练一词可答多次（答错重排队尾），结算按词去重算，与进度条和
+    // correctWords/wrongWords 的按词口径一致；其他模式一题一词，按记录数算不变。
+    const stats =
+      session.mode === 'mistake'
+        ? await c.env.DB.prepare(
+            `SELECT COUNT(*) AS total, COALESCE(SUM(max_correct), 0) AS correct,
+               COALESCE(SUM(word_duration), 0) AS duration
+             FROM (SELECT word_id, MAX(is_correct) AS max_correct,
+               SUM(duration) AS word_duration
+               FROM practice_record WHERE session_id = ? GROUP BY word_id)`,
+          ).bind(session.id).first<{ total: number; correct: number; duration: number }>()
+        : await c.env.DB.prepare(
+            `SELECT COUNT(*) AS total, COALESCE(SUM(is_correct), 0) AS correct,
+               COALESCE(SUM(duration), 0) AS duration
+             FROM practice_record WHERE session_id = ?`,
+          ).bind(session.id).first<{ total: number; correct: number; duration: number }>()
     totalCount = stats?.total || session.total_count
     correctCount = stats?.correct || session.correct_count
     durationMs = Date.now() - new Date(session.start_time).getTime()

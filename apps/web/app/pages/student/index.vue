@@ -247,7 +247,7 @@ onMounted(() => {
             <div class="mb-3">
               <p class="eyebrow">错词重练</p>
               <h2 class="mt-1 section-title">把错过的词练熟</h2>
-              <p class="mt-1 text-xs text-muted">只练最近错得最多的词：答对就过关，答错会再出现，直到练熟。</p>
+              <p class="mt-1 text-xs leading-relaxed text-muted">只练最近 7 天每种题型错得最多的 3 个词。答对就过关，答错会再出现，每个词最多 3 次机会；3 次都没答对的会进结算页的“需要再看”。不占每天的复习题数。</p>
             </div>
             <div v-if="mistakeLoading" class="skeleton h-16" />
             <div v-else-if="mistakeWords.length" class="card flex items-center gap-3 p-4">

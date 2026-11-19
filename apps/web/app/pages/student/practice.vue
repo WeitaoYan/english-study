@@ -493,6 +493,7 @@ onMounted(start)
         <span v-else>{{ index + 1 }} / {{ session.totalCount }}</span>
       </div>
     </div>
+    <p v-if="!summary && session?.mode === 'mistake'" class="mb-5 -mt-3 text-xs leading-relaxed text-muted">答对过关，答错再来；每个词最多 3 次机会，3 次没答对会进结算页的“需要再看”。</p>
 
     <div v-if="summary" class="mx-auto max-w-2xl">
       <div class="card overflow-hidden">

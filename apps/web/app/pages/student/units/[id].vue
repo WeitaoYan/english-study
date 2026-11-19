@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   ArrowLeft,
-  ArrowRight,
   BookOpen,
   Image as ImageIcon,
   Play,
@@ -206,13 +205,6 @@ onMounted(load)
             <span v-if="word.imageUrl && word.imageStatus === 'approved'" class="inline-flex items-center gap-1 rounded-md bg-forest-soft px-1.5 py-0.5 text-[9px] text-forest">
               <ImageIcon :size="10" /> 有图
             </span>
-            <NuxtLink
-              :to="`/student/practice?wordId=${word.id}`"
-              class="btn-ghost !px-2 !py-1 text-[10px]"
-            >
-              练这个
-              <ArrowRight :size="11" />
-            </NuxtLink>
           </div>
         </div>
       </div>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-  ArrowRight,
   BookOpen,
   CalendarClock,
   Info,
@@ -151,18 +150,11 @@ onMounted(load)
             </div>
           </div>
 
-          <div class="mt-3 flex items-center justify-between border-t border-line/60 pt-3">
+          <div class="mt-3 flex items-center border-t border-line/60 pt-3">
             <span class="inline-flex items-center gap-1.5 text-[10px] text-muted">
               <CalendarClock :size="12" />
               {{ word.mastery?.isWeak ? '高频复习中' : '按间隔复习' }}
             </span>
-            <NuxtLink
-              :to="`/student/practice?wordId=${word.id}`"
-              class="btn-ghost btn-sm !text-forest"
-            >
-              单独练
-              <ArrowRight :size="12" />
-            </NuxtLink>
           </div>
         </div>
       </div>

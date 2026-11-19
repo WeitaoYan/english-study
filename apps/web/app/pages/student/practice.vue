@@ -87,7 +87,6 @@ const backTo = computed(() => {
 })
 const modeTitle = computed(() => {
   if (session.value?.mode === 'review') return '今日复习'
-  if (session.value?.mode === 'word') return '单词练习'
   if (session.value?.mode === 'special') return '专项练习'
   if (session.value?.mode === 'mistake') return '错词重练'
   return '单元练习'
@@ -266,15 +265,12 @@ async function start() {
         ? 'special'
         : route.query.mode === 'mistake'
           ? 'mistake'
-          : route.query.wordId
-            ? 'word'
-            : 'unit'
+          : 'unit'
     // 复习题数由后端按家长设的每日限额算，前端不传；单元练习默认 10 题；
     // 专项练习的题数由套题定，前端不传；错词重练的词单由后端现算，前端不传。
     const body: Record<string, unknown> = { mode }
     if (mode === 'unit') body.limit = 10
     if (route.query.unitId) body.unitId = String(route.query.unitId)
-    if (route.query.wordId) body.wordId = String(route.query.wordId)
     if (route.query.specialPracticeId) body.specialPracticeId = String(route.query.specialPracticeId)
     if (mode === 'unit' && !body.unitId) {
       error.value = '缺少单元参数，请从单元列表进入练习'

@@ -38,9 +38,8 @@ function normalizeAnswer(value: string): string {
 }
 
 const sessionSchema = z.object({
-  mode: z.enum(['unit', 'review', 'word', 'special', 'mistake']).default('unit'),
+  mode: z.enum(['unit', 'review', 'special', 'mistake']).default('unit'),
   unitId: z.string().optional(),
-  wordId: z.string().optional(),
   // 专项练习：套题 id（mode=special 时必填）。
   specialPracticeId: z.string().optional(),
   // 复习模式的题数不由这里定：后端按家长设的每日限额与当日已答题数算；
@@ -380,7 +379,7 @@ student.post('/practice/sessions', async (c) => {
   const now = nowIso()
   let selected: JoinedWordRow[] = []
   let unitId: string | null = body.unitId || null
-  let mode: 'unit' | 'review' | 'word' | 'special' | 'mistake' = body.mode
+  let mode: 'unit' | 'review' | 'special' | 'mistake' = body.mode
   let textbookId: string | null = null
   // 专项练习：套题 id 与固定题型；specialPoolRows 是全部指定单元的词（干扰项池）。
   let specialPracticeId: string | null = null
@@ -389,21 +388,7 @@ student.post('/practice/sessions', async (c) => {
   let mistakeFixedTypes: Map<string, QuestionType> | null = null
   let specialPoolRows: JoinedWordRow[] | null = null
 
-  if (body.mode === 'word') {
-    if (!body.wordId) return c.json({ error: '缺少单词参数' }, 400)
-    const word = await getWordById(c.env, user.id, body.wordId)
-    if (!word) return c.json({ error: '单词不存在' }, 404)
-    // 单词练：该词须属于一本被指定的课本（词可能在多个单元里，任一单元的课本被指定即可）。
-    const inAssigned = await c.env.DB.prepare(
-      `SELECT 1 FROM unit_word uw
-       JOIN unit u ON u.id = uw.unit_id
-       JOIN child_textbook ct ON ct.textbook_id = u.textbook_id AND ct.student_user_id = ?
-       WHERE uw.word_id = ? AND uw.enabled = 1`,
-    ).bind(user.id, body.wordId).first()
-    if (!inAssigned) return c.json({ error: '该单词所在的课本未指定给孩子' }, 403)
-    selected = [word]
-    unitId = word.unit_id || null
-  } else if (body.mode === 'review') {
+  if (body.mode === 'review') {
     // 每日复习题数是家长设的：今天已答的先扣掉，剩多少取多少；到量了直接
     // 返回“今日复习已完成”，不再开局。前端不传 limit，后端说了算。
     const dailyLimit = await getReviewDailyLimit(c.env, user.id)

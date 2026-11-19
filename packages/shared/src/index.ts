@@ -297,7 +297,7 @@ export interface QuestionPayload {
 
 export interface PracticeSessionPayload {
   sessionId: string
-  mode: 'unit' | 'review' | 'word' | 'special' | 'mistake'
+  mode: 'unit' | 'review' | 'special' | 'mistake'
   unitId: string | null
   specialPracticeId?: string | null
   totalCount: number

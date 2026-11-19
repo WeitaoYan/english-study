@@ -239,12 +239,6 @@ onMounted(async () => {
                 <p class="text-xs font-medium text-ink">{{ word.mastery?.consecutiveWrong || 0 }} 次</p>
               </div>
               <MasteryMeter :strength="word.mastery?.strength || 0" compact />
-              <NuxtLink
-                :to="`/student/practice?wordId=${word.id}`"
-                class="btn-ghost btn-sm shrink-0 !text-forest"
-              >
-                练这个
-              </NuxtLink>
             </div>
           </div>
         </div>

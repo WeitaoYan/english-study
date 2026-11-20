@@ -7,7 +7,9 @@
 //   node tools/migrate-images.mjs --words sun,moon     只导指定词（已有图片的词默认跳过）
 //   node tools/migrate-images.mjs --words sun --force  指定词已有图片也重导
 //   node tools/migrate-images.mjs --limit 100          一批只导 100 个
-// 选词：已启用、且无已通过图片的词，按拼写顺序（含只有待审照片的词——卡通来了要升级替换）；
+// 选词（2026-11-20 用户拍板：按课本单元导入）：只导已发布课本里的词，从三年级上册开始，
+// 按课本（年级→上下册）→单元（sort_order→unit_no）→单元内词序排；不在课本的词不导。
+// 已导入过的跳过（进度文件 done/noImage 过滤）；含只有待审照片的词——卡通来了要升级替换；
 // 失败的词记进 tools/image-migration-progress.json，断点续跑。
 // Openverse 匿名每天限 200 次请求：进度文件按天计数，到 180 即停，留到明天再跑。
 // 注意：不走管理员账号登录——R2/D1 全部走本机 wrangler（run_wrangler_cf.py 换取凭证）。
@@ -334,11 +336,32 @@ async function main() {
     const found = new Set(words.map((w) => w.spelling.toLowerCase()))
     for (const s of ONLY_WORDS) if (!found.has(s)) console.log(`词库里没有 ${s}，跳过`)
   } else {
+    // 只导已发布课本里的词，按课本→单元→单元内词序排；一个词可能在多个单元/课本里出现，
+    // ORDER BY 保证第一行就是它最早出现的位置，下面去重时只留第一行。
     words = await d1Query(
-      `SELECT w.id, w.spelling FROM word w WHERE w.enabled = 1
-       AND NOT EXISTS (SELECT 1 FROM word_image wi WHERE wi.word_id = w.id AND wi.status = 'approved')
-       ORDER BY w.spelling`,
+      `SELECT w.id, w.spelling,
+         CASE t.grade
+           WHEN '一年级' THEN 1 WHEN '二年级' THEN 2 WHEN '三年级' THEN 3
+           WHEN '四年级' THEN 4 WHEN '五年级' THEN 5 WHEN '六年级' THEN 6
+           WHEN '七年级' THEN 7 WHEN '八年级' THEN 8 WHEN '九年级' THEN 9
+           ELSE 10 END AS grade_order,
+         CASE t.semester WHEN '上册' THEN 1 ELSE 2 END AS semester_order,
+         u.sort_order AS unit_sort, u.unit_no,
+         uw.sort_order AS word_sort
+       FROM word w
+       JOIN unit_word uw ON uw.word_id = w.id AND uw.enabled = 1
+       JOIN unit u ON u.id = uw.unit_id
+       JOIN textbook t ON t.id = u.textbook_id AND t.status = 'published'
+       WHERE w.enabled = 1
+         AND NOT EXISTS (SELECT 1 FROM word_image wi WHERE wi.word_id = w.id AND wi.status = 'approved')
+       ORDER BY grade_order, semester_order, u.sort_order, u.unit_no, uw.sort_order, w.spelling`,
     )
+    const seen = new Set()
+    words = words.filter((word) => {
+      if (seen.has(word.id)) return false
+      seen.add(word.id)
+      return true
+    })
   }
   // pendingImageId/pendingSource：该词已有的待审照片（有则走升级替换；无则走全新导入）。
   // 注意：不要把取待审图写成按词的子查询——子查询里的 ORDER BY created_at 会让优化器

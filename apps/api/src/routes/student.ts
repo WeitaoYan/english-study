@@ -139,8 +139,11 @@ student.get('/dashboard', async (c) => {
        COALESCE(SUM(CASE WHEN strength >= 3 THEN 1 ELSE 0 END), 0) AS mastered_words,
        COALESCE(SUM(CASE WHEN is_weak = 1 THEN 1 ELSE 0 END), 0) AS weak_words,
        COALESCE(SUM(CASE WHEN is_weak = 1 OR (next_review_time IS NOT NULL AND next_review_time <= ?) THEN 1 ELSE 0 END), 0) AS due_today
-     FROM word_mastery wm WHERE wm.user_id = ?
+     FROM word_mastery wm
+     JOIN word w ON w.id = wm.word_id AND w.enabled = 1
+     WHERE wm.user_id = ?
        -- 首页统计只算指定课本里的词：未指定的课本即使以前学过，也不计入待复习数。
+       -- 停用词（如 "let us"）也不计入：复习页本来就不出停用词，仪表盘多算它会造成 8 比 7 这类差 1 的现象。
        AND EXISTS (
          SELECT 1 FROM unit_word uw
          JOIN unit u ON u.id = uw.unit_id AND uw.enabled = 1

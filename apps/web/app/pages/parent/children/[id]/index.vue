@@ -5,6 +5,7 @@ import {
   ArrowRight,
   BookOpen,
   CalendarRange,
+  Check,
   Clock3,
   FileText,
   Gift,
@@ -14,9 +15,11 @@ import {
   Target,
   TrendingUp,
   Users,
+  Volume2,
+  X,
 } from 'lucide-vue-next'
 import { QUESTION_ABILITY_HINTS, QUESTION_ABILITY_LABELS, QUESTION_TYPE_LABELS } from '@english-study/shared'
-import type { ChildTextbookOption, ParentReport, QuestionAbility, QuestionType, SpecialPractice, SpecialPracticeCreate, TextbookPreview } from '@english-study/shared'
+import type { ChildTextbookOption, ParentReport, QuestionAbility, QuestionType, RecentAnswer, RecentAnswersResponse, SpecialPractice, SpecialPracticeCreate, TextbookPreview } from '@english-study/shared'
 import { formatDateTimeCN } from '@english-study/shared'
 
 const route = useRoute()
@@ -246,6 +249,43 @@ async function setDays(value: number) {
   await load()
 }
 
+// 近期答题：具体每道题怎么答的，错题醒目标出。默认最新 20 条，只看错题时服务端过滤。
+const recentAnswers = ref<RecentAnswer[]>([])
+const recentLoading = ref(false)
+const onlyWrong = ref(false)
+
+const SESSION_MODE_LABELS: Record<string, string> = {
+  review: '今日复习',
+  unit: '单元练习',
+  special: '专项练习',
+  mistake: '错词重练',
+}
+
+async function loadRecentAnswers() {
+  recentLoading.value = true
+  try {
+    const result = await api.get<RecentAnswersResponse>(`/parent/children/${route.params.id}/recent-answers`, {
+      query: { limit: 20, onlyWrong: onlyWrong.value ? 1 : 0 },
+    })
+    recentAnswers.value = result.answers || []
+  } catch (error) {
+    toast.error(errorMessage(error, '近期答题加载失败'))
+  } finally {
+    recentLoading.value = false
+  }
+}
+
+async function setOnlyWrong(value: boolean) {
+  onlyWrong.value = value
+  await loadRecentAnswers()
+}
+
+function playAudio(url: string | null) {
+  if (!url) return
+  const audio = new Audio(url)
+  void audio.play()
+}
+
 /** 按能力维度汇总错题：听力（听不懂）、拼写（不会写）、词义（不懂意思）。 */
 const abilityGroups = computed(() => {
   const order: QuestionAbility[] = ['listening', 'spelling', 'meaning']
@@ -312,6 +352,7 @@ async function saveReviewLimit() {
 
 onMounted(() => {
   load()
+  loadRecentAnswers()
   loadTextbooks()
   loadReviewLimit()
   loadSpecialPractices()
@@ -717,6 +758,116 @@ onMounted(() => {
           </div>
         </div>
         <p v-else class="py-8 text-center text-xs text-muted">这段时间还没有答题，练几局就能量出短板。</p>
+      </section>
+
+      <section class="card mt-6 p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="eyebrow">答题明细</p>
+            <h2 class="mt-1 section-title">近期答题</h2>
+            <p class="mt-1 text-xs text-muted">最新 20 条答题记录，能看到每道题的题目和答案；错题红色标出。</p>
+          </div>
+          <div class="flex items-center gap-1.5 rounded-full border border-line bg-white/60 p-1">
+            <button
+              type="button"
+              class="rounded-full px-3 py-1 text-[11px] font-medium"
+              :class="onlyWrong ? 'text-muted' : 'bg-ink text-paper'"
+              @click="setOnlyWrong(false)"
+            >
+              全部
+            </button>
+            <button
+              type="button"
+              class="rounded-full px-3 py-1 text-[11px] font-medium"
+              :class="onlyWrong ? 'bg-danger text-white' : 'text-muted'"
+              @click="setOnlyWrong(true)"
+            >
+              只看错题
+            </button>
+          </div>
+        </div>
+        <div v-if="recentLoading" class="py-8 text-center text-xs text-muted">正在加载答题记录…</div>
+        <div v-else-if="recentAnswers.length" class="mt-5 space-y-3">
+          <div
+            v-for="item in recentAnswers"
+            :key="item.id"
+            class="rounded-2xl border px-4 py-3.5"
+            :class="item.isCorrect ? 'border-line/70 bg-white/50' : 'border-danger/50 bg-danger-soft/40'"
+          >
+            <div class="flex flex-wrap items-center gap-2">
+              <span
+                class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
+                :class="item.isCorrect ? 'bg-forest-soft text-forest' : 'bg-danger text-white'"
+              >
+                <Check v-if="item.isCorrect" :size="11" />
+                <X v-else :size="11" />
+                {{ item.isCorrect ? '答对' : '答错' }}
+              </span>
+              <span class="text-[11px] font-medium text-ink">{{ item.typeLabel }}</span>
+              <span class="text-[11px] text-muted">{{ SESSION_MODE_LABELS[item.sessionMode] || item.sessionMode }}</span>
+              <span class="ml-auto text-[10px] text-muted">{{ formatDateTimeCN(item.answeredAt) }}</span>
+            </div>
+            <div class="mt-2.5 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <p class="text-sm font-medium text-ink">{{ item.word.spelling }}</p>
+              <span v-if="item.word.phonetic" class="text-[11px] text-muted">{{ item.word.phonetic }}</span>
+              <span class="text-[11px] text-muted">{{ item.word.chineseDef }}</span>
+            </div>
+            <div v-if="item.questionType === 'image_choice' && item.word.imageUrl" class="mt-2.5">
+              <img :src="item.word.imageUrl" :alt="item.word.spelling" class="h-24 w-24 rounded-xl border border-line/70 bg-white object-contain" />
+            </div>
+            <button
+              v-else-if="item.questionType === 'audio_choice' && item.word.audioUrl"
+              type="button"
+              class="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3 py-1.5 text-[11px] text-ink"
+              @click="playAudio(item.word.audioUrl)"
+            >
+              <Volume2 :size="13" />
+              播放这道题的录音
+            </button>
+            <p v-if="item.prompt && item.questionType !== 'image_choice' && item.questionType !== 'audio_choice'" class="mt-2 text-xs leading-relaxed text-ink/80">
+              题目：{{ item.prompt }}
+            </p>
+            <div v-if="item.questionType === 'pronunciation_choice'" class="mt-2 space-y-1 text-xs leading-relaxed">
+              <p>
+                <span class="text-muted">孩子选了：</span>
+                <span :class="item.isCorrect ? 'text-forest' : 'text-danger'">{{ item.userAnswerWord ? `“${item.userAnswerWord}” 的发音` : '一段录音' }}</span>
+                <button
+                  v-if="item.userAnswer"
+                  type="button"
+                  class="ml-1.5 inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5 text-[10px] text-ink"
+                  @click="playAudio(item.userAnswer)"
+                >
+                  <Volume2 :size="11" />
+                  播放
+                </button>
+              </p>
+              <p v-if="!item.isCorrect">
+                <span class="text-muted">正确发音：</span>
+                <span class="text-forest">{{ item.correctAnswerWord ? `“${item.correctAnswerWord}” 的发音` : '目标词的录音' }}</span>
+                <button
+                  v-if="item.correctAnswer"
+                  type="button"
+                  class="ml-1.5 inline-flex items-center gap-1 rounded-full border border-line bg-white px-2 py-0.5 text-[10px] text-ink"
+                  @click="playAudio(item.correctAnswer)"
+                >
+                  <Volume2 :size="11" />
+                  播放
+                </button>
+              </p>
+            </div>
+            <div v-else class="mt-2 space-y-1 text-xs leading-relaxed">
+              <p>
+                <span class="text-muted">孩子答：</span>
+                <span :class="item.isCorrect ? 'font-medium text-forest' : 'font-medium text-danger'">{{ item.userAnswer }}</span>
+              </p>
+              <p v-if="!item.isCorrect">
+                <span class="text-muted">正确答案：</span>
+                <span class="font-medium text-forest">{{ item.correctAnswer }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <p v-else class="py-8 text-center text-xs text-muted">{{ onlyWrong ? '最近 20 条里没有错题' : '还没有答题记录' }}</p>
       </section>
 
       <div class="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">

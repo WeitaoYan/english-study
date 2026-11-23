@@ -476,6 +476,35 @@ export interface ParentReport {
   typeStats: TypeErrorStat[]
 }
 
+export interface RecentAnswer {
+  id: string
+  answeredAt: string
+  questionType: QuestionType
+  typeLabel: string
+  sessionMode: string
+  /** 题干：释义选词是中文释义，补全字母是挖空后的拼写，句子填空是挖空的句子，听词选音是目标词；看图/听音选词这里只是题面说明，图和录音见 word。 */
+  prompt: string | null
+  userAnswer: string
+  correctAnswer: string
+  /** 听词选音：孩子选的那段录音属于哪个词（由录音地址解析得到） */
+  userAnswerWord: string | null
+  /** 听词选音：正确答案那段录音属于哪个词 */
+  correctAnswerWord: string | null
+  isCorrect: boolean
+  word: {
+    id: string
+    spelling: string
+    chineseDef: string
+    phonetic: string | null
+    imageUrl: string | null
+    audioUrl: string | null
+  }
+}
+
+export interface RecentAnswersResponse {
+  answers: RecentAnswer[]
+}
+
 export interface IncentiveRule {
   id: string
   familyId: string

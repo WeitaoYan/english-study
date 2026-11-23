@@ -6,6 +6,7 @@ import {
   QUESTION_TYPE_LABELS,
   type IncentiveTrigger,
   type QuestionType,
+  type RecentAnswer,
 } from '@english-study/shared'
 import type { AppEnv } from '../types'
 import { hashPassword, requireAuth, requireRole } from '../lib/auth'
@@ -710,6 +711,98 @@ parent.get('/children/:id/report', async (c) => {
     pendingRewards: pending?.total || 0,
     typeStats,
   })
+})
+
+// 近期答题：家长看孩子具体每道题怎么答的，错题醒目标出。直接读答题记录，
+// 不走汇总表；默认最新 20 条，onlyWrong=1 只看错题。
+parent.get('/children/:id/recent-answers', async (c) => {
+  const user = c.get('user')
+  const child = await getChild(c.env, user.id, c.req.param('id'))
+  if (!child) return c.json({ error: '未找到已绑定的孩子' }, 404)
+  const limit = queryInt(c.req.query('limit'), 20, 1, 50)
+  const onlyWrong = c.req.query('onlyWrong') === '1'
+
+  const { results } = await c.env.DB.prepare(
+    `SELECT pr.id, pr.question_type, pr.prompt, pr.correct_answer, pr.user_answer,
+       pr.is_correct, pr.answered_at,
+       w.id AS word_id, w.spelling, w.chinese_def, w.phonetic,
+       (SELECT wi.image_url FROM word_image wi WHERE wi.word_id = w.id AND wi.status = 'approved' ORDER BY wi.created_at DESC LIMIT 1) AS image_url,
+       (SELECT wa.audio_url FROM word_audio wa WHERE wa.word_id = w.id ORDER BY wa.created_at DESC LIMIT 1) AS audio_url,
+       ps.mode AS session_mode
+     FROM practice_record pr
+     JOIN practice_session ps ON ps.id = pr.session_id
+     JOIN word w ON w.id = pr.word_id
+     WHERE ps.user_id = ?${onlyWrong ? ' AND pr.is_correct = 0' : ''}
+     ORDER BY pr.answered_at DESC
+     LIMIT ?`,
+  ).bind(child.student_user_id, limit).all<{
+    id: string
+    question_type: QuestionType
+    prompt: string | null
+    correct_answer: string
+    user_answer: string
+    is_correct: number
+    answered_at: string
+    word_id: string
+    spelling: string
+    chinese_def: string
+    phonetic: string | null
+    image_url: string | null
+    audio_url: string | null
+    session_mode: string
+  }>()
+
+  // 听词选音的答案存的是录音地址（…/api/audio/<wordId>），解析出它属于哪个词，
+  // 家长才能看懂孩子选了哪个词的发音。
+  const audioWordIds = new Set<string>()
+  const audioIdOf = (url: string | null): string | null => {
+    const m = /\/audio\/([^?/]+)/.exec(url || '')
+    return m ? m[1] : null
+  }
+  for (const row of results || []) {
+    if (row.question_type !== 'pronunciation_choice') continue
+    for (const url of [row.user_answer, row.correct_answer]) {
+      const id = audioIdOf(url)
+      if (id) audioWordIds.add(id)
+    }
+  }
+  const spellingById = new Map<string, string>()
+  const ids = [...audioWordIds]
+  for (let i = 0; i < ids.length; i += 50) {
+    const chunk = ids.slice(i, i + 50)
+    const placeholders = chunk.map(() => '?').join(',')
+    const { results: words } = await c.env.DB.prepare(
+      `SELECT id, spelling FROM word WHERE id IN (${placeholders})`,
+    ).bind(...chunk).all<{ id: string; spelling: string }>()
+    for (const w of words || []) spellingById.set(w.id, w.spelling)
+  }
+  const audioWordOf = (url: string | null): string | null => {
+    const id = audioIdOf(url)
+    return id ? spellingById.get(id) || null : null
+  }
+
+  const answers: RecentAnswer[] = (results || []).map((row) => ({
+    id: row.id,
+    answeredAt: row.answered_at,
+    questionType: row.question_type,
+    typeLabel: QUESTION_TYPE_LABELS[row.question_type] || row.question_type,
+    sessionMode: row.session_mode,
+    prompt: row.prompt,
+    userAnswer: row.user_answer,
+    correctAnswer: row.correct_answer,
+    userAnswerWord: row.question_type === 'pronunciation_choice' ? audioWordOf(row.user_answer) : null,
+    correctAnswerWord: row.question_type === 'pronunciation_choice' ? audioWordOf(row.correct_answer) : null,
+    isCorrect: Boolean(row.is_correct),
+    word: {
+      id: row.word_id,
+      spelling: row.spelling,
+      chineseDef: row.chinese_def,
+      phonetic: row.phonetic,
+      imageUrl: row.image_url,
+      audioUrl: row.audio_url,
+    },
+  }))
+  return c.json({ answers })
 })
 
 const incentiveSchema = z.object({

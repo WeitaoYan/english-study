@@ -4,6 +4,7 @@ import {
   BarChart3,
   BookMarked,
   BookOpen,
+  Calculator,
   ChevronRight,
   Gift,
   GraduationCap,
@@ -173,6 +174,22 @@ async function signOut() {
           </div>
         </template>
       </nav>
+
+      <a
+        href="https://study.ikber.cc"
+        target="_blank"
+        rel="noopener"
+        class="mt-4 block rounded-2xl border border-line/80 bg-paper/70 px-3.5 py-4 transition hover:border-forest/40"
+      >
+        <p class="flex items-center gap-2 text-[11px] font-semibold tracking-wide text-forest">
+          <Calculator :size="13" />
+          更多练习
+        </p>
+        <p class="mt-2 text-xs leading-relaxed text-ink-soft">
+          爱学习 · 数学练习：口算、脱式、竖式，一键生成 A4 练习纸。
+        </p>
+        <p class="mt-2 text-xs font-medium text-forest">去数学站 →</p>
+      </a>
 
       <div class="border-t border-line/80 pt-4">
         <div class="flex items-center justify-between gap-2">

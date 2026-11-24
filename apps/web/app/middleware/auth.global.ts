@@ -13,6 +13,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (!auth.user.value) {
+    // 首页是公开落地页：未登录也能看介绍，已登录的由下面 '/' 分支跳工作台。
+    if (to.path === '/') return
     return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
   }
 

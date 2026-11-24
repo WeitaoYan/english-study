@@ -153,6 +153,11 @@ async function submit() {
           家长还没有账号？
           <NuxtLink to="/register" class="font-medium text-forest underline underline-offset-2">用邮箱注册</NuxtLink>
         </p>
+
+        <p class="mt-4 text-center text-xs text-muted">
+          数学练习：
+          <a class="font-medium text-forest underline underline-offset-2" href="https://study.ikber.cc" target="_blank" rel="noopener">爱学习 · 数学练习</a>
+        </p>
       </div>
     </section>
   </div>

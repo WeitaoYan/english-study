@@ -18,6 +18,8 @@ export function useAuth() {
   function applySession(nextUser: UserSummary, token?: string) {
     user.value = nextUser
     ready.value = true
+    // 登录成功：恢复被 401 屏蔽的错误提示。
+    useToast().resumeErrorToasts()
     if (import.meta.client && token) {
       localStorage.setItem('es_token', token)
     }
@@ -29,6 +31,7 @@ export function useAuth() {
     try {
       const response = await api.get<{ user: UserSummary }>('/auth/me')
       user.value = response.user
+      useToast().resumeErrorToasts()
     } catch {
       user.value = null
     } finally {

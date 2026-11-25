@@ -72,9 +72,15 @@ export function useApi() {
       const status = (error as { statusCode?: number; status?: number })?.statusCode
         || (error as { status?: number })?.status
       if (status === 401 && import.meta.client) {
+        // 会话失效统一跳登录：先清掉已有提示并屏蔽这波错误提示，否则
+        // 页面上多个并发请求同时 401，各自的 catch 会各弹一条「未登录」，
+        // 叠起来溢出。登录成功后由 useAuth 恢复提示。
+        const toast = useToast()
+        toast.clear()
+        toast.suppressErrorToasts()
+        localStorage.removeItem('es_token')
         const currentPath = window.location.pathname
         if (currentPath !== '/login') {
-          localStorage.removeItem('es_token')
           await navigateTo({
             path: '/login',
             query: { redirect: currentPath + window.location.search },

@@ -14,10 +14,7 @@ definePageMeta({ layout: false })
 
 const auth = useAuth()
 
-// 已登录用户不看落地页，直接进自己的工作台（中间件也会拦一道）。
-if (auth.user.value) {
-  await navigateTo(auth.home.value, { replace: true })
-}
+// 首页登录与否都能自由看，不再自动跳工作台；已登录用户点右上角的按钮进工作台。
 
 const highlights = [
   {
@@ -72,8 +69,11 @@ const steps = [
         </span>
       </span>
       <span class="flex items-center gap-2">
-        <NuxtLink to="/login" class="btn-ghost">登录</NuxtLink>
-        <NuxtLink to="/register" class="btn-primary !px-4 !py-2">家长注册</NuxtLink>
+        <NuxtLink v-if="auth.user.value" :to="auth.home.value" class="btn-primary !px-4 !py-2">进入工作台</NuxtLink>
+        <template v-else>
+          <NuxtLink to="/login" class="btn-ghost">登录</NuxtLink>
+          <NuxtLink to="/register" class="btn-primary !px-4 !py-2">家长注册</NuxtLink>
+        </template>
       </span>
     </header>
 
@@ -88,11 +88,17 @@ const steps = [
           面向小学、初中学生的课本同步单词学习工具。按课本单元学习，系统根据记忆状态安排复习；平台只客观记录学习行为，奖励由家长与孩子共同约定。
         </p>
         <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <NuxtLink to="/register" class="btn-primary w-full !py-3 sm:w-auto">
-            家长注册，免费开始
+          <NuxtLink v-if="auth.user.value" :to="auth.home.value" class="btn-primary w-full !py-3 sm:w-auto">
+            进入我的工作台
             <ArrowRight :size="16" />
           </NuxtLink>
-          <NuxtLink to="/login" class="btn-secondary w-full !py-3 sm:w-auto">已有账号，去登录</NuxtLink>
+          <template v-else>
+            <NuxtLink to="/register" class="btn-primary w-full !py-3 sm:w-auto">
+              家长注册，免费开始
+              <ArrowRight :size="16" />
+            </NuxtLink>
+            <NuxtLink to="/login" class="btn-secondary w-full !py-3 sm:w-auto">已有账号，去登录</NuxtLink>
+          </template>
         </div>
         <p class="mt-5 text-[11px] leading-relaxed text-muted">
           学生没有独立登录入口：家长登录后，在孩子卡片点「进入孩子视角」即可进入孩子端。

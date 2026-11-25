@@ -13,16 +13,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (!auth.user.value) {
-    // 首页是公开落地页：未登录也能看介绍，已登录的由下面 '/' 分支跳工作台。
+    // 首页是公开落地页：未登录也能看介绍。
     if (to.path === '/') return
     return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
   }
 
-  const role = auth.user.value.role
-  if (to.path === '/') {
-    return navigateTo(auth.roleHome(role))
-  }
+  // 首页登录与否都能自由访问，不再强制跳工作台；想进工作台点首页的按钮。
+  if (to.path === '/') return
 
+  const role = auth.user.value.role
   const restricted: Record<string, string> = {
     '/student': 'student',
     '/parent': 'parent',

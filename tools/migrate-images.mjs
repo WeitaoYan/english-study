@@ -225,7 +225,7 @@ async function wikipediaImage(spelling) {
   const license = stripTags(meta.LicenseShortName?.value || '')
   if (!licenseAllowed(license)) return null
   const creator = stripTags(meta.Artist?.value || '').slice(0, 100) || fileName
-  return {
+  const candidate = {
     url: thumb.source,
     kind: 'photo',
     source: 'wikipedia',
@@ -233,6 +233,15 @@ async function wikipediaImage(spelling) {
     creator,
     attribution: `图片：${creator} · ${license} · Wikimedia Commons`,
   }
+  // 先下载验一次货再返回：只看缩略图宽和授权不验文件，存图时才发现格式/大小
+  // 不对，整个词会直接记失败、不回落第四路（I 仅 4KB、year 超 2MB、address
+  // 非 JPG/PNG 都卡在这里）。验不过返回 null，让流程继续走 Openverse 照片路。
+  try {
+    await downloadVerified(candidate)
+  } catch {
+    return null
+  }
+  return candidate
 }
 
 const OPENVERSER_LICENSE_LABEL = { by: 'CC BY', 'by-sa': 'CC BY-SA', cc0: 'CC0', pdm: 'Public Domain' }

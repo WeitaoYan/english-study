@@ -336,10 +336,13 @@ admin.get('/units/:id/words', async (c) => {
   })
 })
 
-// 单词拼写只支持英文字母、空格、连字符与撇号；匹配时不区分大小写，
+// 单词拼写只支持英文字母、空格、连字符、撇号与句点；匹配时不区分大小写，
 // 但新词按用户输入的大小写原样入库（I、Ms、April 这类词首字母大写是有意义的，
 // 库里本来就是这么存的；全小写会把 Christmas 这类专有名词写错）。
-const SPELLING_PATTERN = /^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/
+// 句点只允许两种形态：缩写里的单点（a.m.、U.S.A.，末尾可带一点），
+// 以及课本句型里的占位符“...”（have ... class，两边须有空格与字母），
+// 单独的“...”、连续多点、首尾多余符号仍拦住。
+const SPELLING_PATTERN = /^[A-Za-z]+(?:[ '-][A-Za-z]+|\.[A-Za-z]+| \.\.\. [A-Za-z]+)*\.?$/
 
 type ResolveWordResult =
   | { ok: true; wordId: string; created: boolean; spelling: string }
@@ -353,7 +356,7 @@ async function resolveWordForUnit(
 ): Promise<ResolveWordResult> {
   const spelling = input.trim()
   if (!spelling || !SPELLING_PATTERN.test(spelling)) {
-    return { ok: false, status: 400, message: '拼写只支持英文字母、空格、连字符与撇号' }
+    return { ok: false, status: 400, message: '拼写只支持英文字母、空格、连字符、撇号与句点' }
   }
   // 先精确匹配（走 idx_word_spelling 索引，1 行）；大小写不一致时再回落到
   // LOWER() 全表扫——直接 LOWER() 查每次都要扫整个单词表（1667 行）。

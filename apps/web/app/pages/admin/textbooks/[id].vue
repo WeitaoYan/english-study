@@ -83,7 +83,9 @@ const trimmedSearch = computed(() => wordSearch.value.trim())
 const canAiAdd = computed(() => {
   if (searching.value) return false
   const spelling = normalizedSearch.value
-  if (!spelling || !/^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/.test(spelling)) return false
+  // 与后端 SPELLING_PATTERN 一致：字母、空格、连字符、撇号与句点；
+  // 句点只放行缩写单点（a.m.、U.S.A.）与句型占位符“...”（have ... class）。
+  if (!spelling || !/^[A-Za-z]+(?:[ '-][A-Za-z]+|\.[A-Za-z]+| \.\.\. [A-Za-z]+)*\.?$/.test(spelling)) return false
   return !searchResults.value.some((word) => word.spelling.toLowerCase() === spelling)
 })
 // 完全匹配的词已在本单元时：它会从可添加列表里被过滤掉，界面上只剩近似词，

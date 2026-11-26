@@ -32,7 +32,11 @@ function shuffle<T>(values: T[]): T[] {
 export function availableTypes(word: Word): QuestionType[] {
   const types: QuestionType[] = []
   if (word.chineseDef.trim()) types.push('definition_choice')
-  if (word.spelling.replace(/[^a-zA-Z]/g, '').length >= 3) types.push('letter_fill')
+  // 补全字母只适合单词/短语：完整句子（带空格且以句末标点结尾，如 What a nice day!）
+  // 不出补全字母——遮完只剩首字母、中间一个字母和标点，等于让学生默写整句，
+  // 起不到练拼写的作用。短语（have ... class，结尾是字母）与缩写（a.m.，无空格）不受影响。
+  const isSentence = /[.!?]$/.test(word.spelling) && word.spelling.includes(' ')
+  if (word.spelling.replace(/[^a-zA-Z]/g, '').length >= 3 && !isSentence) types.push('letter_fill')
   if (word.examples.length > 0) types.push('sentence_fill')
   if (word.imageUrl && word.imageStatus === 'approved') types.push('image_choice')
   // 听音题只放真人录音：没有录音的词不出听音题（TTS 已移除）。

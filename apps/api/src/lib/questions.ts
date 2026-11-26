@@ -42,7 +42,8 @@ export function availableTypes(word: Word): QuestionType[] {
   return types.length ? types : ['definition_choice']
 }
 
-function chooseType(word: Word, index: number): QuestionType {
+/** 按轮换从该词能出的题型里挑一个：专项练习固定题型时不走这里。 */
+export function chooseType(word: Word, index: number): QuestionType {
   const available = availableTypes(word)
   for (let offset = 0; offset < TYPE_ROTATION.length; offset++) {
     const candidate = TYPE_ROTATION[(index + offset) % TYPE_ROTATION.length]!

@@ -5,7 +5,7 @@ import type { AppEnv, MasteryRow, WordRow } from '../types'
 import { requireAuth, requireRole } from '../lib/auth'
 import { parseBody } from '../lib/http'
 import { computeMastery, masteryToApi } from '../lib/srs'
-import { applyManualQuestion, availableTypes, buildQuestions, expectedAnswer, explanationForRow, maskWordInPhrase, type ManualQuestion } from '../lib/questions'
+import { applyManualQuestion, availableTypes, buildQuestions, chooseType, expectedAnswer, explanationForRow, maskWordInPhrase, type ManualQuestion } from '../lib/questions'
 import { enrichSpecialPractices, getSpecialPracticeForStudent } from '../lib/special'
 import { getTopErrorWords } from '../lib/mistakes'
 import { isQuestionType, mapWord } from '../lib/mappers'
@@ -587,15 +587,35 @@ student.post('/practice/sessions', async (c) => {
     const pool = specialPoolRows || (row.unit_id ? (context.get(row.unit_id) || [row]) : [row])
     // 错词重练每个词有自己的固定题型；专项练习全队一种题型。
     const fixedType = mistakeFixedTypes?.get(row.id) ?? specialFixedType ?? undefined
+    const word = mapWord(row)
+    // 目标题型：固定题型，或按轮换从该词能出的题型里挑。
+    const intended = fixedType ?? chooseType(word, questions.length)
     const generated = buildQuestions([row], pool, questions.length, fixedType)
     let question = generated[0]
     if (!question) continue
+    // 人工题优先：按目标题型先找人工题，有就直接用——即使自动题已回落到别的题型，
+    // 人工题也照样顶上去（管理员建这道题就是希望它出现）。判题仍以人工题自己的
+    // correct_answer 为准（提交时按 questionId 取）。
+    const manual = await findManualQuestion(c.env, row.id, intended)
+    if (manual) {
+      const merged = applyManualQuestion(question, word, manual)
+      if (merged) {
+        questions.push(merged)
+        continue
+      }
+      // 人工题不满足题型依赖（如看图没图、听音没录音）时，继续走自动题。
+    }
+    // 没有（可用的）人工题，走原来的自动出题逻辑。
     // 题型固定：生成函数回落到别的题型时直接跳过该词，不混进别的题型。
     if (fixedType && question.type !== fixedType) continue
-    const manual = await findManualQuestion(c.env, row.id, question.type)
-    if (manual) {
-      const merged = applyManualQuestion(question, mapWord(row), manual)
-      if (merged) question = merged
+    // 自动题回落后类型可能与目标不同，再按最终类型补查一次人工题（兼容旧行为：
+    // 比如目标是句子填空、回落成补全字母后，有人工补全字母题也可以用）。
+    if (question.type !== intended) {
+      const fallbackManual = await findManualQuestion(c.env, row.id, question.type)
+      if (fallbackManual) {
+        const merged = applyManualQuestion(question, word, fallbackManual)
+        if (merged) question = merged
+      }
     }
     questions.push(question)
   }

@@ -343,7 +343,9 @@ admin.get('/units/:id/words', async (c) => {
 // 以及课本句型里的占位符“...”（have ... class，两边须有空格与字母），
 // 单独的“...”、连续多点、首尾多余符号仍拦住。
 // 句末标点（. ! ?）只允许一个、放在末尾，如 What a nice day!、How are you?。
-const SPELLING_PATTERN = /^[A-Za-z]+(?:[ '-][A-Za-z]+|\.[A-Za-z]+| \.\.\. [A-Za-z]+)*(?:[.!?])?$/
+// 句末省略号“...”也允许，须有空格隔开，如 it's time to ...（未完成句型）；
+// 不带空格的“...”（如 have...）仍拦住。
+const SPELLING_PATTERN = /^[A-Za-z]+(?:[ '-][A-Za-z]+|\.[A-Za-z]+| \.\.\. [A-Za-z]+)*(?: \.\.\.|[.!?])?$/
 
 type ResolveWordResult =
   | { ok: true; wordId: string; created: boolean; spelling: string }
@@ -357,7 +359,7 @@ async function resolveWordForUnit(
 ): Promise<ResolveWordResult> {
   const spelling = input.trim()
   if (!spelling || !SPELLING_PATTERN.test(spelling)) {
-    return { ok: false, status: 400, message: '拼写只支持英文字母、空格、连字符、撇号、句点、感叹号与问号' }
+    return { ok: false, status: 400, message: '拼写只支持英文字母、空格、连字符、撇号与句末标点（. ! ? 或 ...）' }
   }
   // 先精确匹配（走 idx_word_spelling 索引，1 行）；大小写不一致时再回落到
   // LOWER() 全表扫——直接 LOWER() 查每次都要扫整个单词表（1667 行）。
